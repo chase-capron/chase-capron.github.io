@@ -3,66 +3,191 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chase Capron</title>
-  <meta name="description" content="Personal site for Chase Capron." />
+  <title>Chase Capron · Computer Engineer</title>
+  <meta name="description" content="Chase Capron — Computer Engineer. Projects, notes, and links." />
+  <meta name="color-scheme" content="dark" />
+
+  <meta property="og:title" content="Chase Capron · Computer Engineer" />
+  <meta property="og:description" content="Projects, notes, and links." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <div class="brand">
-        <div class="avatar" aria-hidden="true">CC</div>
-        <div>
-          <h1>Chase Capron</h1>
-          <p class="tagline">Personal site — projects, notes, and links.</p>
-        </div>
-      </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="bg" aria-hidden="true">
+    <div class="bg__grid"></div>
+    <div class="bg__blob bg__blob--a"></div>
+    <div class="bg__blob bg__blob--b"></div>
+    <div class="bg__noise"></div>
+  </div>
+
+  <header class="site-header" id="top">
+    <div class="container header__row">
+      <a class="brand" href="#top" aria-label="Home">
+        <span class="avatar" aria-hidden="true">CC</span>
+        <span class="brand__text">
+          <span class="brand__name">Chase Capron</span>
+          <span class="brand__role">Computer Engineer</span>
+        </span>
+      </a>
 
       <nav class="nav" aria-label="Primary">
-        <a href="#projects">Projects</a>
         <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#now">Now</a>
+        <a href="#projects">Projects</a>
       </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+        <button class="btn btn--icon" id="motionToggle" type="button" aria-pressed="false" title="Reduce motion">
+          <span aria-hidden="true">▣</span>
+          <span class="sr-only">Reduce motion</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="card" id="projects">
-      <h2>Projects</h2>
-      <p>Quick links (edit these):</p>
-      <ul>
-        <li><a href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="#" target="_blank" rel="noopener">LinkedIn (add)</a></li>
-        <li><a href="#" target="_blank" rel="noopener">Resume PDF (add)</a></li>
-      </ul>
+  <main id="main" class="container">
+    <section class="hero">
+      <div class="hero__content">
+        <p class="pill">Building reliable systems · automation · practical engineering</p>
+        <h1>
+          Hi — I’m <span class="accent">Chase</span>.
+          <span class="muted">I design and ship clean, resilient tech.</span>
+        </h1>
+        <p class="lead">
+          This site is intentionally lightweight and fast. It’ll grow into multi-page sections over time.
+        </p>
+
+        <div class="hero__cta">
+          <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">View GitHub</a>
+          <a class="btn btn--ghost" href="#projects">See what’s next</a>
+        </div>
+
+        <div class="hero__stats" role="list">
+          <div class="stat" role="listitem">
+            <div class="stat__k">Focus</div>
+            <div class="stat__v">Automation + systems</div>
+          </div>
+          <div class="stat" role="listitem">
+            <div class="stat__k">Style</div>
+            <div class="stat__v">Practical, tested, maintainable</div>
+          </div>
+          <div class="stat" role="listitem">
+            <div class="stat__k">Status</div>
+            <div class="stat__v"><span class="dot" aria-hidden="true"></span>Active</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero__panel" aria-label="Quick card">
+        <div class="panel">
+          <div class="panel__header">
+            <div class="panel__title">Quick links</div>
+            <div class="panel__badge">v0</div>
+          </div>
+          <div class="panel__body">
+            <a class="linkrow" href="https://github.com/chase-capron" target="_blank" rel="noopener">
+              <span class="linkrow__label">GitHub</span>
+              <span class="linkrow__value">github.com/chase-capron</span>
+            </a>
+            <div class="divider"></div>
+            <div class="note">
+              <strong>Coming soon:</strong> project write-ups, a few deep dives, and a cleaner navigation with separate pages.
+            </div>
+          </div>
+        </div>
+      </aside>
     </section>
 
-    <section class="card" id="about">
-      <h2>About</h2>
-      <p>
-        Write a short bio here. Keep it simple. This template is intentionally basic so it’s easy to expand into multiple pages later.
-      </p>
+    <section class="section" id="about">
+      <div class="section__head">
+        <h2>About</h2>
+        <p class="muted">A short, honest overview. No fluff.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3>What I do</h3>
+          <p>
+            Computer engineering with a bias for dependable systems: clear interfaces, good defaults, and the kind of
+            automation you can trust at 2AM.
+          </p>
+        </article>
+        <article class="card">
+          <h3>How I work</h3>
+          <p>
+            Iterate fast, measure what matters, and keep the surface area small. If it can be made simpler, it should be.
+          </p>
+        </article>
+        <article class="card">
+          <h3>What I’m building</h3>
+          <p>
+            A small set of projects that make home automation and personal tooling more reliable, auditable, and easy to
+            maintain.
+          </p>
+        </article>
+      </div>
     </section>
 
-    <section class="card" id="contact">
-      <h2>Contact</h2>
-      <p>
-        Add an email, a form link, or a public contact method.
-      </p>
-      <p class="fineprint">
-        Tip: For a no-backend contact form later, you can use Formspree/Netlify Forms.
-      </p>
+    <section class="section" id="now">
+      <div class="section__head">
+        <h2>Now</h2>
+        <p class="muted">A snapshot of what this site will expand into.</p>
+      </div>
+
+      <div class="cards">
+        <article class="card card--interactive" data-tilt>
+          <h3>Currently</h3>
+          <ul class="list">
+            <li>Hardening and simplifying home automation workflows</li>
+            <li>Building maintainable assistant tooling and repo references</li>
+            <li>Keeping things fast, local-first, and boring-in-a-good-way</li>
+          </ul>
+        </article>
+
+        <article class="card card--interactive" data-tilt>
+          <h3>Tech</h3>
+          <p class="muted">(Editable later — placeholder list)</p>
+          <div class="chips" aria-label="Tech chips">
+            <span class="chip">Python</span>
+            <span class="chip">JavaScript</span>
+            <span class="chip">Linux</span>
+            <span class="chip">Home Assistant</span>
+            <span class="chip">Git</span>
+            <span class="chip">Automation</span>
+          </div>
+        </article>
+      </div>
     </section>
+
+    <section class="section" id="projects">
+      <div class="section__head">
+        <h2>Projects</h2>
+        <p class="muted">TBA — this will become a real portfolio section soon.</p>
+      </div>
+
+      <div class="card callout">
+        <div>
+          <h3>Under construction</h3>
+          <p class="muted">I’ll add featured projects + write-ups here. For now, GitHub is the source of truth.</p>
+        </div>
+        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <p class="muted">© <span id="year"></span> Chase Capron</p>
+        <a class="backtotop" href="#top">Back to top ↑</a>
+      </div>
+    </footer>
   </main>
-
-  <footer class="footer">
-    <div class="container">
-      <p>© <span id="year"></span> Chase Capron</p>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
