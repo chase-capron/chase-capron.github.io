@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hot Wheels (Demo) · Chase Capron</title>
+  <meta name="description" content="A tiny animation demo page." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./hot-wheels.css" />
+  <script defer src="../app.js"></script>
+  <script defer src="./hot-wheels.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__gradient"></div>
+    <div class="backdrop__grain"></div>
+  </div>
+
+  <header class="site-header" id="top">
+    <div class="container header__row">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="avatar" aria-hidden="true">CC</span>
+        <span class="brand__text">
+          <span class="brand__name">Chase Capron</span>
+          <span class="brand__role">Computer Engineer</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#projects">Projects</a>
+        <a href="./">Hot Wheels</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="btn btn--icon" id="themeToggle" type="button" aria-pressed="false" title="Toggle theme">
+          <span aria-hidden="true" id="themeIcon">◐</span>
+          <span class="sr-only">Toggle theme</span>
+        </button>
+        <button class="btn btn--icon" id="motionToggle" type="button" aria-pressed="false" title="Reduce motion">
+          <span aria-hidden="true">⟡</span>
+          <span class="sr-only">Reduce motion</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <section class="section" style="padding-top:26px">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow" data-reveal>Demo</p>
+          <h1 data-reveal style="margin:10px 0 0">Hot Wheels</h1>
+          <p class="lead" data-reveal>
+            A quick animation sandbox: a tiny car drives in random straight-line directions, exits the screen, then returns on a new path.
+          </p>
+        </div>
+      </div>
+
+      <div class="track" data-reveal>
+        <div class="track__hud">
+          <div class="track__pill">Mode: <span id="modeLabel">Animated</span></div>
+          <div class="track__pill">Path: <span id="pathLabel">—</span></div>
+          <div class="track__pill">Speed: <span id="speedLabel">—</span></div>
+        </div>
+
+        <div class="car" id="car" aria-label="Animated car" role="img">
+          <div class="car__body">
+            <div class="car__window"></div>
+          </div>
+          <div class="car__wheels">
+            <span class="wheel"></span>
+            <span class="wheel"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" data-reveal style="margin-top:12px">
+        <div>
+          <h3>Notes</h3>
+          <p class="muted">Respects “Reduce motion” (top-right). When enabled, the car stops and becomes a static badge.</p>
+        </div>
+        <a class="btn btn--ghost" href="../index.html">Back home</a>
+      </div>
+
+      <footer class="footer" data-reveal>
+        <div class="footer__inner">
+          <p class="muted">© <span id="year"></span> Chase Capron</p>
+          <a class="backtotop" href="#top">Back to top</a>
+        </div>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
