@@ -198,7 +198,35 @@ h1{margin:10px 0 12px; font-size:46px; letter-spacing:-0.03em; line-height:1.05}
   padding: 16px;
   box-shadow: var(--shadow);
 }
+.panel--spotlight{
+  position: relative;
+  overflow: hidden;
+}
+.panel--spotlight::before{
+  content:"";
+  position:absolute; inset:-60%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 26%, transparent), transparent 70%);
+  transform: translate(35%, -20%);
+  opacity:.7;
+  pointer-events:none;
+}
 .panel__title{font-weight:700}
+.panel__list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+.panel-item{
+  display:block;
+  padding:12px;
+  border-radius: 16px;
+  border:1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 2.5%, transparent);
+  transition: transform 160ms ease, background 160ms ease;
+}
+.panel-item:hover{
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--text) 4.5%, transparent);
+}
+.panel-item__name{font-weight:700}
+.panel-item__meta{margin-top:4px; color:var(--muted); font-size:13px}
+.panel-item--ghost{opacity:.9}
 .link{display:block; margin-top:10px; font-weight:600; color: color-mix(in oklab, var(--accent) 70%, var(--text))}
 .panel__meta{margin-top: 10px; color: var(--muted); font-size: 13px}
 
@@ -224,43 +252,66 @@ h1{margin:10px 0 12px; font-size:46px; letter-spacing:-0.03em; line-height:1.05}
 .proj__title{margin:6px 0 8px; font-size:18px}
 .proj__actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
 
-/* Gallery */
-.gallery{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px}
-.shot{
-  padding:0;
-  border:1px solid var(--border);
-  border-radius: var(--radius);
-  overflow:hidden;
-  background: transparent;
-  box-shadow: var(--shadow);
-  cursor: pointer;
+.proj-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:12px;
 }
-.shot img{display:block; width:100%; height:100%; object-fit:cover; aspect-ratio: 16/10}
-.shot:hover{transform: translateY(-1px)}
-
-.lightbox{position:fixed; inset:0; display:none; z-index:200}
-.lightbox[aria-hidden="false"]{display:block}
-.lightbox__backdrop{position:absolute; inset:0; background: rgba(0,0,0,.55); backdrop-filter: blur(6px)}
-.lightbox__panel{
-  position:relative;
-  max-width: 1100px;
-  margin: 6vh auto 0;
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
+.proj-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:12px;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 22px;
+  border-radius: calc(var(--radius) + 2px);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  position:relative;
   overflow:hidden;
-  box-shadow: 0 40px 140px rgba(0,0,0,.35);
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
-.lightbox__close{
-  position:absolute; right:12px; top:12px;
+.proj-card::after{
+  content:"";
+  position:absolute; inset:-50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 18%, transparent), transparent 72%);
+  transform: translate(55%, -25%);
+  opacity:.55;
+  pointer-events:none;
+}
+.proj-card:hover{transform: translateY(-2px)}
+.proj-card__badge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
   border:1px solid var(--border);
-  background: color-mix(in oklab, var(--text) 6%, transparent);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 8px 10px;
-  cursor:pointer;
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+  color: var(--muted);
+  font-weight:700;
+  font-size:12px;
 }
-.lightbox__panel img{display:block; width:100%; height:auto}
+.proj-card__title{margin-top:10px; font-weight:800; letter-spacing:-0.01em}
+.proj-card__desc{margin-top:8px; color:var(--muted)}
+.proj-card__chips{display:flex; gap:8px; flex-wrap:wrap}
+.proj-card--placeholder{opacity:.85}
+
+/* Project media template grid */
+.media-grid{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px}
+.media-tile{
+  background: var(--card);
+  border: 1px dashed color-mix(in oklab, var(--text) 20%, transparent);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  min-height: 140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.media-tile__inner{color:var(--muted); font-weight:700}
 
 /* Reveal animations */
 [data-reveal]{

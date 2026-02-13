@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../styles.css" />
   <script defer src="../../app.js"></script>
-  <script defer src="project.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -85,22 +84,18 @@
           <p class="muted" style="margin-top:10px">Everything is built to be low-maintenance and easy to extend.</p>
         </article>
       </div>
-
       <div class="section__head" style="margin-top:18px">
-        <h2 data-reveal>Gallery</h2>
-        <p class="muted" data-reveal>Click any image to expand.</p>
+        <h2 data-reveal>Project media (template)</h2>
+        <p class="muted" data-reveal>Placeholder grid — screenshots coming soon.</p>
       </div>
 
-      <div class="gallery" data-reveal>
-        <button class="shot" type="button" data-shot="screenshots/home_apple.png" aria-label="Open screenshot: Home">
-          <img src="screenshots/home_apple.png" alt="Home screen (Apple theme)" loading="lazy" />
-        </button>
-        <button class="shot" type="button" data-shot="screenshots/mappings_apple.png" aria-label="Open screenshot: Mappings">
-          <img src="screenshots/mappings_apple.png" alt="Mappings tab (Apple theme)" loading="lazy" />
-        </button>
-        <button class="shot" type="button" data-shot="screenshots/pads_knobs_apple.png" aria-label="Open screenshot: Pads and knobs">
-          <img src="screenshots/pads_knobs_apple.png" alt="Pads and knobs (Apple theme)" loading="lazy" />
-        </button>
+      <div class="media-grid" data-reveal>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 1</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 2</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 3</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Demo clip</div></div>
+        <div class="media-tile"><div class="media-tile__inner">UI close-up</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Hardware</div></div>
       </div>
 
       <div class="section__head" style="margin-top:18px">
@@ -131,14 +126,6 @@
         </div>
       </footer>
     </section>
-
-    <div class="lightbox" id="lightbox" aria-hidden="true">
-      <div class="lightbox__backdrop" data-close></div>
-      <div class="lightbox__panel" role="dialog" aria-modal="true" aria-label="Image preview">
-        <button class="lightbox__close" type="button" data-close>Close</button>
-        <img id="lightboxImg" alt="" />
-      </div>
-    </div>
   </main>
 </body>
 </html>

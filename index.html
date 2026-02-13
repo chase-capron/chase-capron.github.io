@@ -82,12 +82,23 @@
       </div>
 
       <aside class="hero__panel" aria-label="Quick card">
-        <div class="panel" data-reveal>
-          <div class="panel__title">Quick link</div>
-          <a class="link" href="https://github.com/chase-capron" target="_blank" rel="noopener">
-            github.com/chase-capron
-          </a>
-          <div class="panel__meta">Last updated: <span id="updated">today</span></div>
+        <div class="panel panel--spotlight" data-reveal>
+          <div class="panel__title">Latest</div>
+          <div class="panel__list">
+            <a class="panel-item" href="projects/midi-home-control/index.html">
+              <div class="panel-item__name">MIDI Home Control Rig</div>
+              <div class="panel-item__meta">Featured project · write-up</div>
+            </a>
+            <a class="panel-item" href="https://github.com/chase-capron" target="_blank" rel="noopener">
+              <div class="panel-item__name">GitHub</div>
+              <div class="panel-item__meta">All repos</div>
+            </a>
+            <div class="panel-item panel-item--ghost" role="note">
+              <div class="panel-item__name">Next</div>
+              <div class="panel-item__meta">Project grid coming soon</div>
+            </div>
+          </div>
+          <div class="panel__meta">Updated: <span id="updated">today</span></div>
         </div>
       </aside>
     </section>
@@ -153,41 +164,54 @@
     <section class="section" id="projects">
       <div class="section__head">
         <h2 data-reveal>Projects</h2>
-        <p class="muted" data-reveal>Featured build + more coming soon.</p>
+        <p class="muted" data-reveal>Latest first. This grid will fill out over time.</p>
       </div>
 
-      <div class="grid grid--two">
-        <article class="card card--hover" data-reveal>
-          <div class="proj">
-            <div>
-              <p class="proj__kicker">Featured</p>
-              <h3 class="proj__title">MIDI Home Control Rig</h3>
-              <p class="muted">Turned an Akai MPK Mini into a smart-home remote: gesture logic → MQTT → Home Assistant, with a live Web UI.</p>
-              <div class="chips" aria-label="Project tech">
-                <span class="chip">Python</span>
-                <span class="chip">MQTT</span>
-                <span class="chip">Home Assistant</span>
-                <span class="chip">Web UI</span>
-              </div>
-            </div>
-            <div class="proj__actions">
-              <a class="btn" href="projects/midi-home-control/index.html">View project</a>
-              <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
-            </div>
+      <div class="proj-grid" data-reveal>
+        <a class="proj-card" href="projects/midi-home-control/index.html">
+          <div class="proj-card__top">
+            <div class="proj-card__badge">Latest</div>
+            <div class="proj-card__title">MIDI Home Control Rig</div>
+            <div class="proj-card__desc">MIDI controller → gesture router → MQTT → Home Assistant, with a live UI.</div>
           </div>
-        </article>
+          <div class="proj-card__chips" aria-label="Project tech">
+            <span class="chip">Python</span>
+            <span class="chip">MQTT</span>
+            <span class="chip">Home Assistant</span>
+          </div>
+        </a>
 
-        <article class="card" data-reveal>
-          <h3>More projects</h3>
-          <p class="muted">TBA — I’ll add a proper portfolio grid + write-ups here.</p>
-          <div class="callout" style="margin-top:14px">
-            <div>
-              <h3>Source of truth</h3>
-              <p class="muted">Until this fills out, my GitHub is the best place to browse.</p>
-            </div>
-            <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
+        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
+          <div class="proj-card__top">
+            <div class="proj-card__badge">TBA</div>
+            <div class="proj-card__title">Project Name</div>
+            <div class="proj-card__desc">Short description goes here.</div>
           </div>
-        </article>
+        </div>
+
+        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
+          <div class="proj-card__top">
+            <div class="proj-card__badge">TBA</div>
+            <div class="proj-card__title">Project Name</div>
+            <div class="proj-card__desc">Short description goes here.</div>
+          </div>
+        </div>
+
+        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
+          <div class="proj-card__top">
+            <div class="proj-card__badge">TBA</div>
+            <div class="proj-card__title">Project Name</div>
+            <div class="proj-card__desc">Short description goes here.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" data-reveal style="margin-top:12px">
+        <div>
+          <h3>More on GitHub</h3>
+          <p class="muted">Until the grid is fully populated, GitHub is the complete list.</p>
+        </div>
+        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
       </div>
     </section>
 
