@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MIDI Home Control Rig · Chase Capron</title>
+  <meta name="description" content="MIDI Home Control Rig — turning a MIDI controller into a smart-home remote." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles.css" />
+  <script defer src="../../app.js"></script>
+  <script defer src="project.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__gradient"></div>
+    <div class="backdrop__grain"></div>
+  </div>
+
+  <header class="site-header" id="top">
+    <div class="container header__row">
+      <a class="brand" href="../../index.html" aria-label="Home">
+        <span class="avatar" aria-hidden="true">CC</span>
+        <span class="brand__text">
+          <span class="brand__name">Chase Capron</span>
+          <span class="brand__role">Computer Engineer</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="../../index.html#projects">Projects</a>
+        <a href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="btn btn--icon" id="themeToggle" type="button" aria-pressed="false" title="Toggle theme">
+          <span aria-hidden="true" id="themeIcon">◐</span>
+          <span class="sr-only">Toggle theme</span>
+        </button>
+        <button class="btn btn--icon" id="motionToggle" type="button" aria-pressed="false" title="Reduce motion">
+          <span aria-hidden="true">⟡</span>
+          <span class="sr-only">Reduce motion</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <section class="section" style="padding-top:26px">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow" data-reveal>Project</p>
+          <h1 data-reveal style="margin:10px 0 0">MIDI Home Control Rig</h1>
+          <p class="lead" data-reveal>
+            Turning an <strong>Akai MPK Mini</strong> into a physical smart-home remote: gesture logic → MQTT → Home Assistant,
+            with a live web UI for visibility and feedback.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid--two">
+        <article class="card card--hover" data-reveal>
+          <h3>Highlights</h3>
+          <ul class="list">
+            <li>Real-time MIDI input routing with short/long/hold behaviors</li>
+            <li>Config-driven mapping layer for pads/keys/knobs</li>
+            <li>Low-latency MQTT integration with Home Assistant automations</li>
+            <li>Live Web UI: layout, mappings, event stream, and interaction feedback</li>
+          </ul>
+        </article>
+
+        <article class="card card--hover" data-reveal>
+          <h3>Stack</h3>
+          <div class="chips" aria-label="Project stack">
+            <span class="chip">Python</span>
+            <span class="chip">MIDI</span>
+            <span class="chip">MQTT</span>
+            <span class="chip">Home Assistant</span>
+            <span class="chip">WebSockets</span>
+            <span class="chip">HTML/CSS/JS</span>
+          </div>
+          <p class="muted" style="margin-top:10px">Everything is built to be low-maintenance and easy to extend.</p>
+        </article>
+      </div>
+
+      <div class="section__head" style="margin-top:18px">
+        <h2 data-reveal>Gallery</h2>
+        <p class="muted" data-reveal>Click any image to expand.</p>
+      </div>
+
+      <div class="gallery" data-reveal>
+        <button class="shot" type="button" data-shot="screenshots/home_apple.png" aria-label="Open screenshot: Home">
+          <img src="screenshots/home_apple.png" alt="Home screen (Apple theme)" loading="lazy" />
+        </button>
+        <button class="shot" type="button" data-shot="screenshots/mappings_apple.png" aria-label="Open screenshot: Mappings">
+          <img src="screenshots/mappings_apple.png" alt="Mappings tab (Apple theme)" loading="lazy" />
+        </button>
+        <button class="shot" type="button" data-shot="screenshots/pads_knobs_apple.png" aria-label="Open screenshot: Pads and knobs">
+          <img src="screenshots/pads_knobs_apple.png" alt="Pads and knobs (Apple theme)" loading="lazy" />
+        </button>
+      </div>
+
+      <div class="section__head" style="margin-top:18px">
+        <h2 data-reveal>Overview</h2>
+        <p class="muted" data-reveal>How it works, at a high level.</p>
+      </div>
+
+      <div class="card" data-reveal>
+        <p class="muted">
+          A Python router listens to MIDI input and classifies gestures (tap/hold/knob changes). It publishes compact MQTT messages.
+          Home Assistant subscribes and performs the actual device control. A small web UI consumes event updates to show what’s happening
+          and provide immediate visual feedback.
+        </p>
+      </div>
+
+      <div class="callout" data-reveal style="margin-top:14px">
+        <div>
+          <h3>Want the code?</h3>
+          <p class="muted">Public repo link can be added when you’re ready. For now, GitHub profile is linked.</p>
+        </div>
+        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      </div>
+
+      <footer class="footer" data-reveal>
+        <div class="footer__inner">
+          <p class="muted">© <span id="year"></span> Chase Capron</p>
+          <a class="backtotop" href="#top">Back to top</a>
+        </div>
+      </footer>
+    </section>
+
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+      <div class="lightbox__backdrop" data-close></div>
+      <div class="lightbox__panel" role="dialog" aria-modal="true" aria-label="Image preview">
+        <button class="lightbox__close" type="button" data-close>Close</button>
+        <img id="lightboxImg" alt="" />
+      </div>
+    </div>
+  </main>
+</body>
+</html>

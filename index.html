@@ -153,15 +153,41 @@
     <section class="section" id="projects">
       <div class="section__head">
         <h2 data-reveal>Projects</h2>
-        <p class="muted" data-reveal>TBA for now — GitHub is the source of truth.</p>
+        <p class="muted" data-reveal>Featured build + more coming soon.</p>
       </div>
 
-      <div class="callout" data-reveal>
-        <div>
-          <h3>Coming soon</h3>
-          <p class="muted">Featured projects + write-ups will live here.</p>
-        </div>
-        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
+      <div class="grid grid--two">
+        <article class="card card--hover" data-reveal>
+          <div class="proj">
+            <div>
+              <p class="proj__kicker">Featured</p>
+              <h3 class="proj__title">MIDI Home Control Rig</h3>
+              <p class="muted">Turned an Akai MPK Mini into a smart-home remote: gesture logic → MQTT → Home Assistant, with a live Web UI.</p>
+              <div class="chips" aria-label="Project tech">
+                <span class="chip">Python</span>
+                <span class="chip">MQTT</span>
+                <span class="chip">Home Assistant</span>
+                <span class="chip">Web UI</span>
+              </div>
+            </div>
+            <div class="proj__actions">
+              <a class="btn" href="projects/midi-home-control/index.html">View project</a>
+              <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-reveal>
+          <h3>More projects</h3>
+          <p class="muted">TBA — I’ll add a proper portfolio grid + write-ups here.</p>
+          <div class="callout" style="margin-top:14px">
+            <div>
+              <h3>Source of truth</h3>
+              <p class="muted">Until this fills out, my GitHub is the best place to browse.</p>
+            </div>
+            <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
+          </div>
+        </article>
       </div>
     </section>
 
