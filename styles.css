@@ -1,0 +1,58 @@
+:root{
+  --bg:#0b0f17;
+  --panel:#121a26;
+  --text:#e8eef7;
+  --muted:#a9b7c9;
+  --accent:#ff8c00;
+  --border:rgba(255,255,255,.10);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  background:radial-gradient(1200px 800px at 20% 0%, rgba(255,140,0,.15), transparent 60%), var(--bg);
+  color:var(--text);
+}
+
+a{color:var(--text); text-decoration:none; border-bottom:1px solid rgba(255,140,0,.55)}
+a:hover{border-bottom-color:var(--accent)}
+
+.container{max-width:900px; margin:0 auto; padding:24px}
+
+.site-header{
+  position:sticky; top:0;
+  background:rgba(11,15,23,.75);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--border);
+}
+
+.brand{display:flex; gap:14px; align-items:center}
+.avatar{
+  width:44px; height:44px; border-radius:12px;
+  background:linear-gradient(135deg, rgba(255,140,0,.25), rgba(255,255,255,.06));
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700;
+}
+
+h1{margin:0; font-size:20px}
+.tagline{margin:4px 0 0; color:var(--muted)}
+
+.nav{margin-top:14px; display:flex; gap:16px; flex-wrap:wrap}
+.nav a{border-bottom:1px solid transparent; color:var(--muted)}
+.nav a:hover{color:var(--text); border-bottom-color:var(--accent)}
+
+main{padding-top:10px}
+.card{
+  background:rgba(18,26,38,.9);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin:16px 0;
+}
+.card h2{margin:0 0 10px; font-size:18px}
+.card p, .card li{color:var(--muted); line-height:1.55}
+
+.footer{border-top:1px solid var(--border); margin-top:24px}
+.fineprint{font-size:13px}

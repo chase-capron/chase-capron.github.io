@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chase Capron</title>
+  <meta name="description" content="Personal site for Chase Capron." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="brand">
+        <div class="avatar" aria-hidden="true">CC</div>
+        <div>
+          <h1>Chase Capron</h1>
+          <p class="tagline">Personal site — projects, notes, and links.</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" id="projects">
+      <h2>Projects</h2>
+      <p>Quick links (edit these):</p>
+      <ul>
+        <li><a href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="#" target="_blank" rel="noopener">LinkedIn (add)</a></li>
+        <li><a href="#" target="_blank" rel="noopener">Resume PDF (add)</a></li>
+      </ul>
+    </section>
+
+    <section class="card" id="about">
+      <h2>About</h2>
+      <p>
+        Write a short bio here. Keep it simple. This template is intentionally basic so it’s easy to expand into multiple pages later.
+      </p>
+    </section>
+
+    <section class="card" id="contact">
+      <h2>Contact</h2>
+      <p>
+        Add an email, a form link, or a public contact method.
+      </p>
+      <p class="fineprint">
+        Tip: For a no-backend contact form later, you can use Formspree/Netlify Forms.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© <span id="year"></span> Chase Capron</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
