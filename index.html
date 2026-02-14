@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chase Capron · Computer Engineer</title>
-  <meta name="description" content="Chase Capron — Computer Engineer. Projects, notes, and links." />
+  <title>Chase Capron · Engineering the Everyday</title>
+  <meta name="description" content="Chase Capron builds practical systems across home automation, AI, and physical hardware projects." />
   <meta name="color-scheme" content="light dark" />
 
-  <meta property="og:title" content="Chase Capron · Computer Engineer" />
-  <meta property="og:description" content="Projects, notes, and links." />
+  <meta property="og:title" content="Chase Capron · Engineering the Everyday" />
+  <meta property="og:description" content="Projects, experiments, and notes for smarter, more dependable spaces." />
   <meta property="og:type" content="website" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@300;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
   <script defer src="app.js"></script>
@@ -23,23 +23,23 @@
 
   <div class="backdrop" aria-hidden="true">
     <div class="backdrop__gradient"></div>
-    <div class="backdrop__grain"></div>
   </div>
 
   <header class="site-header" id="top">
     <div class="container header__row">
       <a class="brand" href="#top" aria-label="Home">
-        <span class="avatar" aria-hidden="true">CC</span>
+        <span class="avatar" aria-hidden="true">C</span>
         <span class="brand__text">
           <span class="brand__name">Chase Capron</span>
-          <span class="brand__role">Computer Engineer</span>
+          <span class="brand__role">Home Automation Engineer</span>
         </span>
       </a>
 
       <nav class="nav" aria-label="Primary">
         <a href="#about">About</a>
-        <a href="#now">Now</a>
-        <a href="#projects">Projects</a>
+        <a href="#projects">Work</a>
+        <a href="#labs">Labs</a>
+        <a href="#future">Now</a>
       </nav>
 
       <div class="header__actions">
@@ -52,169 +52,231 @@
     </div>
   </header>
 
-  <main id="main" class="container">
-    <section class="hero">
-      <div class="hero__content">
-        <p class="eyebrow">Hi — I’m Chase.</p>
-        <h1>
-          Computer Engineer.
-          <span class="muted">I build clean, reliable systems and automation.</span>
-        </h1>
-        <p class="lead">
-          This site is intentionally lightweight and fast. Over time it’ll expand into separate pages with a real project portfolio.
+  <main id="main" class="site-shell">
+    <section class="orb-layer" aria-hidden="true">
+      <span class="orb orb--one" data-parallax data-speed="0.03"></span>
+      <span class="orb orb--two" data-parallax data-speed="0.06"></span>
+      <span class="orb orb--three" data-parallax data-speed="-0.045"></span>
+    </section>
+
+    <section class="scene hero" id="about">
+      <div class="container">
+        <p class="eyebrow" data-reveal>Built systems that work in real life.</p>
+        <h1 data-reveal>Engineering the everyday with software, sensors, and a lot of curiosity.</h1>
+        <p class="lead" data-reveal data-delay="80">
+          I build practical systems for home automation, AI workflows, and physical control. From uneven heating in Boston apartments
+          to battery-powered plant environments, the goal is clear: reliable behavior, less manual overhead, and smoother routines.
         </p>
 
-        <div class="hero__cta">
-          <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">View GitHub</a>
-          <a class="btn btn--ghost" href="#projects">Projects (TBA)</a>
+        <div class="hero__cta" data-reveal data-delay="160">
+          <a class="btn" href="#projects">Explore Projects</a>
+          <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">View GitHub</a>
+          <a class="btn btn--text" href="#future">Current focus</a>
         </div>
 
-        <div class="hero__row" role="list">
-          <div class="pill" role="listitem">Automation</div>
-          <div class="pill" role="listitem">Systems</div>
-          <div class="pill" role="listitem">Tooling</div>
-          <div class="pill" role="listitem">Reliability</div>
+        <p class="scroll-indicator" data-reveal data-delay="220">Scroll to navigate</p>
+      </div>
+    </section>
+
+    <section class="scene section">
+      <div class="container">
+        <div class="section__top" data-reveal>
+          <p class="eyebrow">About</p>
+          <h2>I work where software meets physical systems.</h2>
+          <p class="muted">I like systems that run quietly, fail safe, and save people time.</p>
+        </div>
+
+        <div class="grid">
+          <article class="card" data-reveal data-delay="60">
+            <h3>What I build</h3>
+            <p>
+              Home automation logic, AI-assisted planning tools, maker projects, and lightweight website experiences.
+              I focus on readable systems that stay robust after the demo ends.
+            </p>
+          </article>
+
+          <article class="card" data-reveal data-delay="120">
+            <h3>Current stack</h3>
+            <div class="chips" aria-label="Tech stack">
+              <span class="chip">Python</span>
+              <span class="chip">Home Assistant</span>
+              <span class="chip">MQTT</span>
+              <span class="chip">JavaScript</span>
+              <span class="chip">Linux</span>
+              <span class="chip">Git</span>
+            </div>
+          </article>
+
+          <article class="card" data-reveal data-delay="180">
+            <h3>Operating style</h3>
+            <p>
+              Keep the surface small, automate the repetitive steps, and tune with real behavior over time.
+              A useful project should work at 2 a.m. and still make sense.
+            </p>
+          </article>
         </div>
       </div>
+    </section>
 
-      <aside class="hero__panel" aria-label="Quick card">
-        <div class="panel panel--spotlight" data-reveal>
-          <div class="panel__title">Latest</div>
-          <div class="panel__list">
-            <a class="panel-item" href="projects/midi-home-control/index.html">
-              <div class="panel-item__name">MIDI Home Control Rig</div>
-              <div class="panel-item__meta">Featured project · write-up</div>
-            </a>
-            <a class="panel-item" href="https://github.com/chase-capron" target="_blank" rel="noopener">
-              <div class="panel-item__name">GitHub</div>
-              <div class="panel-item__meta">All repos</div>
-            </a>
-            <div class="panel-item panel-item--ghost" role="note">
-              <div class="panel-item__name">Next</div>
-              <div class="panel-item__meta">Project grid coming soon</div>
+    <section class="scene section" id="projects">
+      <div class="container">
+        <div class="section__top" data-reveal>
+          <p class="eyebrow">Selected Work</p>
+          <h2>Projects across software, AI, and smart hardware</h2>
+          <p class="muted">A real-world set of systems, from controls to creative automation.</p>
+        </div>
+
+        <div class="project-grid">
+          <a class="project-card" href="projects/midi-home-control/index.html" data-reveal data-delay="60">
+            <div class="project-card__badge">Featured</div>
+            <h3>MIDI Home Control Rig</h3>
+            <p>Built a physical control chain where a MIDI rig triggers Home Assistant automations with a real-time status UI.</p>
+            <div class="chips">
+              <span class="chip">Python</span>
+              <span class="chip">MQTT</span>
+              <span class="chip">Home Assistant</span>
+            </div>
+          </a>
+
+          <article class="project-card" data-reveal data-delay="120">
+            <div class="project-card__badge">Active</div>
+            <h3>AI Nutritionist and Meal Planner</h3>
+            <p>Designed a personal planning flow for meals and nutrition insights with AI support and practical constraints for day-to-day use.</p>
+            <div class="chips">
+              <span class="chip">AI</span>
+              <span class="chip">Python</span>
+              <span class="chip">Prompting</span>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal data-delay="180">
+            <div class="project-card__badge">Active</div>
+            <h3>GreenThumb</h3>
+            <p>Developing adaptive plant-care automation with battery-powered sensors and smart decisions for light, moisture, and temperature.</p>
+            <div class="chips">
+              <span class="chip">IoT</span>
+              <span class="chip">Sensors</span>
+              <span class="chip">Automation</span>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal data-delay="240">
+            <div class="project-card__badge">In Progress</div>
+            <h3>Smart Heating Control Logic</h3>
+            <p>Heating script that combines room sensors, occupancy, weather, and schedule preferences to balance uneven apartment zones.</p>
+            <div class="chips">
+              <span class="chip">Home Automation</span>
+              <span class="chip">Rule Engine</span>
+              <span class="chip">Python</span>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal data-delay="120">
+            <div class="project-card__badge">Maker</div>
+            <h3>Laser Cutting and 3D Printing</h3>
+            <p>Workflow for practical tools, custom enclosures, and utility pieces that support smarter control hardware and daily routines.</p>
+            <div class="chips">
+              <span class="chip">CAD</span>
+              <span class="chip">Prototyping</span>
+              <span class="chip">Maker</span>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal data-delay="180">
+            <div class="project-card__badge">Lab</div>
+            <h3>Hot Wheels Tracker</h3>
+            <p>Building an online database to organize my collection, track purchase details, and monitor market value signals.</p>
+            <div class="chips">
+              <span class="chip">Database</span>
+              <span class="chip">Web</span>
+              <span class="chip">Tracking</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene section" id="labs">
+      <div class="container">
+        <div class="section__top" data-reveal>
+          <p class="eyebrow">Labs</p>
+          <h2>XR, legacy tech, and future helpers</h2>
+          <p class="muted">I test ideas across glasses, headsets, and repurposed devices to make life easier.</p>
+        </div>
+
+        <div class="labs">
+          <div class="lab" data-reveal data-delay="60">
+            <h3>Meta Ray-Ban Smart Glasses</h3>
+            <p>Developing interaction ideas and workflows built for hands-free control and contextual status updates.</p>
+          </div>
+          <div class="lab" data-reveal data-delay="120">
+            <h3>Meta Quest 3 Home Projects</h3>
+            <p>Prototyping AR interaction for home controls and maintenance helpers.</p>
+          </div>
+          <div class="lab" data-reveal data-delay="180">
+            <h3>Bring old tech back to life</h3>
+            <p>Refurbishing and reusing older gear with modern software adapters when it can keep helping instead of becoming e-waste.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene section section--stacked" id="future">
+      <div class="container">
+        <div class="section__top" data-reveal>
+          <p class="eyebrow">Now</p>
+          <h2>Current goals</h2>
+          <p class="muted">The short list for the next phase of shipping work.</p>
+        </div>
+
+        <div class="stack-stack">
+          <div class="stack-row" data-reveal data-delay="60">
+            <span class="stack-index">01</span>
+            <div>
+              <h3>Heater stability</h3>
+              <p>Improve confidence in uneven apartment heating by refining fallback paths and better sensor calibration.</p>
             </div>
           </div>
-          <div class="panel__meta">Updated: <span id="updated">today</span></div>
-        </div>
-      </aside>
-    </section>
 
-    <section class="section" id="about">
-      <div class="section__head">
-        <h2 data-reveal>About</h2>
-        <p class="muted" data-reveal>Short, honest, and easy to skim.</p>
-      </div>
-
-      <div class="grid">
-        <article class="card" data-reveal>
-          <h3>What I do</h3>
-          <p>
-            I build systems that are straightforward to operate and hard to break — from automation to tooling that keeps things consistent.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>How I work</h3>
-          <p>
-            Small surface area, clear contracts, good defaults, and shipping improvements in tight loops.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>What this becomes</h3>
-          <p>
-            A portfolio with write-ups, links, and multiple pages — without turning into a slow framework site.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="now">
-      <div class="section__head">
-        <h2 data-reveal>Now</h2>
-        <p class="muted" data-reveal>A snapshot of what I’m focused on.</p>
-      </div>
-
-      <div class="grid grid--two">
-        <article class="card card--hover" data-reveal>
-          <h3>Current focus</h3>
-          <ul class="list">
-            <li>Home automation workflows that stay reliable over time</li>
-            <li>Assistant tooling + repo references for faster iteration</li>
-            <li>Local-first, auditable systems</li>
-          </ul>
-        </article>
-
-        <article class="card card--hover" data-reveal>
-          <h3>Stack (placeholder)</h3>
-          <div class="chips" aria-label="Tech chips">
-            <span class="chip">Python</span>
-            <span class="chip">JavaScript</span>
-            <span class="chip">Linux</span>
-            <span class="chip">Home Assistant</span>
-            <span class="chip">Git</span>
-            <span class="chip">Automation</span>
+          <div class="stack-row" data-reveal data-delay="110">
+            <span class="stack-index">02</span>
+            <div>
+              <h3>GreenThumb beta</h3>
+              <p>Complete a stable hardware/software version with better battery behavior and alerting for plant care.</p>
+            </div>
           </div>
-        </article>
+
+          <div class="stack-row" data-reveal data-delay="160">
+            <span class="stack-index">03</span>
+            <div>
+              <h3>Robot helper roadmap</h3>
+              <p>Prototype path toward a humanoid assistant for repetitive household tasks like dish pickup and laundry runs.</p>
+            </div>
+          </div>
+
+          <div class="stack-row" data-reveal data-delay="210">
+            <span class="stack-index">04</span>
+            <div>
+              <h3>Personal chef assistant</h3>
+              <p>Not a replacement for people, but a useful automated aid for meal prep reminders, timing, and planning routines.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" data-reveal data-delay="240">
+          <div>
+            <h3>Keep in touch about what I am building now</h3>
+            <p class="muted">This page updates as projects move from experiments into stable systems.</p>
+          </div>
+          <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">See all repos</a>
+        </div>
       </div>
     </section>
 
-    <section class="section" id="projects">
-      <div class="section__head">
-        <h2 data-reveal>Projects</h2>
-        <p class="muted" data-reveal>Latest first. This grid will fill out over time.</p>
-      </div>
-
-      <div class="proj-grid" data-reveal>
-        <a class="proj-card" href="projects/midi-home-control/index.html">
-          <div class="proj-card__top">
-            <div class="proj-card__badge">Latest</div>
-            <div class="proj-card__title">MIDI Home Control Rig</div>
-            <div class="proj-card__desc">MIDI controller → gesture router → MQTT → Home Assistant, with a live UI.</div>
-          </div>
-          <div class="proj-card__chips" aria-label="Project tech">
-            <span class="chip">Python</span>
-            <span class="chip">MQTT</span>
-            <span class="chip">Home Assistant</span>
-          </div>
-        </a>
-
-        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
-          <div class="proj-card__top">
-            <div class="proj-card__badge">TBA</div>
-            <div class="proj-card__title">Project Name</div>
-            <div class="proj-card__desc">Short description goes here.</div>
-          </div>
-        </div>
-
-        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
-          <div class="proj-card__top">
-            <div class="proj-card__badge">TBA</div>
-            <div class="proj-card__title">Project Name</div>
-            <div class="proj-card__desc">Short description goes here.</div>
-          </div>
-        </div>
-
-        <div class="proj-card proj-card--placeholder" aria-label="Placeholder project">
-          <div class="proj-card__top">
-            <div class="proj-card__badge">TBA</div>
-            <div class="proj-card__title">Project Name</div>
-            <div class="proj-card__desc">Short description goes here.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="callout" data-reveal style="margin-top:12px">
-        <div>
-          <h3>More on GitHub</h3>
-          <p class="muted">Until the grid is fully populated, GitHub is the complete list.</p>
-        </div>
-        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">Browse GitHub</a>
-      </div>
-    </section>
-
-    <footer class="footer" data-reveal>
-      <div class="footer__inner">
-        <p class="muted">© <span id="year"></span> Chase Capron</p>
-        <a class="backtotop" href="#top">Back to top</a>
+    <footer class="footer">
+      <div class="container footer__inner">
+        <p>© <span id="year"></span> Chase Capron</p>
+        <span class="muted">Updated <span id="updated">today</span> · last sync local-first</span>
       </div>
     </footer>
   </main>

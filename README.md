@@ -1,25 +1,27 @@
 # chase-capron.github.io
 
-A lightweight personal site for **Chase Capron** — intentionally fast, simple, and “Apple-clean.”
+Developer-focused website for **Chase Capron** with an Apple-inspired scroll experience, project journal, and interactive motion behavior.
 
-Live: https://chase-capron.github.io/
+## What this repository contains
+- `index.html` for site structure and content sections
+- `styles.css` for the full visual system, layout tokens, and animations
+- `app.js` for reveal-on-scroll and motion controls
+- `projects/` for deeper project write-ups
+- `assets/` for site graphics
 
-## What’s in here
-- `index.html` — home page
-- `styles.css` — global styling (theme tokens + layout)
-- `app.js` — small UX enhancements (theme toggle, reduced motion, reveal-on-scroll)
-- `projects/` — project pages (write-ups / placeholders)
-- `hot-wheels/` — small animation demo page
+## Design direction
+- Clean, typographic-heavy interface with large section pacing
+- Soft layered gradients, glass cards, and motion reveal blocks
+- Reduced motion support with a local user toggle
 
-## Edit (quick)
-- Update text/sections in **`index.html`**
-- Tweak colors/spacing in **`styles.css`**
-- Adjust UI behaviors in **`app.js`**
+## Project areas highlighted
+- MIDI Home Control
+- Home Assistant
+- AI Nutritionist and Meal Planner
+- GreenThumb plant automation
+- Smart heating control logic
+- XR and hardware-adjacent experiments
 
 ## Deploy
-GitHub Pages serves from **`main`** (root). Pushes to `main` publish automatically.
-
-## Design notes
-- Minimal dependencies (no framework)
-- Responsive by default
-- Respects **prefers-reduced-motion** (and the site’s Reduce Motion toggle)
+- GitHub Pages serves from `main`
+- Pushes to `main` publish the site
