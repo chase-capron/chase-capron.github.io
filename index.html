@@ -11,6 +11,9 @@
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
   <meta property="og:type" content="website" />
 
+  <link rel="icon" type="image/png" href="assets/chase-logo.png" />
+  <link rel="apple-touch-icon" href="assets/chase-logo.png" />
+
   <link rel="stylesheet" href="styles.css" />
   <script defer src="app.js"></script>
 </head>
@@ -20,10 +23,10 @@
   <header class="site-header" id="top">
     <div class="container header__row">
       <a class="brand" href="#top" aria-label="Back to home">
-        <span class="brand__badge" aria-hidden="true">CC</span>
+        <img class="brand__logo" src="assets/chase-logo.png" alt="" aria-hidden="true" />
         <span class="brand__text">
           <span class="brand__name">Chase Capron</span>
-          <span class="brand__role">Home Automation Engineer</span>
+          <span class="brand__role">Computer Engineer</span>
         </span>
       </a>
 
@@ -38,16 +41,22 @@
 
   <main id="main">
     <section class="hero" id="home" aria-label="intro">
-      <div class="container">
-        <p class="eyebrow" data-reveal>I build practical systems that help people automate the hard parts.</p>
-        <h1 data-reveal data-delay="40">Home automation heavy, AI-assisted tooling, and hands-on maker projects.</h1>
-        <p class="lead" data-reveal data-delay="90">
-          I focus on software and hardware that reduce manual work, solve real problems, and stay dependable when you need them most.
-          If something can be automated, I try to automate it.
-        </p>
-        <div class="hero__actions" data-reveal data-delay="150">
-          <a class="btn" href="#selected-work">View Projects</a>
-          <a class="btn btn--ghost" href="projects/">Open project archive</a>
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow" data-reveal>I build practical systems that help people automate the hard parts.</p>
+          <h1 data-reveal data-delay="40">Home automation heavy, AI-assisted tooling, and hands-on maker projects.</h1>
+          <p class="lead" data-reveal data-delay="90">
+            I focus on software and hardware that reduce manual work, solve real problems, and stay dependable when you need them most.
+            If something can be automated, I try to automate it.
+          </p>
+          <div class="hero__actions" data-reveal data-delay="150">
+            <a class="btn" href="#selected-work">View Projects</a>
+            <a class="btn btn--ghost" href="projects/">Open project archive</a>
+          </div>
+        </div>
+
+        <div class="hero__mark" aria-hidden="true" data-reveal data-delay="120">
+          <img src="assets/chase-logo.png" alt="" loading="lazy" />
         </div>
       </div>
 
