@@ -5,21 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MIDI Home Control Rig · Chase Capron</title>
   <meta name="description" content="MIDI Home Control Rig — turning a MIDI controller into a smart-home remote." />
-  <meta name="color-scheme" content="dark" />
-
-  <link rel="icon" type="image/svg+xml" href="../../assets/chase-logo.svg" />
-  <link rel="apple-touch-icon" href="../../assets/chase-logo.svg" />
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../styles.css" />
   <script defer src="../../app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__gradient"></div>
+    <div class="backdrop__grain"></div>
+  </div>
+
   <header class="site-header" id="top">
     <div class="container header__row">
-      <a class="brand" href="../../index.html" aria-label="Back home">
-        <img class="brand__logo" src="../../assets/chase-logo.svg" alt="" aria-hidden="true" />
+      <a class="brand" href="../../index.html" aria-label="Home">
+        <span class="avatar" aria-hidden="true">CC</span>
         <span class="brand__text">
           <span class="brand__name">Chase Capron</span>
           <span class="brand__role">Computer Engineer</span>
@@ -27,96 +30,103 @@
       </a>
 
       <nav class="nav" aria-label="Primary">
-        <a href="../../index.html">Home</a>
-        <a href="../">Projects</a>
+        <a href="../../index.html#projects">Projects</a>
+        <a href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
       </nav>
 
-      <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      <div class="header__actions">
+        <button class="btn btn--icon" id="motionToggle" type="button" aria-pressed="false" title="Reduce motion">
+          <span aria-hidden="true">⟡</span>
+          <span class="sr-only">Reduce motion</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main id="main">
-    <section class="app-hero" aria-label="project hero">
-      <div class="container app-hero__grid">
-        <div data-reveal>
-          <div class="app-icon"><img src="../../assets/midi-live.png" alt="MIDI LIVE" /></div>
-          <h1 class="app-title">MIDI Home Control Rig</h1>
-          <p class="app-sub">
-            Turning an <strong>Akai MPK Mini</strong> into a physical smart-home remote: gesture logic to MQTT to Home Assistant,
-            with a live web UI for feedback.
+  <main id="main" class="container">
+    <section class="section" style="padding-top:26px">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow" data-reveal>Project</p>
+          <h1 data-reveal style="margin:10px 0 0">MIDI Home Control Rig</h1>
+          <p class="lead" data-reveal>
+            Turning an <strong>Akai MPK Mini</strong> into a physical smart-home remote: gesture logic → MQTT → Home Assistant,
+            with a live web UI for visibility and feedback.
           </p>
-          <div class="app-meta">
-            <span class="status status--complete">Complete</span>
-            <span class="chip chip--python">Python</span>
-            <span class="chip chip--mqtt">MQTT</span>
-            <span class="chip chip--ha">Home Assistant</span>
-            <span class="chip chip--automation">Automation</span>
+
+          <div class="proj-logo" data-reveal>
+            <img src="../../assets/MIDI-LIVE-logo.png" alt="MIDI LIVE" loading="lazy" />
           </div>
-        </div>
 
-        <div class="preview" data-reveal data-delay="80" aria-label="preview">
-          <div class="preview__inner">Add screenshots or a short demo clip here</div>
         </div>
       </div>
-    </section>
 
-    <section class="section">
-      <div class="container">
-        <div class="section__top" data-reveal>
-          <p class="eyebrow">Screenshots</p>
-          <h2>Gallery</h2>
-        </div>
-        <div class="gallery" data-reveal data-delay="60">
-          <div class="shot">UI view</div>
-          <div class="shot">Mappings</div>
-          <div class="shot">Event stream</div>
-          <div class="shot">Hardware</div>
-        </div>
+      <div class="grid grid--two">
+        <article class="card card--hover" data-reveal>
+          <h3>Highlights</h3>
+          <ul class="list">
+            <li>Real-time MIDI input routing with short/long/hold behaviors</li>
+            <li>Config-driven mapping layer for pads/keys/knobs</li>
+            <li>Low-latency MQTT integration with Home Assistant automations</li>
+            <li>Live Web UI: layout, mappings, event stream, and interaction feedback</li>
+          </ul>
+        </article>
+
+        <article class="card card--hover" data-reveal>
+          <h3>Stack</h3>
+          <div class="chips" aria-label="Project stack">
+            <span class="chip">Python</span>
+            <span class="chip">MIDI</span>
+            <span class="chip">MQTT</span>
+            <span class="chip">Home Assistant</span>
+            <span class="chip">WebSockets</span>
+            <span class="chip">HTML/CSS/JS</span>
+          </div>
+          <p class="muted" style="margin-top:10px">Everything is built to be low-maintenance and easy to extend.</p>
+        </article>
       </div>
-    </section>
-
-    <section class="section section--alt">
-      <div class="container">
-        <div class="section__top" data-reveal>
-          <p class="eyebrow">Template</p>
-          <h2>Ready to fill in</h2>
-        </div>
-
-        <div class="app-grid" data-reveal data-delay="80">
-          <article class="app-card">
-            <h3>Highlights</h3>
-            <p>Key features and the punch list: gestures, mappings, HA scenes, and UI feedback.</p>
-          </article>
-          <article class="app-card">
-            <h3>Architecture</h3>
-            <p>Diagram slot: MIDI input → router → MQTT → Home Assistant → UI updates.</p>
-          </article>
-          <article class="app-card">
-            <h3>Build notes</h3>
-            <p>Hardware notes, latency notes, edge cases, and how the mapping layer stays maintainable.</p>
-          </article>
-          <article class="app-card">
-            <h3>UI</h3>
-            <p>Screen breakdowns: layout view, mapping editor, event viewer, and feedback indicators.</p>
-          </article>
-          <article class="app-card">
-            <h3>Roadmap</h3>
-            <p>Optional future ideas: profiles, better gesture modes, and richer visualizations.</p>
-          </article>
-          <article class="app-card">
-            <h3>Links</h3>
-            <p>Slots for repo links, demo videos, and related Home Assistant automations.</p>
-          </article>
-        </div>
+      <div class="section__head" style="margin-top:18px">
+        <h2 data-reveal>Project media (template)</h2>
+        <p class="muted" data-reveal>Placeholder grid — screenshots coming soon.</p>
       </div>
+
+      <div class="media-grid" data-reveal>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 1</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 2</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Screenshot 3</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Demo clip</div></div>
+        <div class="media-tile"><div class="media-tile__inner">UI close-up</div></div>
+        <div class="media-tile"><div class="media-tile__inner">Hardware</div></div>
+      </div>
+
+      <div class="section__head" style="margin-top:18px">
+        <h2 data-reveal>Overview</h2>
+        <p class="muted" data-reveal>How it works, at a high level.</p>
+      </div>
+
+      <div class="card" data-reveal>
+        <p class="muted">
+          A Python router listens to MIDI input and classifies gestures (tap/hold/knob changes). It publishes compact MQTT messages.
+          Home Assistant subscribes and performs the actual device control. A small web UI consumes event updates to show what’s happening
+          and provide immediate visual feedback.
+        </p>
+      </div>
+
+      <div class="callout" data-reveal style="margin-top:14px">
+        <div>
+          <h3>Want the code?</h3>
+          <p class="muted">Public repo link can be added when you’re ready. For now, GitHub profile is linked.</p>
+        </div>
+        <a class="btn" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      </div>
+
+      <footer class="footer" data-reveal>
+        <div class="footer__inner">
+          <p class="muted">© <span id="year"></span> Chase Capron</p>
+          <a class="backtotop" href="#top">Back to top</a>
+        </div>
+      </footer>
     </section>
   </main>
-
-  <footer class="footer">
-    <div class="container footer__inner">
-      <p>© <span id="year"></span> Chase Capron</p>
-      <p class="muted">Updated <span id="updated">today</span></p>
-    </div>
-  </footer>
 </body>
 </html>
