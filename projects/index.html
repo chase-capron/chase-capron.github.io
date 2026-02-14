@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects · Chase Capron</title>
+  <meta name="description" content="Complete project archive for Chase Capron." />
+  <meta name="color-scheme" content="dark" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script defer src="../app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header__row">
+      <a class="brand" href="../index.html" aria-label="Back home">
+        <span class="brand__badge" aria-hidden="true">CC</span>
+        <span class="brand__text">
+          <span class="brand__name">Chase Capron</span>
+          <span class="brand__role">Projects</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html">Home</a>
+        <a href="#top">Projects</a>
+      </nav>
+
+      <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section" id="top">
+      <div class="container">
+        <p class="eyebrow">Project archive</p>
+        <h1>Everything I’m building</h1>
+        <p class="lead">A single view of active projects, completed systems, and maker work in progress.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="project-grid">
+          <a class="project-card" href="midi-home-control/index.html">
+            <div class="project-card__meta">Complete</div>
+            <h3>MIDI Home Control Rig</h3>
+            <p>A MIDI-to-Home Assistant workflow with responsive automation and status-aware interfaces.</p>
+            <div class="chips">
+              <span class="chip">Python</span>
+              <span class="chip">MQTT</span>
+              <span class="chip">Home Assistant</span>
+            </div>
+          </a>
+          <article class="project-card">
+            <div class="project-card__meta">Active</div>
+            <h3>AI Nutritionist and Meal Planner</h3>
+            <p>Label-first meal planning with goal tracking and memory-based recommendations.</p>
+            <div class="chips">
+              <span class="chip">AI</span>
+              <span class="chip">Python</span>
+              <span class="chip">Automation</span>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-card__meta">Active</div>
+            <h3>GreenThumb</h3>
+            <p>Plant care system with soil probes, ambient sensing, and model-based watering/light recommendations.</p>
+            <div class="chips">
+              <span class="chip">IoT</span>
+              <span class="chip">AI</span>
+              <span class="chip">Sensors</span>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-card__meta">Completed</div>
+            <h3>Smart Heating Control</h3>
+            <p>Room balancing automation that reads sensors, occupancy, weather, and schedule preferences.</p>
+            <div class="chips">
+              <span class="chip">Home Assistant</span>
+              <span class="chip">Rule Engine</span>
+              <span class="chip">Sensors</span>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-card__meta">Maker</div>
+            <h3>Laser Cutting and 3D Printing</h3>
+            <p>Build system for practical enclosures, mounts, and mechanical parts tied to automation workflows.</p>
+            <div class="chips">
+              <span class="chip">CAD</span>
+              <span class="chip">Prototyping</span>
+              <span class="chip">Workshop</span>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-card__meta">In development</div>
+            <h3>Hot Wheels Tracker</h3>
+            <p>Collection tracker with pricing and inventory metadata for quick references and organization.</p>
+            <div class="chips">
+              <span class="chip">Database</span>
+              <span class="chip">Web</span>
+              <span class="chip">Catalog</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© <span id="year"></span> Chase Capron</p>
+      <p class="muted">Updated <span id="updated">today</span></p>
+    </div>
+  </footer>
+</body>
+</html>
