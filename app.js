@@ -12,33 +12,6 @@
     const d = new Date();
     upd.textContent = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
   }
-
-  // Theme toggle (Apple-clean: light first, but remembers preference)
-  const THEME_KEY = 'cc_theme';
-  const themeBtn = document.getElementById('themeToggle');
-  const icon = document.getElementById('themeIcon');
-
-  function applyTheme(theme) {
-    if (theme === 'dark') root.dataset.theme = 'dark';
-    else delete root.dataset.theme;
-
-    if (icon) icon.textContent = theme === 'dark' ? '●' : '◐';
-    if (themeBtn) themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-  }
-
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme === 'dark') applyTheme('dark');
-  else applyTheme('light');
-
-  if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      const isDark = root.dataset.theme === 'dark';
-      const next = isDark ? 'light' : 'dark';
-      localStorage.setItem(THEME_KEY, next);
-      applyTheme(next);
-    });
-  }
-
   // Reduce motion toggle
   const MOTION_KEY = 'cc_reduce_motion';
   const motionBtn = document.getElementById('motionToggle');
