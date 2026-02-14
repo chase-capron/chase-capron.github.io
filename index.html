@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chase Capron · Home Automation Engineer</title>
+  <title>Chase Capron · Computer Engineer</title>
   <meta name="description" content="Chase Capron builds practical home automation and AI-assisted systems for real-world use." />
   <meta name="color-scheme" content="dark" />
 
-  <meta property="og:title" content="Chase Capron · Home Automation Engineer" />
+  <meta property="og:title" content="Chase Capron · Computer Engineer" />
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
   <meta property="og:type" content="website" />
 
@@ -42,7 +42,7 @@
   <main id="main">
     <section class="hero" id="home" aria-label="intro">
       <div class="container hero__grid">
-        <div class="hero__copy">
+        <div>
           <p class="eyebrow" data-reveal>I build practical systems that help people automate the hard parts.</p>
           <h1 data-reveal data-delay="40">Home automation heavy, AI-assisted tooling, and hands-on maker projects.</h1>
           <p class="lead" data-reveal data-delay="90">
@@ -55,64 +55,114 @@
           </div>
         </div>
 
-        <div class="hero__mark" aria-hidden="true" data-reveal data-delay="120">
-          <img src="assets/chase-logo.png" alt="" loading="lazy" />
+        <div class="hero__art" data-reveal data-delay="120" aria-label="logo">
+          <div class="hero__logo">
+            <img src="assets/chase-logo.png" alt="Chase logo" loading="lazy" />
+          </div>
         </div>
       </div>
 
       <div class="hero-marquee" aria-label="Project highlights" data-reveal data-delay="200">
         <div class="hero-marquee__track" role="list">
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Featured</p>
+          <a class="project-tile" role="listitem" href="projects/midi-home-control/">
+            <p class="project-tile__eyebrow">Project</p>
             <h3>MIDI Home Control Rig</h3>
             <p>Real-time routing from MIDI gestures into Home Assistant scenes and automations.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">In Progress</p>
-            <h3>AI Nutritionist and Meal Planner</h3>
-            <p>Context-aware meal recommendations with label reading and goal tracking logic.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">In Dev</p>
-            <h3>GreenThumb</h3>
-            <p>Plant care automation with soil and ambient sensors feeding AI decision logic.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Complete</p>
-            <h3>Smart Heating Control</h3>
-            <p>Home Assistant logic that balances rooms using sensor data, occupancy, weather, and preferences.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Maker</p>
-            <h3>Laser Cutting + 3D Printing</h3>
-            <p>Prototyping enclosures, mounts, and practical household automation hardware.</p>
-          </article>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
+            </div>
+          </a>
 
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Featured</p>
-            <h3>MIDI Home Control Rig</h3>
-            <p>Real-time routing from MIDI gestures into Home Assistant scenes and automations.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">In Progress</p>
+          <a class="project-tile" role="listitem" href="projects/ai-nutritionist/">
+            <p class="project-tile__eyebrow">Project</p>
             <h3>AI Nutritionist and Meal Planner</h3>
-            <p>Context-aware meal recommendations with label reading and goal tracking logic.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">In Dev</p>
+            <p>Label reading plus context memory to recommend meals and keep goals on track.</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon" aria-hidden="true"><span>🍱</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/greenthumb/">
+            <p class="project-tile__eyebrow">Project</p>
             <h3>GreenThumb</h3>
             <p>Plant care automation with soil and ambient sensors feeding AI decision logic.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Complete</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon" aria-hidden="true"><span>🌿</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/smart-heating/">
+            <p class="project-tile__eyebrow">Project</p>
             <h3>Smart Heating Control</h3>
-            <p>Home Assistant logic that balances rooms using sensor data, occupancy, weather, and preferences.</p>
-          </article>
-          <article class="project-tile" role="listitem">
-            <p class="project-tile__eyebrow">Maker</p>
+            <p>Room balancing automation using sensors, occupancy, weather, and preference logic.</p>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon" aria-hidden="true"><span>♨️</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/laser-3d-printing/">
+            <p class="project-tile__eyebrow">Project</p>
             <h3>Laser Cutting + 3D Printing</h3>
             <p>Prototyping enclosures, mounts, and practical household automation hardware.</p>
-          </article>
+            <div class="project-tile__footer">
+              <span class="status status--maker">Maker</span>
+              <span class="tile-icon" aria-hidden="true"><span>🛠️</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/midi-home-control/">
+            <p class="project-tile__eyebrow">Project</p>
+            <h3>MIDI Home Control Rig</h3>
+            <p>Real-time routing from MIDI gestures into Home Assistant scenes and automations.</p>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/ai-nutritionist/">
+            <p class="project-tile__eyebrow">Project</p>
+            <h3>AI Nutritionist and Meal Planner</h3>
+            <p>Label reading plus context memory to recommend meals and keep goals on track.</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon" aria-hidden="true"><span>🍱</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/greenthumb/">
+            <p class="project-tile__eyebrow">Project</p>
+            <h3>GreenThumb</h3>
+            <p>Plant care automation with soil and ambient sensors feeding AI decision logic.</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon" aria-hidden="true"><span>🌿</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/smart-heating/">
+            <p class="project-tile__eyebrow">Project</p>
+            <h3>Smart Heating Control</h3>
+            <p>Room balancing automation using sensors, occupancy, weather, and preference logic.</p>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon" aria-hidden="true"><span>♨️</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/laser-3d-printing/">
+            <p class="project-tile__eyebrow">Project</p>
+            <h3>Laser Cutting + 3D Printing</h3>
+            <p>Prototyping enclosures, mounts, and practical household automation hardware.</p>
+            <div class="project-tile__footer">
+              <span class="status status--maker">Maker</span>
+              <span class="tile-icon" aria-hidden="true"><span>🛠️</span></span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
@@ -142,9 +192,9 @@
           <article class="card">
             <h3>Current stack</h3>
             <div class="chips" aria-label="Core tools">
-              <span class="chip">Python</span>
-              <span class="chip">Home Assistant</span>
-              <span class="chip">MQTT</span>
+              <span class="chip chip--python">Python</span>
+              <span class="chip chip--ha">Home Assistant</span>
+              <span class="chip chip--mqtt">MQTT</span>
               <span class="chip">Git</span>
               <span class="chip">Linux</span>
               <span class="chip">JavaScript</span>
@@ -162,66 +212,89 @@
         </div>
 
         <div class="project-grid" data-reveal data-delay="80">
-          <a class="project-card" href="projects/midi-home-control/index.html">
-            <div class="project-card__meta">Complete</div>
-            <h3>MIDI Home Control Rig</h3>
+          <a class="project-card" href="projects/midi-home-control/">
+            <div class="project-card__top">
+              <span class="status status--complete">Complete</span>
+              <span class="project-card__icon" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
+            </div>
+            <h3 style="margin-top:10px">MIDI Home Control Rig</h3>
             <p>Physical interface + automation pipeline for Home Assistant and real-time status interaction.</p>
             <div class="chips">
-              <span class="chip">Python</span>
-              <span class="chip">MQTT</span>
-              <span class="chip">Home Assistant</span>
+              <span class="chip chip--python">Python</span>
+              <span class="chip chip--mqtt">MQTT</span>
+              <span class="chip chip--ha">Home Assistant</span>
+              <span class="chip chip--automation">Automation</span>
             </div>
           </a>
-          <article class="project-card">
-            <div class="project-card__meta">Active</div>
-            <h3>AI Nutritionist and Meal Planner</h3>
-            <p>In-progress tool that reads label data, tracks goals, and suggests meals with planning context.</p>
-            <div class="chips">
-              <span class="chip">AI</span>
-              <span class="chip">Python</span>
-              <span class="chip">Automation</span>
+
+          <a class="project-card" href="projects/ai-nutritionist/">
+            <div class="project-card__top">
+              <span class="status status--dev">In Development</span>
+              <span class="project-card__icon" aria-hidden="true"><span>🍱</span></span>
             </div>
-          </article>
-          <article class="project-card">
-            <div class="project-card__meta">Active</div>
-            <h3>GreenThumb</h3>
-            <p>Plant-care platform with soil and ambient sensing plus AI recommendations based on plant type and climate.</p>
+            <h3 style="margin-top:10px">AI Nutritionist and Meal Planner</h3>
+            <p>In-progress tool that reads nutrition labels, tracks goals, and plans meals with memory context.</p>
             <div class="chips">
-              <span class="chip">IoT</span>
-              <span class="chip">AI</span>
-              <span class="chip">Sensors</span>
+              <span class="chip chip--ai">AI</span>
+              <span class="chip chip--python">Python</span>
+              <span class="chip chip--automation">Automation</span>
             </div>
-          </article>
-          <article class="project-card">
-            <div class="project-card__meta">Completed</div>
-            <h3>Smart Heating Control Automation</h3>
-            <p>Home Assistant-based logic for room-based heating using multiple rooms, weather, occupancy, and schedules.</p>
+          </a>
+
+          <a class="project-card" href="projects/greenthumb/">
+            <div class="project-card__top">
+              <span class="status status--dev">In Development</span>
+              <span class="project-card__icon" aria-hidden="true"><span>🌿</span></span>
+            </div>
+            <h3 style="margin-top:10px">GreenThumb</h3>
+            <p>Plant-care platform with soil + ambient sensing and AI recommendations based on plant type, season, and environment.</p>
             <div class="chips">
-              <span class="chip">Home Assistant</span>
-              <span class="chip">Rule logic</span>
-              <span class="chip">Python</span>
+              <span class="chip chip--iot">IoT</span>
+              <span class="chip chip--ai">AI</span>
+              <span class="chip chip--sensors">Sensors</span>
             </div>
-          </article>
-          <article class="project-card">
-            <div class="project-card__meta">Maker</div>
-            <h3>Laser Cutting + 3D Printing</h3>
-            <p>Workflow and builds for practical parts, smart enclosures, and small hardware utilities.</p>
+          </a>
+
+          <a class="project-card" href="projects/smart-heating/">
+            <div class="project-card__top">
+              <span class="status status--complete">Complete</span>
+              <span class="project-card__icon" aria-hidden="true"><span>♨️</span></span>
+            </div>
+            <h3 style="margin-top:10px">Smart Heating Control</h3>
+            <p>Home Assistant automation that balances uneven heating using room sensors, occupancy, weather, and preferences.</p>
             <div class="chips">
-              <span class="chip">CAD</span>
-              <span class="chip">Prototyping</span>
-              <span class="chip">Design</span>
+              <span class="chip chip--ha">Home Assistant</span>
+              <span class="chip chip--sensors">Sensors</span>
+              <span class="chip chip--automation">Automation</span>
             </div>
-          </article>
-          <article class="project-card">
-            <div class="project-card__meta">In development</div>
-            <h3>Hot Wheels Tracker</h3>
-            <p>Online database for tracking a collection and price history so it is easier to organize and value.</p>
+          </a>
+
+          <a class="project-card" href="projects/laser-3d-printing/">
+            <div class="project-card__top">
+              <span class="status status--maker">Maker</span>
+              <span class="project-card__icon" aria-hidden="true"><span>🛠️</span></span>
+            </div>
+            <h3 style="margin-top:10px">Laser Cutting + 3D Printing</h3>
+            <p>Workflow and builds for practical parts, enclosures, and small hardware utilities that support automation projects.</p>
             <div class="chips">
-              <span class="chip">Web</span>
-              <span class="chip">Database</span>
-              <span class="chip">Cataloging</span>
+              <span class="chip chip--cad">CAD</span>
+              <span class="chip chip--proto">Prototyping</span>
+              <span class="chip chip--design">Design</span>
             </div>
-          </article>
+          </a>
+
+          <a class="project-card" href="projects/hot-wheels-tracker/">
+            <div class="project-card__top">
+              <span class="status status--planned">Planned</span>
+              <span class="project-card__icon" aria-hidden="true"><span>🏎️</span></span>
+            </div>
+            <h3 style="margin-top:10px">Hot Wheels Tracker</h3>
+            <p>Collection tracker with pricing and inventory metadata for quick references and easy organization.</p>
+            <div class="chips">
+              <span class="chip chip--db">Database</span>
+              <span class="chip chip--catalog">Cataloging</span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
@@ -234,26 +307,26 @@
         </div>
 
         <div class="hardware-grid">
-          <div class="hardware-card" data-reveal data-delay="80">
+          <a class="hardware-card" data-reveal data-delay="80" href="https://www.meta.com/smart-glasses/" target="_blank" rel="noopener">
             <p class="hardware-card__icon">🕶️</p>
             <p class="hardware-card__name">Meta Ray-Ban Smart Glasses</p>
-          </div>
-          <div class="hardware-card" data-reveal data-delay="120">
+          </a>
+          <a class="hardware-card" data-reveal data-delay="120" href="https://www.meta.com/quest/quest-3/" target="_blank" rel="noopener">
             <p class="hardware-card__icon">👓</p>
             <p class="hardware-card__name">Meta Quest 3</p>
-          </div>
-          <div class="hardware-card" data-reveal data-delay="160">
+          </a>
+          <a class="hardware-card" data-reveal data-delay="160" href="projects/greenthumb/">
             <p class="hardware-card__icon">🌿</p>
             <p class="hardware-card__name">Plant Sensor Kits</p>
-          </div>
-          <div class="hardware-card" data-reveal data-delay="200">
+          </a>
+          <a class="hardware-card" data-reveal data-delay="200" href="https://www.adafruit.com/" target="_blank" rel="noopener">
             <p class="hardware-card__icon">🦾</p>
             <p class="hardware-card__name">Soldering + Maker Tools</p>
-          </div>
-          <div class="hardware-card" data-reveal data-delay="240">
+          </a>
+          <a class="hardware-card" data-reveal data-delay="240" href="projects/midi-home-control/">
             <p class="hardware-card__icon">♻️</p>
             <p class="hardware-card__name">Legacy Device Builds</p>
-          </div>
+          </a>
         </div>
       </div>
     </section>
@@ -272,7 +345,7 @@
               Build one central AI assistant workflow that stays in sync with every project, then iterate each project in parallel with AI support.
             </p>
           </div>
-          <a class="btn" href="projects/">Open full project page</a>
+          <a class="btn" href="projects/">Open project archive</a>
         </article>
       </div>
     </section>
