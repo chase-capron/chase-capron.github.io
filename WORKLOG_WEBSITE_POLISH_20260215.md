@@ -108,3 +108,19 @@ Quick sanity checks (no pushes):
   - `/` → 200 text/html
   - `/projects/` → 200 text/html
   - `/app.js` → 200 text/javascript
+
+## 13:50 (Eval 4/4 — LOW, cron re-run)
+Final quick sanity checks (no pushes):
+
+- Repo status: clean (no uncommitted changes)
+- JS syntax: `node --check app.js` → OK (no output, exit 0)
+- Debug leftovers / TODOs:
+  - `grep -RInE "console\.|debugger|TODO|FIXME" .` → only `.git/hooks/*` samples + this worklog
+  - Note: `rg` (ripgrep) is not installed on this host, so used `grep`.
+- Broken local links/assets:
+  - Parsed 8 HTML files; checked 87 local `href/src` targets → none missing
+- Static serving smoke test (`python -m http.server` + `curl`):
+  - `/` → 200 text/html
+  - `/projects/` → 200 text/html
+  - `/styles.css` → 200 text/css
+  - `/app.js` → 200 text/javascript
