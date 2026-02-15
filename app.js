@@ -1,42 +1,77 @@
 (() => {
   const root = document.documentElement;
-  const yearEl = document.getElementById('year');
-  const updatedEl = document.getElementById('updated');
-  const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (yearEl) {
-    yearEl.textContent = String(new Date().getFullYear());
+  // Footer year
+  const y = document.getElementById('year');
+  if (y) y.textContent = String(new Date().getFullYear());
+
+  // Simple “updated” text
+  const upd = document.getElementById('updated');
+  if (upd) {
+    const d = new Date();
+    upd.textContent = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
   }
+  // Reduce motion toggle
+  const MOTION_KEY = 'cc_reduce_motion';
+  const motionBtn = document.getElementById('motionToggle');
+  const savedMotion = localStorage.getItem(MOTION_KEY);
+  if (savedMotion === 'true') root.dataset.reduceMotion = 'true';
 
-  if (updatedEl) {
-    updatedEl.textContent = new Date().toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
+  if (motionBtn) {
+    motionBtn.setAttribute('aria-pressed', root.dataset.reduceMotion === 'true' ? 'true' : 'false');
+    motionBtn.addEventListener('click', () => {
+      const next = root.dataset.reduceMotion !== 'true';
+      root.dataset.reduceMotion = next ? 'true' : 'false';
+      localStorage.setItem(MOTION_KEY, next ? 'true' : 'false');
+      motionBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
     });
   }
 
-  revealNodes.forEach((node) => {
-    const delay = Number(node.dataset.delay || 0);
-    node.style.setProperty('--reveal-delay', `${delay}ms`);
-  });
+  // Arc Raiders-ish theme toggle
+  const ARC_KEY = 'cc_style_arc';
+  const arcBtn = document.getElementById('arcToggle');
+  const savedArc = localStorage.getItem(ARC_KEY);
+  if (savedArc === 'true') root.dataset.style = 'arc';
 
-  if (!('IntersectionObserver' in window)) {
-    revealNodes.forEach((node) => node.classList.add('is-in'));
+  if (arcBtn) {
+    const syncArc = () => {
+      const on = root.dataset.style === 'arc';
+      arcBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      arcBtn.textContent = on ? 'Arc: On' : 'Arc';
+    };
+
+    syncArc();
+    arcBtn.addEventListener('click', () => {
+      const next = root.dataset.style !== 'arc';
+      if (next) root.dataset.style = 'arc';
+      else delete root.dataset.style;
+      localStorage.setItem(ARC_KEY, next ? 'true' : 'false');
+      syncArc();
+    });
+  }
+
+  // Reveal-on-scroll (subtle, Apple-like)
+  const reduce = prefersReduced || root.dataset.reduceMotion === 'true';
+  const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
+  if (!nodes.length) return;
+
+  if (reduce || !('IntersectionObserver' in window)) {
+    nodes.forEach((n) => n.classList.add('is-in'));
     return;
   }
 
-  const io = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-in');
-        observer.unobserve(entry.target);
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
       }
-    });
-  }, {
-    rootMargin: '0px 0px -10% 0px',
-    threshold: 0.1,
-  });
+    },
+    { rootMargin: '0px 0px -10% 0px', threshold: 0.08 }
+  );
 
-  revealNodes.forEach((node) => io.observe(node));
+  nodes.forEach((n) => io.observe(n));
 })();
