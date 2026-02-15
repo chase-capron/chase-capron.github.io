@@ -14,6 +14,14 @@
   <link rel="icon" type="image/png" href="assets/chase-logo.png" />
   <link rel="apple-touch-icon" href="assets/chase-logo.png" />
 
+  <script>
+    try {
+      if (localStorage.getItem('cc_style_arc') === 'true') {
+        document.documentElement.dataset.style = 'arc';
+      }
+    } catch (e) {}
+  </script>
+
   <link rel="stylesheet" href="styles.css" />
   <script defer src="app.js"></script>
 </head>
@@ -69,56 +77,6 @@
 
       <div class="hero-marquee" aria-label="Project highlights" data-reveal data-delay="200">
         <div class="hero-marquee__track" role="list">
-          <a class="project-tile" role="listitem" href="projects/midi-home-control/">
-            <p class="project-tile__eyebrow">Project</p>
-            <h3>MIDI Home Control Rig</h3>
-            <p>Real-time routing from MIDI gestures into Home Assistant scenes and automations.</p>
-            <div class="project-tile__footer">
-              <span class="status status--complete">Complete</span>
-              <span class="tile-icon tile-icon--logo" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
-            </div>
-          </a>
-
-          <a class="project-tile" role="listitem" href="projects/ai-nutritionist/">
-            <p class="project-tile__eyebrow">Project</p>
-            <h3>AI Nutritionist and Meal Planner</h3>
-            <p>Label reading plus context memory to recommend meals and keep goals on track.</p>
-            <div class="project-tile__footer">
-              <span class="status status--dev">In Development</span>
-              <span class="tile-icon" aria-hidden="true"><span>🍱</span></span>
-            </div>
-          </a>
-
-          <a class="project-tile" role="listitem" href="projects/greenthumb/">
-            <p class="project-tile__eyebrow">Project</p>
-            <h3>GreenThumb</h3>
-            <p>Plant care automation with soil and ambient sensors feeding AI decision logic.</p>
-            <div class="project-tile__footer">
-              <span class="status status--dev">In Development</span>
-              <span class="tile-icon" aria-hidden="true"><span>🌿</span></span>
-            </div>
-          </a>
-
-          <a class="project-tile" role="listitem" href="projects/smart-heating/">
-            <p class="project-tile__eyebrow">Project</p>
-            <h3>Smart Heating Control</h3>
-            <p>Room balancing automation using sensors, occupancy, weather, and preference logic.</p>
-            <div class="project-tile__footer">
-              <span class="status status--complete">Complete</span>
-              <span class="tile-icon" aria-hidden="true"><span>♨️</span></span>
-            </div>
-          </a>
-
-          <a class="project-tile" role="listitem" href="projects/laser-3d-printing/">
-            <p class="project-tile__eyebrow">Project</p>
-            <h3>Laser Cutting + 3D Printing</h3>
-            <p>Prototyping enclosures, mounts, and practical household automation hardware.</p>
-            <div class="project-tile__footer">
-              <span class="status status--maker">Maker</span>
-              <span class="tile-icon" aria-hidden="true"><span>🛠️</span></span>
-            </div>
-          </a>
-
           <a class="project-tile" role="listitem" href="projects/midi-home-control/">
             <p class="project-tile__eyebrow">Project</p>
             <h3>MIDI Home Control Rig</h3>

@@ -10,6 +10,14 @@
   <link rel="icon" type="image/png" href="../assets/chase-logo.png" />
   <link rel="apple-touch-icon" href="../assets/chase-logo.png" />
 
+  <script>
+    try {
+      if (localStorage.getItem('cc_style_arc') === 'true') {
+        document.documentElement.dataset.style = 'arc';
+      }
+    } catch (e) {}
+  </script>
+
   <link rel="stylesheet" href="../styles.css" />
   <script defer src="../app.js"></script>
 </head>
@@ -31,7 +39,12 @@
         <a href="#top">Projects</a>
       </nav>
 
-      <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      <div class="header__actions">
+        <button class="btn btn--ghost" id="arcToggle" type="button" aria-pressed="false" title="Toggle Arc theme">
+          Arc
+        </button>
+        <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+      </div>
     </div>
   </header>
 
