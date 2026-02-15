@@ -11,6 +11,26 @@
   --shadow: 0 24px 68px rgba(0, 0, 0, 0.35);
   --shadow-strong: 0 34px 110px rgba(0, 0, 0, 0.42);
   --radius: 20px;
+
+  /* Arc-ish beams */
+  --beam-1: #ff3d00;
+  --beam-2: #ffb000;
+  --beam-3: #37d7ff;
+  --beam-4: #b84cff;
+}
+
+:root[data-style="arc"] {
+  --bg: #04060b;
+  --bg-soft: #070b12;
+  --surface: rgba(12, 16, 24, 0.72);
+  --surface-solid: #0a0f19;
+  --text: #f3f6ff;
+  --text-soft: rgba(243, 246, 255, 0.72);
+  --line: rgba(243, 246, 255, 0.16);
+  --accent: var(--beam-3);
+  --accent-2: var(--beam-2);
+  --shadow: 0 28px 88px rgba(0, 0, 0, 0.6);
+  --shadow-strong: 0 40px 140px rgba(0, 0, 0, 0.62);
 }
 
 * { box-sizing: border-box; }
@@ -28,6 +48,57 @@ body {
     var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Arial, sans-serif;
   line-height: 1.5;
+  position: relative;
+}
+
+/* Arc theme: subtle moving beam stripes in the background */
+:root[data-style="arc"] body::before,
+:root[data-style="arc"] body::after {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  pointer-events: none;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    110deg,
+    color-mix(in oklab, var(--beam-1) 60%, transparent) 0px,
+    color-mix(in oklab, var(--beam-1) 60%, transparent) 10px,
+    transparent 10px,
+    transparent 44px,
+    color-mix(in oklab, var(--beam-2) 55%, transparent) 44px,
+    color-mix(in oklab, var(--beam-2) 55%, transparent) 56px,
+    transparent 56px,
+    transparent 90px,
+    color-mix(in oklab, var(--beam-3) 55%, transparent) 90px,
+    color-mix(in oklab, var(--beam-3) 55%, transparent) 102px,
+    transparent 102px,
+    transparent 140px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.72;
+  filter: blur(1px) saturate(1.15);
+  transform: translate3d(-10%, -6%, 0) rotate(-2deg);
+  animation: arcBeamsSlide 14s linear infinite;
+}
+
+:root[data-style="arc"] body::after {
+  opacity: 0.45;
+  filter: blur(12px) saturate(1.2);
+  transform: translate3d(8%, 10%, 0) rotate(2.5deg) scale(1.08);
+  animation-duration: 22s;
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-style="arc"] body::before,
+  :root[data-style="arc"] body::after {
+    animation: none;
+  }
+}
+
+@keyframes arcBeamsSlide {
+  0% { background-position: 0 0; }
+  100% { background-position: 520px 0; }
 }
 
 h1, h2, h3, p { margin: 0; }
@@ -67,6 +138,12 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+}
+
+.header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .brand {

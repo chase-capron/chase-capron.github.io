@@ -26,6 +26,29 @@
     return;
   }
 
+  // Arc theme toggle
+  const ARC_KEY = 'cc_style_arc';
+  const arcBtn = document.getElementById('arcToggle');
+  const savedArc = localStorage.getItem(ARC_KEY);
+  if (savedArc === 'true') root.dataset.style = 'arc';
+
+  if (arcBtn) {
+    const sync = () => {
+      const on = root.dataset.style === 'arc';
+      arcBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      arcBtn.textContent = on ? 'Arc: On' : 'Arc';
+    };
+
+    sync();
+    arcBtn.addEventListener('click', () => {
+      const next = root.dataset.style !== 'arc';
+      if (next) root.dataset.style = 'arc';
+      else delete root.dataset.style;
+      localStorage.setItem(ARC_KEY, next ? 'true' : 'false');
+      sync();
+    });
+  }
+
   const io = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
