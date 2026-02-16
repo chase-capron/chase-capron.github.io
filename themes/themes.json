@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "defaultTheme": "default",
+  "themes": [
+    {
+      "id": "default",
+      "label": "Default",
+      "css": "themes/default.css",
+      "description": "Current site look"
+    },
+    {
+      "id": "arc",
+      "label": "Arc",
+      "css": "themes/arc.css",
+      "description": "Neon tunnel motion theme"
+    }
+  ]
+}

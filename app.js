@@ -3,8 +3,38 @@
 
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
+  const THEME_MANIFEST_URL = 'themes/themes.json';
   const themeSelect = document.getElementById('themeSelect');
-  const allowedThemes = new Set(['default', 'arc']);
+  const themeHint = document.getElementById('themeHint');
+
+  const defaultThemeCatalog = [
+    {
+      id: 'default',
+      label: 'Default',
+      css: 'themes/default.css',
+      description: 'Current site look',
+    },
+    {
+      id: 'arc',
+      label: 'Arc',
+      css: 'themes/arc.css',
+      description: 'Neon tunnel motion theme',
+    },
+  ];
+
+  let themeCatalog = [...defaultThemeCatalog];
+  let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
+  let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
+
+  const sanitizeThemeId = (value) => {
+    const stringValue = String(value || '').toLowerCase();
+    return /^[a-z0-9-]+$/.test(stringValue) ? stringValue : 'default';
+  };
+
+  const normalizeTheme = (value) => {
+    const candidate = sanitizeThemeId(value);
+    return allowedThemes.has(candidate) ? candidate : 'default';
+  };
 
   const getStoredTheme = () => {
     try {
@@ -12,14 +42,56 @@
       if (explicit && allowedThemes.has(explicit)) return explicit;
 
       // Migration path for existing users.
-      if (localStorage.getItem(LEGACY_ARC_KEY) === 'true') return 'arc';
+      if (localStorage.getItem(LEGACY_ARC_KEY) === 'true' && allowedThemes.has('arc')) return 'arc';
     } catch (e) {}
 
     return 'default';
   };
 
+  const ensureThemeStylesheet = () => {
+    let link = document.getElementById('themeStylesheet');
+    if (link instanceof HTMLLinkElement) return link;
+
+    link = document.createElement('link');
+    link.id = 'themeStylesheet';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    return link;
+  };
+
+  const applyThemeStylesheet = (themeId) => {
+    const theme = themesById.get(themeId) || themesById.get('default');
+    if (!theme?.css) return;
+
+    const link = ensureThemeStylesheet();
+    if (link.getAttribute('href') !== theme.css) {
+      link.setAttribute('href', theme.css);
+    }
+  };
+
+  const renderThemeOptions = (activeTheme) => {
+    if (!themeSelect) return;
+
+    themeSelect.innerHTML = '';
+    themeCatalog.forEach((theme) => {
+      const option = document.createElement('option');
+      option.value = theme.id;
+      option.textContent = theme.label;
+      if (theme.description) option.title = theme.description;
+      themeSelect.appendChild(option);
+    });
+
+    themeSelect.value = normalizeTheme(activeTheme);
+  };
+
+  const setThemeHint = (themeId) => {
+    if (!themeHint) return;
+    const description = themesById.get(themeId)?.description;
+    themeHint.textContent = description || 'Switch visual style instantly.';
+  };
+
   const applyTheme = (theme) => {
-    const nextTheme = allowedThemes.has(theme) ? theme : 'default';
+    const nextTheme = normalizeTheme(theme);
 
     if (nextTheme === 'default') {
       delete root.dataset.theme;
@@ -27,9 +99,9 @@
       root.dataset.theme = nextTheme;
     }
 
-    if (themeSelect) {
-      themeSelect.value = nextTheme;
-    }
+    applyThemeStylesheet(nextTheme);
+    renderThemeOptions(nextTheme);
+    setThemeHint(nextTheme);
 
     try {
       localStorage.setItem(THEME_KEY, nextTheme);
@@ -37,7 +109,34 @@
     } catch (e) {}
   };
 
-  const firstTheme = root.dataset.theme || getStoredTheme();
+  const hydrateThemeCatalog = async () => {
+    try {
+      const response = await fetch(THEME_MANIFEST_URL, { cache: 'no-store' });
+      if (!response.ok) return;
+
+      const payload = await response.json();
+      const themes = Array.isArray(payload?.themes) ? payload.themes : [];
+
+      const validated = themes
+        .map((theme) => ({
+          id: sanitizeThemeId(theme?.id),
+          label: String(theme?.label || '').trim(),
+          css: String(theme?.css || '').trim(),
+          description: String(theme?.description || '').trim(),
+        }))
+        .filter((theme) => theme.id && theme.label && theme.css);
+
+      if (!validated.length) return;
+
+      themeCatalog = validated;
+      allowedThemes = new Set(validated.map((theme) => theme.id));
+      themesById = new Map(validated.map((theme) => [theme.id, theme]));
+    } catch (e) {
+      // Fallback to baked-in catalog
+    }
+  };
+
+  const firstTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
   applyTheme(firstTheme);
 
   if (themeSelect) {
@@ -45,6 +144,11 @@
       applyTheme(event.target.value);
     });
   }
+
+  hydrateThemeCatalog().then(() => {
+    const nextTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
+    applyTheme(nextTheme);
+  });
 
   const yearEl = document.getElementById('year');
   if (yearEl) {
@@ -61,6 +165,7 @@
       month: 'short',
       day: '2-digit',
     });
+    updatedEl.title = modifiedDate.toISOString();
   }
 
   // Marquee: keep the HTML source clean (single set of tiles), but duplicate it at runtime

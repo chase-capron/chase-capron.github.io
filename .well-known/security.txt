@@ -1,0 +1,5 @@
+Contact: https://github.com/chase-capron/chase-capron.github.io/issues
+Policy: https://chase-capron.github.io/SECURITY.md
+Canonical: https://chase-capron.github.io/.well-known/security.txt
+Preferred-Languages: en
+Expires: 2027-02-16T00:00:00.000Z

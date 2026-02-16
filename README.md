@@ -5,7 +5,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 ## What this repository contains
 - `index.html` for site structure and content sections
 - `styles.css` for the full visual system, layout tokens, and animations
-- `themes/` for modular theme layers (`default.css`, `arc.css`) to support future theme additions
+- `themes/` for modular theme layers plus `themes.json` registry for future on-the-fly theme additions
 - `app.js` for reveal-on-scroll, theme persistence, and freshness date rendering
 - `projects/` for deeper project write-ups
 - `assets/` for site graphics
@@ -24,9 +24,10 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - XR and hardware-adjacent experiments
 
 ## Security and hygiene notes
-- Site pages include a strict referrer policy and a locked-down permissions policy via `<meta>`.
+- Site pages include strict `Content-Security-Policy`, `Permissions-Policy`, and referrer policy metadata.
 - External links are opened with `rel="noopener"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
+- Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 
 ## Deploy
 - GitHub Pages serves from `main`

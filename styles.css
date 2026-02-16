@@ -204,6 +204,18 @@ a { color: inherit; text-decoration: none; }
   outline-offset: 1px;
 }
 
+.theme-control__field {
+  display: grid;
+  gap: 2px;
+}
+
+.theme-control__hint {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--text-soft) 86%, white 14%);
+}
+
 .eyebrow {
   color: #8cb0ff;
   text-transform: uppercase;
@@ -847,6 +859,8 @@ h1 {
   .header__actions { gap: 6px; }
   .theme-control { padding: 4px 6px; gap: 6px; }
   .theme-control__label { display: none; }
+  .theme-control__field { display: block; }
+  .theme-control__hint { display: none; }
   .theme-control__select { padding: 5px 22px 5px 8px; font-size: 12px; }
   .btn--ghost { width: auto; padding: 8px 10px; font-size: 12px; }
   .grid { grid-template-columns: 1fr; }

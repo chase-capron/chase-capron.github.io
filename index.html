@@ -7,7 +7,9 @@
   <meta name="description" content="Chase Capron builds practical home automation and AI-assisted systems for real-world use." />
   <meta name="color-scheme" content="dark" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="theme-color" content="#070b17" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), browsing-topics=()" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
 
   <meta property="og:title" content="Chase Capron · Computer Engineer" />
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
@@ -28,8 +30,6 @@
   </script>
 
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="themes/default.css" />
-  <link rel="stylesheet" href="themes/arc.css" />
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -53,10 +53,10 @@
       <div class="header__actions">
         <div class="theme-control" role="group" aria-label="Theme picker">
           <label class="theme-control__label" for="themeSelect">Theme</label>
-          <select class="theme-control__select" id="themeSelect" name="theme">
-            <option value="default">Default</option>
-            <option value="arc">Arc</option>
-          </select>
+          <div class="theme-control__field">
+            <select class="theme-control__select" id="themeSelect" name="theme"></select>
+            <p class="theme-control__hint" id="themeHint">Switch visual style instantly.</p>
+          </div>
         </div>
         <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
       </div>
