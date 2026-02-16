@@ -4,6 +4,7 @@
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
   const THEME_MANIFEST_URL = 'themes/themes.json';
+  const PROJECT_MANIFEST_URL = 'projects/projects.json';
   const themeSelect = document.getElementById('themeSelect');
   const themeHint = document.getElementById('themeHint');
   const themePanelHint = document.getElementById('themePanelHint');
@@ -15,12 +16,14 @@
       label: 'Default',
       css: 'themes/presets/default.css',
       description: 'Current site look',
+      accent: '#2f83ff',
     },
     {
       id: 'arc',
       label: 'Arc',
       css: 'themes/presets/arc.css',
       description: 'Neon tunnel motion theme',
+      accent: '#ff3d00',
     },
   ];
 
@@ -31,6 +34,11 @@
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();
     return /^[a-z0-9-]+$/.test(stringValue) ? stringValue : 'default';
+  };
+
+  const sanitizeThemeAccent = (value) => {
+    const stringValue = String(value || '').trim();
+    return /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(stringValue) ? stringValue : '';
   };
 
   const normalizeTheme = (value) => {
@@ -103,11 +111,24 @@
       title.className = 'theme-preset__title';
       title.textContent = theme.label;
 
+      const header = document.createElement('span');
+      header.className = 'theme-preset__header';
+      header.appendChild(title);
+
+      const accent = sanitizeThemeAccent(theme.accent);
+      if (accent) {
+        const swatch = document.createElement('span');
+        swatch.className = 'theme-preset__swatch';
+        swatch.style.background = accent;
+        swatch.setAttribute('aria-hidden', 'true');
+        header.appendChild(swatch);
+      }
+
       const description = document.createElement('span');
       description.className = 'theme-preset__desc';
       description.textContent = theme.description || 'Theme preset';
 
-      button.append(title, description);
+      button.append(header, description);
       button.addEventListener('click', () => applyTheme(theme.id));
       themePresetList.appendChild(button);
     });
@@ -154,6 +175,7 @@
           label: String(theme?.label || '').trim(),
           css: String(theme?.css || '').trim(),
           description: String(theme?.description || '').trim(),
+          accent: sanitizeThemeAccent(theme?.accent),
         }))
         .filter((theme) => theme.id && theme.label && theme.css);
 
@@ -221,21 +243,79 @@
       day: '2-digit',
     });
 
+    const relativeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+    const sanitizePath = (value) => {
+      const candidate = String(value || '').trim();
+      if (!candidate.startsWith('/projects/')) return '';
+      return /^\/projects\/[a-z0-9-]+\/$/.test(candidate) ? candidate : '';
+    };
+
+    const sanitizeDate = (value) => {
+      const candidate = String(value || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return null;
+      const parsed = Date.parse(`${candidate}T00:00:00Z`);
+      return Number.isFinite(parsed) ? new Date(parsed) : null;
+    };
+
+    const sanitizeNote = (value) => String(value || '').trim().slice(0, 140);
+
+    const formatRelativeDays = (date) => {
+      const diffDays = Math.round((date.getTime() - Date.now()) / MS_PER_DAY);
+      return relativeFormatter.format(diffDays, 'day');
+    };
+
+    const freshnessClass = (date) => {
+      const ageDays = Math.floor((Date.now() - date.getTime()) / MS_PER_DAY);
+      if (ageDays <= 30) return 'project-card__meta--fresh';
+      if (ageDays <= 120) return 'project-card__meta--steady';
+      return 'project-card__meta--stale';
+    };
+
+    const fetchManifest = async () => {
+      try {
+        const response = await fetch(PROJECT_MANIFEST_URL, { cache: 'no-store' });
+        if (!response.ok) return new Map();
+
+        const payload = await response.json();
+        const rows = Array.isArray(payload?.projects) ? payload.projects : [];
+
+        const entries = rows
+          .map((project) => {
+            const path = sanitizePath(project?.path);
+            const updated = sanitizeDate(project?.updated);
+            if (!path || !updated) return null;
+            return [path, { updated, note: sanitizeNote(project?.note) }];
+          })
+          .filter(Boolean);
+
+        return new Map(entries);
+      } catch (e) {
+        return new Map();
+      }
+    };
+
+    const manifestByPath = await fetchManifest();
+
     const fetchCardLastUpdated = async (card) => {
       const href = card.getAttribute('href') || '';
       const url = new URL(href, window.location.href);
 
-      let modifiedDate = null;
+      let modifiedDate = manifestByPath.get(url.pathname)?.updated || null;
+      let freshnessNote = manifestByPath.get(url.pathname)?.note || '';
 
-      try {
-        const response = await fetch(url.href, { method: 'HEAD', cache: 'no-store' });
-        if (response.ok) {
-          const headerValue = response.headers.get('last-modified');
-          const parsed = Date.parse(headerValue || '');
-          if (Number.isFinite(parsed)) modifiedDate = new Date(parsed);
+      if (!modifiedDate) {
+        try {
+          const response = await fetch(url.href, { method: 'HEAD', cache: 'no-store' });
+          if (response.ok) {
+            const headerValue = response.headers.get('last-modified');
+            const parsed = Date.parse(headerValue || '');
+            if (Number.isFinite(parsed)) modifiedDate = new Date(parsed);
+          }
+        } catch (e) {
+          // Graceful fallback below.
         }
-      } catch (e) {
-        // Graceful fallback below.
       }
 
       if (!modifiedDate) return;
@@ -247,8 +327,13 @@
         card.appendChild(metaEl);
       }
 
-      metaEl.textContent = `Updated ${formatter.format(modifiedDate)}`;
+      metaEl.className = `project-card__meta ${freshnessClass(modifiedDate)}`;
+      metaEl.textContent = `Updated ${formatter.format(modifiedDate)} (${formatRelativeDays(modifiedDate)})`;
       metaEl.title = modifiedDate.toISOString();
+
+      if (freshnessNote) {
+        metaEl.setAttribute('aria-label', `${metaEl.textContent}. ${freshnessNote}`);
+      }
     };
 
     await Promise.all(localCards.map(fetchCardLastUpdated));

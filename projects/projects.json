@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "generatedAt": "2026-02-16T20:16:00Z",
+  "projects": [
+    {
+      "slug": "midi-home-control",
+      "path": "/projects/midi-home-control/",
+      "updated": "2026-02-16",
+      "status": "complete",
+      "note": "Routing and scene controls tuned for stable real-time use."
+    },
+    {
+      "slug": "ai-nutritionist",
+      "path": "/projects/ai-nutritionist/",
+      "updated": "2026-02-16",
+      "status": "in-development",
+      "note": "Label-reader flow and meal context memory are under active iteration."
+    },
+    {
+      "slug": "greenthumb",
+      "path": "/projects/greenthumb/",
+      "updated": "2026-02-16",
+      "status": "in-development",
+      "note": "Sensor telemetry and AI watering logic are being calibrated."
+    },
+    {
+      "slug": "smart-heating",
+      "path": "/projects/smart-heating/",
+      "updated": "2026-02-16",
+      "status": "complete",
+      "note": "Room-balancing and occupancy-aware comfort rules are in production."
+    },
+    {
+      "slug": "laser-3d-printing",
+      "path": "/projects/laser-3d-printing/",
+      "updated": "2026-02-16",
+      "status": "maker",
+      "note": "Fixture and enclosure prototypes continue as-needed for active builds."
+    },
+    {
+      "slug": "hot-wheels-tracker",
+      "path": "/projects/hot-wheels-tracker/",
+      "updated": "2026-02-16",
+      "status": "in-development",
+      "note": "Collection schema and pricing ingest flow are still in development."
+    }
+  ]
+}

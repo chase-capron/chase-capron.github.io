@@ -14,6 +14,7 @@ Theme definitions are data-driven via `themes/themes.json`.
    - `label`: UI label
    - `css`: stylesheet path (use `themes/presets/<theme-id>.css`)
    - `description`: helper text shown in the picker + theme panel
+   - `accent` (optional): hex color (`#RRGGBB`) for picker swatch previews
 3. Keep `default` as a stable fallback.
 
 The site loads theme CSS on demand in `app.js`, so new themes can be shipped without touching `index.html`.

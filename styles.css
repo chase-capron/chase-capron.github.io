@@ -515,9 +515,24 @@ h1 {
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 50%, transparent);
 }
 
+.theme-preset__header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .theme-preset__title {
   font-size: 14px;
   font-weight: 800;
+}
+
+.theme-preset__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(7, 11, 23, 0.45);
 }
 
 .theme-preset__desc {
@@ -571,6 +586,18 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.01em;
   color: color-mix(in oklab, var(--text-soft) 84%, white 16%);
+}
+
+.project-card__meta--fresh {
+  color: color-mix(in oklab, #76ffc0 72%, var(--text-soft));
+}
+
+.project-card__meta--steady {
+  color: color-mix(in oklab, #9ec3ff 74%, var(--text-soft));
+}
+
+.project-card__meta--stale {
+  color: color-mix(in oklab, #ffd39c 72%, var(--text-soft));
 }
 
 .project-card__icon {

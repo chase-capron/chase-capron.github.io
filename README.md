@@ -7,7 +7,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - `styles.css` for the full visual system, layout tokens, and animations
 - `themes/` for modular theme layers (`themes/presets/`) plus `themes.json` registry for future on-the-fly theme additions
 - `app.js` for reveal-on-scroll, theme persistence, theme preset panel controls, and freshness dates (page-level + per-project cards)
-- `projects/` for deeper project write-ups
+- `projects/` for deeper project write-ups plus `projects/projects.json` freshness metadata used by homepage cards
 - `assets/` for site graphics
 
 ## Design direction
@@ -27,6 +27,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - Site pages include strict `Content-Security-Policy`, `Permissions-Policy`, and referrer policy metadata.
 - External links are opened with `rel="noopener noreferrer"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
+- Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 
 ## Deploy
