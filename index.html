@@ -141,8 +141,8 @@
           <article class="card">
             <h3>What I build</h3>
             <p>
-              Home automation logic, maker hardware integrations, AI-assisted productivity tooling,
-              and website builds that stay fast and usable.
+              Practical, automation-first software: home systems, AI-assisted workflow tools, hardware-integrated control surfaces,
+              and polished web apps that make complex data easier to use.
             </p>
           </article>
           <article class="card">
@@ -156,11 +156,16 @@
             <h3>Current stack</h3>
             <div class="chips" aria-label="Core tools">
               <span class="chip chip--python">Python</span>
+              <span class="chip chip--js">TypeScript / JavaScript</span>
               <span class="chip chip--ha">Home Assistant</span>
               <span class="chip chip--mqtt">MQTT</span>
-              <span class="chip chip--git">Git</span>
-              <span class="chip chip--linux">Linux</span>
-              <span class="chip chip--js">JavaScript</span>
+              <span class="chip chip--iot">FastAPI</span>
+              <span class="chip chip--db">Next.js</span>
+              <span class="chip chip--db">Prisma + SQLite</span>
+              <span class="chip chip--sensors">BLE / GATT</span>
+              <span class="chip chip--ai">AI Tooling</span>
+              <span class="chip chip--git">Git + GitHub</span>
+              <span class="chip chip--linux">Linux / Raspberry Pi</span>
             </div>
           </article>
         </div>
@@ -177,10 +182,10 @@
         <div class="project-grid" data-reveal data-delay="80">
           <a class="project-card" href="projects/midi-home-control/">
             <div class="project-card__top">
-              <span class="status status--complete">Complete</span>
               <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
             </div>
-            <h3 style="margin-top:10px">MIDI Home Control Rig</h3>
+            <h3 class="project-card__title">MIDI Home Control Rig</h3>
+            <span class="status status--complete project-card__status">Complete</span>
             <p>Physical interface + automation pipeline for Home Assistant and real-time status interaction.</p>
             <div class="chips">
               <span class="chip chip--python">Python</span>
@@ -192,10 +197,10 @@
 
           <a class="project-card" href="projects/ai-nutritionist/">
             <div class="project-card__top">
-              <span class="status status--dev">In Development</span>
               <span class="project-card__icon" aria-hidden="true"><span>🍱</span></span>
             </div>
-            <h3 style="margin-top:10px">AI Nutritionist and Meal Planner</h3>
+            <h3 class="project-card__title">AI Nutritionist and Meal Planner</h3>
+            <span class="status status--dev project-card__status">In Development</span>
             <p>In-progress tool that reads nutrition labels, tracks goals, and plans meals with memory context.</p>
             <div class="chips">
               <span class="chip chip--ai">AI</span>
@@ -206,10 +211,10 @@
 
           <a class="project-card" href="projects/greenthumb/">
             <div class="project-card__top">
-              <span class="status status--dev">In Development</span>
               <span class="project-card__icon" aria-hidden="true"><span>🌿</span></span>
             </div>
-            <h3 style="margin-top:10px">GreenThumb</h3>
+            <h3 class="project-card__title">GreenThumb</h3>
+            <span class="status status--dev project-card__status">In Development</span>
             <p>Plant-care platform with soil + ambient sensing and AI recommendations based on plant type, season, and environment.</p>
             <div class="chips">
               <span class="chip chip--iot">IoT</span>
@@ -220,10 +225,10 @@
 
           <a class="project-card" href="projects/smart-heating/">
             <div class="project-card__top">
-              <span class="status status--complete">Complete</span>
               <span class="project-card__icon" aria-hidden="true"><span>♨️</span></span>
             </div>
-            <h3 style="margin-top:10px">Smart Heating Control</h3>
+            <h3 class="project-card__title">Smart Heating Control</h3>
+            <span class="status status--complete project-card__status">Complete</span>
             <p>Home Assistant automation that balances uneven heating using room sensors, occupancy, weather, and preferences.</p>
             <div class="chips">
               <span class="chip chip--ha">Home Assistant</span>
@@ -234,10 +239,10 @@
 
           <a class="project-card" href="projects/laser-3d-printing/">
             <div class="project-card__top">
-              <span class="status status--maker">Maker</span>
               <span class="project-card__icon" aria-hidden="true"><span>🛠️</span></span>
             </div>
-            <h3 style="margin-top:10px">Laser Cutting + 3D Printing</h3>
+            <h3 class="project-card__title">Laser Cutting + 3D Printing</h3>
+            <span class="status status--maker project-card__status">Maker</span>
             <p>Workflow and builds for practical parts, enclosures, and small hardware utilities that support automation projects.</p>
             <div class="chips">
               <span class="chip chip--cad">CAD</span>
@@ -248,10 +253,10 @@
 
           <a class="project-card" href="projects/hot-wheels-tracker/">
             <div class="project-card__top">
-              <span class="status status--planned">Planned</span>
               <span class="project-card__icon" aria-hidden="true"><span>🏎️</span></span>
             </div>
-            <h3 style="margin-top:10px">Hot Wheels Tracker</h3>
+            <h3 class="project-card__title">Hot Wheels Tracker</h3>
+            <span class="status status--dev project-card__status">In Development</span>
             <p>Collection tracker with pricing and inventory metadata for quick references and easy organization.</p>
             <div class="chips">
               <span class="chip chip--db">Database</span>
@@ -328,9 +333,10 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <p>© <span id="year"></span> Chase Capron</p>
+      <p class="footer__copyright"><img class="footer__logo" src="assets/chase-logo.png" alt="" aria-hidden="true" /> © <span id="year"></span> Chase Capron</p>
       <p class="muted">Updated <span id="updated">today</span></p>
     </div>
+    <div class="container footer__legal">All code, branding, and original project content are © Chase Capron. All rights reserved.</div>
   </footer>
 </body>
 </html>

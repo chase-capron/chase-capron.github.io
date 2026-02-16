@@ -51,41 +51,42 @@ body {
   position: relative;
 }
 
-/* Arc theme: subtle moving beam stripes in the background */
+/* Arc theme: seamless straight tunnel-style moving beam stripes */
 :root[data-style="arc"] body::before,
 :root[data-style="arc"] body::after {
   content: "";
   position: fixed;
-  inset: -25%;
+  inset: 0;
   pointer-events: none;
   z-index: -1;
-  background: repeating-linear-gradient(
-    110deg,
-    color-mix(in oklab, var(--beam-1) 60%, transparent) 0px,
-    color-mix(in oklab, var(--beam-1) 60%, transparent) 10px,
-    transparent 10px,
-    transparent 44px,
-    color-mix(in oklab, var(--beam-2) 55%, transparent) 44px,
-    color-mix(in oklab, var(--beam-2) 55%, transparent) 56px,
-    transparent 56px,
-    transparent 90px,
-    color-mix(in oklab, var(--beam-3) 55%, transparent) 90px,
-    color-mix(in oklab, var(--beam-3) 55%, transparent) 102px,
-    transparent 102px,
-    transparent 140px
-  );
+  background:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--beam-1) 62%, transparent) 0px,
+      color-mix(in oklab, var(--beam-1) 62%, transparent) 8px,
+      transparent 8px,
+      transparent 40px,
+      color-mix(in oklab, var(--beam-2) 58%, transparent) 40px,
+      color-mix(in oklab, var(--beam-2) 58%, transparent) 48px,
+      transparent 48px,
+      transparent 84px,
+      color-mix(in oklab, var(--beam-3) 58%, transparent) 84px,
+      color-mix(in oklab, var(--beam-3) 58%, transparent) 92px,
+      transparent 92px,
+      transparent 132px
+    );
+  background-size: 132px 100%;
+  background-repeat: repeat;
   mix-blend-mode: screen;
-  opacity: 0.72;
-  filter: blur(1px) saturate(1.15);
-  transform: translate3d(-10%, -6%, 0) rotate(-2deg);
-  animation: arcBeamsSlide 14s linear infinite;
+  opacity: 0.65;
+  filter: blur(0.8px) saturate(1.16);
+  animation: arcTunnelLinear 9s linear infinite;
 }
 
 :root[data-style="arc"] body::after {
-  opacity: 0.45;
-  filter: blur(12px) saturate(1.2);
-  transform: translate3d(8%, 10%, 0) rotate(2.5deg) scale(1.08);
-  animation-duration: 22s;
+  opacity: 0.35;
+  filter: blur(8px) saturate(1.2);
+  animation-duration: 18s;
   animation-direction: reverse;
 }
 
@@ -96,9 +97,9 @@ body {
   }
 }
 
-@keyframes arcBeamsSlide {
-  0% { background-position: 0 0; }
-  100% { background-position: 520px 0; }
+@keyframes arcTunnelLinear {
+  0% { background-position-x: 0; }
+  100% { background-position-x: 132px; }
 }
 
 h1, h2, h3, p { margin: 0; }
@@ -473,8 +474,16 @@ h1 {
 .project-card__top {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
+}
+
+.project-card__title {
+  margin-top: 10px;
+}
+
+.project-card__status {
+  margin-top: 8px;
 }
 
 .project-card__icon {
@@ -629,6 +638,26 @@ h1 {
   color: var(--text-soft);
 }
 
+.footer__copyright {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer__logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 4px;
+  opacity: 0.9;
+}
+
+.footer__legal {
+  margin-top: 6px;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
 /* Reveal animation */
 [data-reveal] {
   opacity: 0;
@@ -757,22 +786,25 @@ h1 {
 }
 
 @media (max-width: 760px) {
-  .header__row { flex-wrap: nowrap; padding: 8px 0; }
-  .brand { min-width: 0; }
-  .nav { width: auto; justify-content: center; gap: 6px; }
-  .nav a { padding: 7px 10px; font-size: 14px; }
-  .btn--ghost { width: auto; padding: 9px 12px; font-size: 13px; }
+  .header__row { flex-wrap: nowrap; padding: 8px 0; gap: 8px; }
+  .brand { min-width: 0; flex: 1 1 auto; }
+  .brand__name { font-size: 15px; }
+  .brand__role { display: none; }
+  .nav { width: auto; justify-content: center; gap: 4px; }
+  .nav a { padding: 6px 8px; font-size: 13px; }
+  .header__actions { gap: 6px; }
+  .btn--ghost { width: auto; padding: 8px 10px; font-size: 12px; }
   .grid { grid-template-columns: 1fr; }
-  .project-grid { grid-template-columns: 1fr 1fr; }
+  .project-grid { grid-template-columns: 1fr; }
   .hardware-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .callout { flex-direction: column; }
-  .footer__inner { flex-direction: column; }
-  .hero__grid { grid-template-columns: 1fr 170px; gap: 14px; align-items: start; }
-  .hero__logo { width: 170px; height: 170px; border-radius: 26px; }
+  .footer__inner { flex-direction: column; align-items: flex-start; }
+  .hero { padding-top: 44px; }
+  .hero__grid { grid-template-columns: 1fr; gap: 14px; align-items: start; }
+  .hero__logo { width: min(260px, 100%); height: auto; aspect-ratio: 1 / 1; margin-inline: auto; }
 }
 
 @media (max-width: 420px) {
-  .project-grid { grid-template-columns: 1fr; }
   .hero__grid { grid-template-columns: 1fr; }
-  .hero__logo { width: min(260px, 100%); height: auto; aspect-ratio: 1 / 1; }
+  .hero__logo { width: min(220px, 100%); height: auto; aspect-ratio: 1 / 1; }
 }
