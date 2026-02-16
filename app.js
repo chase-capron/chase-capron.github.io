@@ -23,6 +23,7 @@
   const themeHint = document.getElementById('themeHint');
   const themePanelHint = document.getElementById('themePanelHint');
   const themePresetList = document.getElementById('themePresetList');
+  const themeManifestStamp = document.getElementById('themeManifestStamp');
 
   const defaultThemeCatalog = [
     {
@@ -74,6 +75,13 @@
       .filter(Boolean)
       .map((tag) => tag.slice(0, 24))
       .slice(0, 3);
+  };
+
+  const sanitizeGeneratedAt = (value) => {
+    const candidate = String(value || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(candidate)) return null;
+    const parsed = Date.parse(candidate);
+    return Number.isFinite(parsed) ? new Date(parsed) : null;
   };
 
   const normalizeTheme = (value) => {
@@ -190,6 +198,25 @@
     if (themePanelHint) themePanelHint.textContent = hint;
   };
 
+  const renderThemeManifestStamp = (generatedAt) => {
+    if (!themeManifestStamp || !generatedAt) return;
+
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    });
+
+    const relativeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const diffDays = Math.round((generatedAt.getTime() - Date.now()) / MS_PER_DAY);
+    const relative = relativeFormatter.format(diffDays, 'day');
+
+    themeManifestStamp.textContent = `Theme registry refreshed ${formatter.format(generatedAt)} (${relative}).`;
+    themeManifestStamp.hidden = false;
+    themeManifestStamp.title = generatedAt.toISOString();
+  };
+
   const applyTheme = (theme) => {
     const nextTheme = normalizeTheme(theme);
 
@@ -216,6 +243,7 @@
       if (!response.ok) return;
 
       const payload = await response.json();
+      renderThemeManifestStamp(sanitizeGeneratedAt(payload?.generatedAt));
       const themes = Array.isArray(payload?.themes) ? payload.themes : [];
 
       const validated = themes
@@ -328,13 +356,6 @@
       return 'project-card__meta--stale';
     };
 
-    const sanitizeGeneratedAt = (value) => {
-      const candidate = String(value || '').trim();
-      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(candidate)) return null;
-      const parsed = Date.parse(candidate);
-      return Number.isFinite(parsed) ? new Date(parsed) : null;
-    };
-
     const renderManifestStamp = (generatedAt) => {
       const stamp = document.getElementById('projectManifestStamp');
       if (!stamp || !generatedAt) return;
@@ -380,6 +401,7 @@
 
       let modifiedDate = manifestByPath.get(url.pathname)?.updated || null;
       let freshnessNote = manifestByPath.get(url.pathname)?.note || '';
+      let freshnessSource = modifiedDate ? 'manifest' : 'header';
 
       if (!modifiedDate) {
         try {
@@ -403,12 +425,22 @@
         card.appendChild(metaEl);
       }
 
+      const sourceLabel = freshnessSource === 'manifest' ? 'metadata manifest' : 'Last-Modified fallback';
       metaEl.className = `project-card__meta ${freshnessClass(modifiedDate)}`;
-      metaEl.textContent = `Updated ${formatter.format(modifiedDate)} (${formatRelativeDays(modifiedDate)})`;
-      metaEl.title = modifiedDate.toISOString();
+      metaEl.textContent = `Updated ${formatter.format(modifiedDate)} (${formatRelativeDays(modifiedDate)}) · ${sourceLabel}`;
+      metaEl.title = `${modifiedDate.toISOString()} · ${sourceLabel}`;
 
+      let noteEl = card.querySelector('.project-card__meta-note');
       if (freshnessNote) {
+        if (!noteEl) {
+          noteEl = document.createElement('p');
+          noteEl.className = 'project-card__meta-note';
+          card.appendChild(noteEl);
+        }
+        noteEl.textContent = freshnessNote;
         metaEl.setAttribute('aria-label', `${metaEl.textContent}. ${freshnessNote}`);
+      } else if (noteEl) {
+        noteEl.remove();
       }
     };
 

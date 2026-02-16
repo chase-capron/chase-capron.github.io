@@ -667,6 +667,12 @@ h1 {
   color: color-mix(in oklab, #ffd39c 72%, var(--text-soft));
 }
 
+.project-card__meta-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: color-mix(in oklab, var(--text-soft) 82%, white 18%);
+}
+
 .project-card__icon {
   width: 44px;
   height: 44px;

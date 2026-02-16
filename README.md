@@ -28,9 +28,9 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - Site pages include strict `Content-Security-Policy` (including `script-src 'self'` with no inline scripts), `Permissions-Policy`, and referrer policy metadata.
 - External links are opened with `rel="noopener noreferrer"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
-- Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers.
-- Theme manifest (`themes/themes.json`) now supports lightweight `tags` metadata for future theme switcher UX without changing page structure.
-- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene, and manifest schema sanity.
+- Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers, plus short manifest notes for context.
+- Theme manifest (`themes/themes.json`) includes `generatedAt` + `tags` metadata so theme controls can stay flexible without changing page structure.
+- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene, manifest schema sanity, and homepage project-manifest coverage.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 
 ## Deploy

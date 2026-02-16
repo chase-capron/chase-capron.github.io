@@ -111,6 +111,14 @@ const checkThemesManifest = () => {
   const payload = JSON.parse(readUtf8(themesPath));
   const themes = Array.isArray(payload?.themes) ? payload.themes : [];
 
+  if (!Number.isInteger(payload?.version) || payload.version < 1) {
+    addIssue('themes/themes.json version must be an integer >= 1');
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(payload?.generatedAt || ''))) {
+    addIssue('themes/themes.json generatedAt must be ISO UTC timestamp (YYYY-MM-DDTHH:mm:ssZ)');
+  }
+
   if (!themes.length) {
     addIssue('themes/themes.json has no themes array entries');
     return;
@@ -163,12 +171,39 @@ const checkProjectsManifest = () => {
 
   const pathRegex = /^\/projects\/[a-z0-9-]+\/$/;
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const projectPaths = new Set();
 
   projects.forEach((project, idx) => {
     const row = `projects/projects.json project[${idx}]`;
-    if (!pathRegex.test(String(project?.path || ''))) addIssue(`${row} invalid path`);
+    const projectPath = String(project?.path || '');
+    if (!pathRegex.test(projectPath)) addIssue(`${row} invalid path`);
     if (!dateRegex.test(String(project?.updated || ''))) addIssue(`${row} invalid updated date`);
     if (String(project?.note || '').length > 140) addIssue(`${row} note should stay <= 140 chars`);
+    if (projectPath) projectPaths.add(projectPath);
+  });
+
+  const indexPath = path.join(repoRoot, 'index.html');
+  const indexHtml = readUtf8(indexPath);
+  const cardHrefRegex = /<a\s+[^>]*class="[^"]*\bproject-card\b[^"]*"[^>]*href="([^"]+)"/gi;
+  const homepageProjectPaths = new Set();
+
+  let cardMatch;
+  while ((cardMatch = cardHrefRegex.exec(indexHtml)) !== null) {
+    const href = String(cardMatch[1] || '').trim();
+    if (!href) continue;
+
+    if (!href.startsWith('/projects/') && !href.startsWith('projects/')) continue;
+
+    const normalized = href.startsWith('/') ? href : `/${href}`;
+    const canonical = normalized.endsWith('/') ? normalized : `${normalized}/`;
+
+    homepageProjectPaths.add(canonical);
+  }
+
+  homepageProjectPaths.forEach((projectPath) => {
+    if (!projectPaths.has(projectPath)) {
+      addIssue(`projects/projects.json missing metadata entry for homepage project card: ${projectPath}`);
+    }
   });
 };
 
