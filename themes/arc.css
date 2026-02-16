@@ -1,0 +1,68 @@
+:root[data-theme="arc"] {
+  --bg: #04060b;
+  --bg-soft: #070b12;
+  --surface: rgba(12, 16, 24, 0.72);
+  --surface-solid: #0a0f19;
+  --text: #f3f6ff;
+  --text-soft: rgba(243, 246, 255, 0.72);
+  --line: rgba(243, 246, 255, 0.16);
+  --accent: var(--beam-3);
+  --accent-2: var(--beam-2);
+  --shadow: 0 28px 88px rgba(0, 0, 0, 0.6);
+  --shadow-strong: 0 40px 140px rgba(0, 0, 0, 0.62);
+}
+
+/* Arc theme: seamless straight tunnel-style moving beam stripes */
+:root[data-theme="arc"] body::before,
+:root[data-theme="arc"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--beam-1) 62%, transparent) 0px,
+      color-mix(in oklab, var(--beam-1) 62%, transparent) 8px,
+      transparent 8px,
+      transparent 40px,
+      color-mix(in oklab, var(--beam-2) 58%, transparent) 40px,
+      color-mix(in oklab, var(--beam-2) 58%, transparent) 48px,
+      transparent 48px,
+      transparent 84px,
+      color-mix(in oklab, var(--beam-3) 58%, transparent) 84px,
+      color-mix(in oklab, var(--beam-3) 58%, transparent) 92px,
+      transparent 92px,
+      transparent 132px
+    );
+  background-size: 132px 100%;
+  background-repeat: repeat;
+  mix-blend-mode: screen;
+  opacity: 0.65;
+  filter: blur(0.8px) saturate(1.16);
+  animation: arcTunnelLinear 9s linear infinite;
+}
+
+:root[data-theme="arc"] body::after {
+  opacity: 0.35;
+  filter: blur(8px) saturate(1.2);
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="arc"] body::before,
+  :root[data-theme="arc"] body::after {
+    animation: none;
+  }
+}
+
+@keyframes arcTunnelLinear {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 132px;
+  }
+}

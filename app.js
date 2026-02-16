@@ -1,6 +1,51 @@
 (() => {
   const root = document.documentElement;
 
+  const THEME_KEY = 'cc_theme';
+  const LEGACY_ARC_KEY = 'cc_style_arc';
+  const themeSelect = document.getElementById('themeSelect');
+  const allowedThemes = new Set(['default', 'arc']);
+
+  const getStoredTheme = () => {
+    try {
+      const explicit = localStorage.getItem(THEME_KEY);
+      if (explicit && allowedThemes.has(explicit)) return explicit;
+
+      // Migration path for existing users.
+      if (localStorage.getItem(LEGACY_ARC_KEY) === 'true') return 'arc';
+    } catch (e) {}
+
+    return 'default';
+  };
+
+  const applyTheme = (theme) => {
+    const nextTheme = allowedThemes.has(theme) ? theme : 'default';
+
+    if (nextTheme === 'default') {
+      delete root.dataset.theme;
+    } else {
+      root.dataset.theme = nextTheme;
+    }
+
+    if (themeSelect) {
+      themeSelect.value = nextTheme;
+    }
+
+    try {
+      localStorage.setItem(THEME_KEY, nextTheme);
+      localStorage.setItem(LEGACY_ARC_KEY, nextTheme === 'arc' ? 'true' : 'false');
+    } catch (e) {}
+  };
+
+  const firstTheme = root.dataset.theme || getStoredTheme();
+  applyTheme(firstTheme);
+
+  if (themeSelect) {
+    themeSelect.addEventListener('change', (event) => {
+      applyTheme(event.target.value);
+    });
+  }
+
   const yearEl = document.getElementById('year');
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
@@ -8,41 +53,13 @@
 
   const updatedEl = document.getElementById('updated');
   if (updatedEl) {
-    updatedEl.textContent = new Date().toLocaleDateString(undefined, {
+    const parsedModified = Date.parse(document.lastModified || '');
+    const modifiedDate = Number.isFinite(parsedModified) ? new Date(parsedModified) : new Date();
+
+    updatedEl.textContent = modifiedDate.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: '2-digit',
-    });
-  }
-
-  // Arc theme toggle (localStorage is best-effort; it can be blocked in some contexts)
-  const ARC_KEY = 'cc_style_arc';
-  const arcBtn = document.getElementById('arcToggle');
-  let savedArc = null;
-  try {
-    savedArc = localStorage.getItem(ARC_KEY);
-  } catch (e) {}
-
-  if (savedArc === 'true') root.dataset.style = 'arc';
-
-  if (arcBtn) {
-    const sync = () => {
-      const on = root.dataset.style === 'arc';
-      arcBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      arcBtn.textContent = on ? 'Arc: On' : 'Arc';
-    };
-
-    sync();
-    arcBtn.addEventListener('click', () => {
-      const next = root.dataset.style !== 'arc';
-      if (next) root.dataset.style = 'arc';
-      else delete root.dataset.style;
-
-      try {
-        localStorage.setItem(ARC_KEY, next ? 'true' : 'false');
-      } catch (e) {}
-
-      sync();
     });
   }
 
@@ -71,18 +88,22 @@
     let ticking = false;
     const applyBackgroundDrift = () => {
       const y = window.scrollY || window.pageYOffset || 0;
-      const useDrift = root.dataset.style !== 'arc';
+      const useDrift = (root.dataset.theme || 'default') !== 'arc';
       root.style.setProperty('--bg-shift-a', `${useDrift ? Math.round(y * 0.03) : 0}px`);
       root.style.setProperty('--bg-shift-b', `${useDrift ? Math.round(y * -0.02) : 0}px`);
       root.style.setProperty('--bg-shift-c', `${useDrift ? Math.round(y * 0.015) : 0}px`);
       ticking = false;
     };
 
-    window.addEventListener('scroll', () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(applyBackgroundDrift);
-    }, { passive: true });
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(applyBackgroundDrift);
+      },
+      { passive: true }
+    );
 
     applyBackgroundDrift();
   }

@@ -6,19 +6,26 @@
   <title>Smart Heating Control · Chase Capron</title>
   <meta name="description" content="Smart Heating Control — multi-room heating logic using sensors and preference inputs." />
   <meta name="color-scheme" content="dark" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), browsing-topics=()" />
 
   <link rel="icon" type="image/png" href="../../assets/chase-logo.png" />
   <link rel="apple-touch-icon" href="../../assets/chase-logo.png" />
 
   <script>
     try {
-      if (localStorage.getItem('cc_style_arc') === 'true') {
-        document.documentElement.dataset.style = 'arc';
+      const savedTheme = localStorage.getItem('cc_theme');
+      const legacyArc = localStorage.getItem('cc_style_arc') === 'true';
+      const initialTheme = savedTheme || (legacyArc ? 'arc' : 'default');
+      if (initialTheme && initialTheme !== 'default') {
+        document.documentElement.dataset.theme = initialTheme;
       }
     } catch (e) {}
   </script>
 
   <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../../themes/default.css" />
+  <link rel="stylesheet" href="../../themes/arc.css" />
   <script defer src="../../app.js"></script>
 </head>
 <body>
@@ -40,9 +47,13 @@
       </nav>
 
       <div class="header__actions">
-        <button class="btn btn--ghost" id="arcToggle" type="button" aria-pressed="false" title="Toggle Arc theme">
-          Arc
-        </button>
+        <div class="theme-control" role="group" aria-label="Theme picker">
+          <label class="theme-control__label" for="themeSelect">Theme</label>
+          <select class="theme-control__select" id="themeSelect" name="theme">
+            <option value="default">Default</option>
+            <option value="arc">Arc</option>
+          </select>
+        </div>
         <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>

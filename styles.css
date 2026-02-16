@@ -22,19 +22,6 @@
   --beam-4: #b84cff;
 }
 
-:root[data-style="arc"] {
-  --bg: #04060b;
-  --bg-soft: #070b12;
-  --surface: rgba(12, 16, 24, 0.72);
-  --surface-solid: #0a0f19;
-  --text: #f3f6ff;
-  --text-soft: rgba(243, 246, 255, 0.72);
-  --line: rgba(243, 246, 255, 0.16);
-  --accent: var(--beam-3);
-  --accent-2: var(--beam-2);
-  --shadow: 0 28px 88px rgba(0, 0, 0, 0.6);
-  --shadow-strong: 0 40px 140px rgba(0, 0, 0, 0.62);
-}
 
 * { box-sizing: border-box; }
 
@@ -60,60 +47,13 @@ body {
   position: relative;
 }
 
-/* Arc theme: seamless straight tunnel-style moving beam stripes */
-:root[data-style="arc"] body::before,
-:root[data-style="arc"] body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      color-mix(in oklab, var(--beam-1) 62%, transparent) 0px,
-      color-mix(in oklab, var(--beam-1) 62%, transparent) 8px,
-      transparent 8px,
-      transparent 40px,
-      color-mix(in oklab, var(--beam-2) 58%, transparent) 40px,
-      color-mix(in oklab, var(--beam-2) 58%, transparent) 48px,
-      transparent 48px,
-      transparent 84px,
-      color-mix(in oklab, var(--beam-3) 58%, transparent) 84px,
-      color-mix(in oklab, var(--beam-3) 58%, transparent) 92px,
-      transparent 92px,
-      transparent 132px
-    );
-  background-size: 132px 100%;
-  background-repeat: repeat;
-  mix-blend-mode: screen;
-  opacity: 0.65;
-  filter: blur(0.8px) saturate(1.16);
-  animation: arcTunnelLinear 9s linear infinite;
-}
-
-:root[data-style="arc"] body::after {
-  opacity: 0.35;
-  filter: blur(8px) saturate(1.2);
-  animation-duration: 18s;
-  animation-direction: reverse;
-}
 
 @media (prefers-reduced-motion: reduce) {
   body {
     background-attachment: scroll;
   }
-
-  :root[data-style="arc"] body::before,
-  :root[data-style="arc"] body::after {
-    animation: none;
-  }
 }
 
-@keyframes arcTunnelLinear {
-  0% { background-position-x: 0; }
-  100% { background-position-x: 132px; }
-}
 
 h1, h2, h3, p { margin: 0; }
 
@@ -228,6 +168,41 @@ a { color: inherit; text-decoration: none; }
 }
 
 .btn:hover { transform: translateY(-1px); }
+
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.theme-control__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-soft);
+}
+
+.theme-control__select {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 6px 28px 6px 10px;
+  color: var(--text);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--text-soft) 50%) calc(100% - 13px) calc(50% - 2px) / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--text-soft) 50%, transparent 50%) calc(100% - 9px) calc(50% - 2px) / 6px 6px no-repeat,
+    rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.theme-control__select:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 72%, white);
+  outline-offset: 1px;
+}
 
 .eyebrow {
   color: #8cb0ff;
@@ -870,6 +845,9 @@ h1 {
   .nav { width: auto; justify-content: center; gap: 4px; }
   .nav a { padding: 6px 8px; font-size: 13px; }
   .header__actions { gap: 6px; }
+  .theme-control { padding: 4px 6px; gap: 6px; }
+  .theme-control__label { display: none; }
+  .theme-control__select { padding: 5px 22px 5px 8px; font-size: 12px; }
   .btn--ghost { width: auto; padding: 8px 10px; font-size: 12px; }
   .grid { grid-template-columns: 1fr; }
   .project-grid { grid-template-columns: 1fr; }
