@@ -484,15 +484,18 @@ h1 {
   border-color: rgba(47, 131, 255, 0.75);
 }
 
-.project-card__top {
+.project-card__head {
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
 }
 
 .project-card__title {
-  margin-top: 10px;
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.2;
 }
 
 .project-card__status {
@@ -622,16 +625,30 @@ h1 {
 .hardware-card__icon {
   font-size: 32px;
   margin: 0;
-  min-height: 34px;
+  min-height: 42px;
   display: grid;
   place-items: center;
 }
 
-.hardware-card__icon img {
-  width: 24px;
-  height: 24px;
+.hardware-card__icon--emoji {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.hardware-icon {
   object-fit: contain;
   display: block;
+}
+
+/* PNG source assets include extra visual padding, so they render larger than SVGs for visual parity */
+.hardware-icon--png {
+  width: 44px;
+  height: 44px;
+}
+
+.hardware-icon--svg {
+  width: 36px;
+  height: 36px;
 }
 
 .hardware-card__name {
@@ -646,6 +663,11 @@ h1 {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+}
+
+/* Temporarily hidden per content direction */
+#current-goals {
+  display: none;
 }
 
 .callout p { color: var(--text-soft); margin-top: 8px; max-width: 63ch; }
