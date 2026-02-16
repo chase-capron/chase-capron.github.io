@@ -10,7 +10,7 @@ Please report security issues privately by opening a GitHub issue with `[securit
 If details are sensitive, provide a minimal public report and request a secure follow-up channel.
 
 ## Current hardening baseline
-- `Content-Security-Policy` via `<meta http-equiv>` to restrict executable/content sources.
+- `Content-Security-Policy` via `<meta http-equiv>` to restrict executable/content sources (`script-src 'self'`; no inline script execution).
 - `Permissions-Policy` denies camera/microphone/geolocation/topic APIs.
 - `Referrer-Policy` set to `strict-origin-when-cross-origin`.
 - External links use `rel="noopener noreferrer"`.

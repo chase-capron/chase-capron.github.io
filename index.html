@@ -9,7 +9,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#070b17" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), browsing-topics=()" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
 
   <meta property="og:title" content="Chase Capron · Computer Engineer" />
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
@@ -18,17 +18,7 @@
   <link rel="icon" type="image/png" href="assets/chase-logo.png" />
   <link rel="apple-touch-icon" href="assets/chase-logo.png" />
 
-  <script>
-    try {
-      const savedTheme = localStorage.getItem('cc_theme');
-      const legacyArc = localStorage.getItem('cc_style_arc') === 'true';
-      const initialTheme = savedTheme || (legacyArc ? 'arc' : 'default');
-      if (initialTheme && initialTheme !== 'default') {
-        document.documentElement.dataset.theme = initialTheme;
-      }
-    } catch (e) {}
-  </script>
-
+  <script src="theme-init.js"></script>
   <link rel="stylesheet" href="styles.css" />
   <script defer src="app.js"></script>
 </head>
@@ -207,6 +197,12 @@
           <p class="eyebrow">Selected Work</p>
           <h2>Project grid</h2>
           <p class="section__hint">Each project card shows freshness using a local metadata manifest with same-origin Last-Modified fallback.</p>
+          <p class="section__micro" id="projectManifestStamp" hidden>Project metadata refreshed recently.</p>
+          <ul class="freshness-legend" aria-label="Freshness indicator legend">
+            <li><span class="freshness-dot freshness-dot--fresh" aria-hidden="true"></span>Fresh ≤ 30 days</li>
+            <li><span class="freshness-dot freshness-dot--steady" aria-hidden="true"></span>Steady 31–120 days</li>
+            <li><span class="freshness-dot freshness-dot--stale" aria-hidden="true"></span>Older than 120 days</li>
+          </ul>
         </div>
 
         <div class="project-grid" data-reveal data-delay="80">

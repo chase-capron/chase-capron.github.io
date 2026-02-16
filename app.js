@@ -287,10 +287,26 @@
       return 'project-card__meta--stale';
     };
 
+    const sanitizeGeneratedAt = (value) => {
+      const candidate = String(value || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(candidate)) return null;
+      const parsed = Date.parse(candidate);
+      return Number.isFinite(parsed) ? new Date(parsed) : null;
+    };
+
+    const renderManifestStamp = (generatedAt) => {
+      const stamp = document.getElementById('projectManifestStamp');
+      if (!stamp || !generatedAt) return;
+
+      stamp.textContent = `Metadata manifest refreshed ${formatter.format(generatedAt)} (${formatRelativeDays(generatedAt)}).`;
+      stamp.hidden = false;
+      stamp.title = generatedAt.toISOString();
+    };
+
     const fetchManifest = async () => {
       try {
         const response = await fetch(PROJECT_MANIFEST_URL, { cache: 'no-store' });
-        if (!response.ok) return new Map();
+        if (!response.ok) return { byPath: new Map(), generatedAt: null };
 
         const payload = await response.json();
         const rows = Array.isArray(payload?.projects) ? payload.projects : [];
@@ -304,13 +320,18 @@
           })
           .filter(Boolean);
 
-        return new Map(entries);
+        return {
+          byPath: new Map(entries),
+          generatedAt: sanitizeGeneratedAt(payload?.generatedAt),
+        };
       } catch (e) {
-        return new Map();
+        return { byPath: new Map(), generatedAt: null };
       }
     };
 
-    const manifestByPath = await fetchManifest();
+    const manifest = await fetchManifest();
+    const manifestByPath = manifest.byPath;
+    renderManifestStamp(manifest.generatedAt);
 
     const fetchCardLastUpdated = async (card) => {
       const href = card.getAttribute('href') || '';

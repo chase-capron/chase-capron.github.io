@@ -418,6 +418,48 @@ h1 {
   font-size: 14px;
 }
 
+.section__micro {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: color-mix(in oklab, var(--text-soft) 80%, white 20%);
+}
+
+.freshness-legend {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: color-mix(in oklab, var(--text-soft) 84%, white 16%);
+  font-size: 12px;
+}
+
+.freshness-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.freshness-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(7, 11, 23, 0.35);
+}
+
+.freshness-dot--fresh {
+  background: color-mix(in oklab, #76ffc0 75%, #9fd7be 25%);
+}
+
+.freshness-dot--steady {
+  background: color-mix(in oklab, #9ec3ff 78%, #b3d4ff 22%);
+}
+
+.freshness-dot--stale {
+  background: color-mix(in oklab, #ffd39c 76%, #ffcd8a 24%);
+}
+
 .section__top h2 {
   font-size: clamp(28px, 4.2vw, 42px);
   line-height: 1.12;
