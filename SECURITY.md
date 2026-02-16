@@ -13,11 +13,11 @@ If details are sensitive, provide a minimal public report and request a secure f
 - `Content-Security-Policy` via `<meta http-equiv>` to restrict executable/content sources.
 - `Permissions-Policy` denies camera/microphone/geolocation/topic APIs.
 - `Referrer-Policy` set to `strict-origin-when-cross-origin`.
-- External links use `rel="noopener"`.
-- Theme loading is allowlisted through `themes/themes.json` and sanitized IDs.
+- External links use `rel="noopener noreferrer"`.
+- Theme loading is allowlisted through `themes/themes.json` (`themes/presets/*`) and sanitized IDs.
 
 ## Hygiene checklist (for future updates)
 - Keep third-party dependencies to zero unless required.
 - Re-check CSP when adding new scripts, fonts, or remote assets.
-- Ensure all new external links include `rel="noopener"`.
+- Ensure all new external links include `rel="noopener noreferrer"`.
 - Prefer progressive enhancement and fail-safe defaults.

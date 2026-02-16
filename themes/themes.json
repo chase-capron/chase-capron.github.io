@@ -5,13 +5,13 @@
     {
       "id": "default",
       "label": "Default",
-      "css": "themes/default.css",
+      "css": "themes/presets/default.css",
       "description": "Current site look"
     },
     {
       "id": "arc",
       "label": "Arc",
-      "css": "themes/arc.css",
+      "css": "themes/presets/arc.css",
       "description": "Neon tunnel motion theme"
     }
   ]

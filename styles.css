@@ -411,6 +411,13 @@ h1 {
 
 .section__top { margin-bottom: 18px; }
 
+.section__hint {
+  margin: 10px 0 0;
+  max-width: 70ch;
+  color: color-mix(in oklab, var(--text-soft) 84%, white 16%);
+  font-size: 14px;
+}
+
 .section__top h2 {
   font-size: clamp(28px, 4.2vw, 42px);
   line-height: 1.12;
@@ -447,6 +454,75 @@ h1 {
 .app-card p {
   color: var(--text-soft);
   margin-top: 10px;
+}
+
+.theme-panel {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.theme-panel__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.theme-panel__head h3 {
+  margin: 0;
+}
+
+.theme-panel__head p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.theme-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.theme-preset {
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.theme-preset:hover,
+.theme-preset:focus-visible {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--accent) 72%, white 28%);
+  background: rgba(47, 131, 255, 0.12);
+}
+
+.theme-preset[aria-pressed="true"] {
+  border-color: color-mix(in oklab, var(--accent) 72%, white 28%);
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 50%, transparent);
+}
+
+.theme-preset__title {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.theme-preset__desc {
+  font-size: 12px;
+  color: var(--text-soft);
 }
 
 .project-card,
@@ -870,6 +946,9 @@ h1 {
   .theme-control__field { display: block; }
   .theme-control__hint { display: none; }
   .theme-control__select { padding: 5px 22px 5px 8px; font-size: 12px; }
+  .theme-panel { padding: 14px; }
+  .theme-panel__head { flex-direction: column; align-items: flex-start; }
+  .theme-preset-grid { grid-template-columns: 1fr; }
   .btn--ghost { width: auto; padding: 8px 10px; font-size: 12px; }
   .grid { grid-template-columns: 1fr; }
   .project-grid { grid-template-columns: 1fr; }

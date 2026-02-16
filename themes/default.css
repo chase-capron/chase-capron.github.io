@@ -1,9 +1,6 @@
 /*
-  Default theme placeholder.
-  Purpose: keep theme assets in a dedicated folder so additional themes can be
-  added without touching global layout styles.
+  Compatibility wrapper.
+  Theme assets now live in themes/presets/* for future switching/extensibility.
 */
 
-:root[data-theme="default"] {
-  /* Intentionally empty: base tokens live in styles.css */
-}
+@import url('./presets/default.css');

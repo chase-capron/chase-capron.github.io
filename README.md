@@ -5,8 +5,8 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 ## What this repository contains
 - `index.html` for site structure and content sections
 - `styles.css` for the full visual system, layout tokens, and animations
-- `themes/` for modular theme layers plus `themes.json` registry for future on-the-fly theme additions
-- `app.js` for reveal-on-scroll, theme persistence, and freshness dates (page-level + per-project cards)
+- `themes/` for modular theme layers (`themes/presets/`) plus `themes.json` registry for future on-the-fly theme additions
+- `app.js` for reveal-on-scroll, theme persistence, theme preset panel controls, and freshness dates (page-level + per-project cards)
 - `projects/` for deeper project write-ups
 - `assets/` for site graphics
 
@@ -25,7 +25,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 
 ## Security and hygiene notes
 - Site pages include strict `Content-Security-Policy`, `Permissions-Policy`, and referrer policy metadata.
-- External links are opened with `rel="noopener"`.
+- External links are opened with `rel="noopener noreferrer"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 

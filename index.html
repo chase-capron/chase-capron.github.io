@@ -58,7 +58,7 @@
             <p class="theme-control__hint" id="themeHint">Switch visual style instantly.</p>
           </div>
         </div>
-        <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn--ghost" href="https://github.com/chase-capron" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </div>
   </header>
@@ -183,11 +183,30 @@
       </div>
     </section>
 
+    <section class="section" id="appearance" data-reveal>
+      <div class="container">
+        <div class="section__top">
+          <p class="eyebrow">Display</p>
+          <h2>Theme presets</h2>
+          <p class="section__hint">Pick a visual style. Current look stays as the default baseline.</p>
+        </div>
+
+        <article class="theme-panel" data-reveal data-delay="60">
+          <div class="theme-panel__head">
+            <h3>Theme selection</h3>
+            <p id="themePanelHint">Switch visual style instantly.</p>
+          </div>
+          <div class="theme-preset-grid" id="themePresetList" role="group" aria-label="Theme presets"></div>
+        </article>
+      </div>
+    </section>
+
     <section class="section section--alt" id="selected-work">
       <div class="container">
         <div class="section__top" data-reveal>
           <p class="eyebrow">Selected Work</p>
           <h2>Project grid</h2>
+          <p class="section__hint">Each project card shows a latest-update stamp when that project page exposes a Last-Modified date.</p>
         </div>
 
         <div class="project-grid" data-reveal data-delay="80">
@@ -286,11 +305,11 @@
         </div>
 
         <div class="hardware-grid">
-          <a class="hardware-card" data-reveal data-delay="80" href="https://www.meta.com/smart-glasses/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="80" href="https://www.meta.com/smart-glasses/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/rayban.png" alt="Ray-Ban logo" /></p>
             <p class="hardware-card__name">Meta Ray-Ban Smart Glasses</p>
           </a>
-          <a class="hardware-card" data-reveal data-delay="120" href="https://www.meta.com/quest/quest-3/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="120" href="https://www.meta.com/quest/quest-3/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/meta.png" alt="Meta logo" /></p>
             <p class="hardware-card__name">Meta Quest 3</p>
           </a>
@@ -298,7 +317,7 @@
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/plant.png" alt="Plant sensor icon" /></p>
             <p class="hardware-card__name">Plant Sensor Kits</p>
           </a>
-          <a class="hardware-card" data-reveal data-delay="200" href="https://www.adafruit.com/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="200" href="https://www.adafruit.com/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/maker.png" alt="Maker tools icon" /></p>
             <p class="hardware-card__name">Soldering + Maker Tools</p>
           </a>
@@ -306,15 +325,15 @@
             <p class="hardware-card__icon hardware-card__icon--emoji">♻️</p>
             <p class="hardware-card__name">Legacy Device Builds</p>
           </a>
-          <a class="hardware-card" data-reveal data-delay="280" href="https://www.apple.com/mac-mini/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="280" href="https://www.apple.com/mac-mini/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--svg" src="assets/hardware/apple.svg" alt="Apple logo" /></p>
             <p class="hardware-card__name">Mac mini</p>
           </a>
-          <a class="hardware-card" data-reveal data-delay="320" href="https://www.raspberrypi.com/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="320" href="https://www.raspberrypi.com/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/raspberrypi.png" alt="Raspberry Pi logo" /></p>
             <p class="hardware-card__name">Raspberry Pi</p>
           </a>
-          <a class="hardware-card" data-reveal data-delay="360" href="https://www.home-assistant.io/" target="_blank" rel="noopener">
+          <a class="hardware-card" data-reveal data-delay="360" href="https://www.home-assistant.io/" target="_blank" rel="noopener noreferrer">
             <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--svg" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" /></p>
             <p class="hardware-card__name">Home Assistant</p>
           </a>

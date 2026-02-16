@@ -1,0 +1,9 @@
+/*
+  Default theme placeholder.
+  Purpose: keep theme assets in a dedicated folder so additional themes can be
+  added without touching global layout styles.
+*/
+
+:root[data-theme="default"] {
+  /* Intentionally empty: base tokens live in styles.css */
+}

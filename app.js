@@ -6,18 +6,20 @@
   const THEME_MANIFEST_URL = 'themes/themes.json';
   const themeSelect = document.getElementById('themeSelect');
   const themeHint = document.getElementById('themeHint');
+  const themePanelHint = document.getElementById('themePanelHint');
+  const themePresetList = document.getElementById('themePresetList');
 
   const defaultThemeCatalog = [
     {
       id: 'default',
       label: 'Default',
-      css: 'themes/default.css',
+      css: 'themes/presets/default.css',
       description: 'Current site look',
     },
     {
       id: 'arc',
       label: 'Arc',
-      css: 'themes/arc.css',
+      css: 'themes/presets/arc.css',
       description: 'Neon tunnel motion theme',
     },
   ];
@@ -84,10 +86,38 @@
     themeSelect.value = normalizeTheme(activeTheme);
   };
 
+  const renderThemePresetButtons = (activeTheme) => {
+    if (!themePresetList) return;
+
+    const currentTheme = normalizeTheme(activeTheme);
+    themePresetList.innerHTML = '';
+
+    themeCatalog.forEach((theme) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'theme-preset';
+      button.dataset.theme = theme.id;
+      button.setAttribute('aria-pressed', theme.id === currentTheme ? 'true' : 'false');
+
+      const title = document.createElement('span');
+      title.className = 'theme-preset__title';
+      title.textContent = theme.label;
+
+      const description = document.createElement('span');
+      description.className = 'theme-preset__desc';
+      description.textContent = theme.description || 'Theme preset';
+
+      button.append(title, description);
+      button.addEventListener('click', () => applyTheme(theme.id));
+      themePresetList.appendChild(button);
+    });
+  };
+
   const setThemeHint = (themeId) => {
-    if (!themeHint) return;
     const description = themesById.get(themeId)?.description;
-    themeHint.textContent = description || 'Switch visual style instantly.';
+    const hint = description || 'Switch visual style instantly.';
+    if (themeHint) themeHint.textContent = hint;
+    if (themePanelHint) themePanelHint.textContent = hint;
   };
 
   const applyTheme = (theme) => {
@@ -101,6 +131,7 @@
 
     applyThemeStylesheet(nextTheme);
     renderThemeOptions(nextTheme);
+    renderThemePresetButtons(nextTheme);
     setThemeHint(nextTheme);
 
     try {
