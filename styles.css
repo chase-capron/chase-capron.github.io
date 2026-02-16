@@ -499,7 +499,7 @@ h1 {
 }
 
 .project-card__status {
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 .project-card__icon {
@@ -558,6 +558,24 @@ h1 {
   font-weight: 800;
   color: #c2cbe0;
   background: rgba(255, 255, 255, 0.03);
+}
+
+.chips--stack .chip {
+  animation: stackChipFloat 4.6s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.chips--stack .chip:nth-child(2n) {
+  animation-duration: 5.2s;
+}
+
+.chips--stack .chip:nth-child(3n) {
+  animation-duration: 5.8s;
+}
+
+@keyframes stackChipFloat {
+  0%, 100% { transform: translateY(0); filter: brightness(1); }
+  50% { transform: translateY(-2px); filter: brightness(1.06); }
 }
 
 .chip--ha { color: #cfefff; border-color: rgba(65, 189, 245, 0.38); background: rgba(65, 189, 245, 0.12); }
@@ -620,12 +638,17 @@ h1 {
 .hardware-card {
   text-align: center;
   min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .hardware-card__icon {
   font-size: 32px;
   margin: 0;
   min-height: 42px;
+  width: 100%;
   display: grid;
   place-items: center;
 }
@@ -652,10 +675,12 @@ h1 {
 }
 
 .hardware-card__name {
-  margin-top: 8px;
+  margin-top: auto;
   font-size: 14px;
   font-weight: 800;
   color: var(--text-soft);
+  width: 100%;
+  text-align: center;
 }
 
 .callout {
@@ -720,6 +745,10 @@ h1 {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .chips--stack .chip {
+    animation: none;
   }
 }
 
