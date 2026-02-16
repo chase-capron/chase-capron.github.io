@@ -1,6 +1,9 @@
 :root {
   --bg: #070b17;
   --bg-soft: #0f1628;
+  --bg-shift-a: 0px;
+  --bg-shift-b: 0px;
+  --bg-shift-c: 0px;
   --surface: rgba(20, 30, 48, 0.72);
   --surface-solid: #101a2d;
   --text: #e8eefc;
@@ -46,6 +49,12 @@ body {
     radial-gradient(circle at 85% 20%, rgba(111, 130, 255, 0.10), transparent 35%),
     radial-gradient(circle at 55% 85%, rgba(255, 150, 80, 0.07), transparent 35%),
     var(--bg);
+  background-position:
+    0 var(--bg-shift-a),
+    0 var(--bg-shift-b),
+    0 var(--bg-shift-c),
+    0 0;
+  background-attachment: fixed, fixed, fixed, fixed;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Arial, sans-serif;
   line-height: 1.5;
   position: relative;
@@ -91,6 +100,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body {
+    background-attachment: scroll;
+  }
+
   :root[data-style="arc"] body::before,
   :root[data-style="arc"] body::after {
     animation: none;

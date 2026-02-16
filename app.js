@@ -66,6 +66,27 @@
     }
   }
 
+  // Subtle standard-theme background drift on scroll
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let ticking = false;
+    const applyBackgroundDrift = () => {
+      const y = window.scrollY || window.pageYOffset || 0;
+      const useDrift = root.dataset.style !== 'arc';
+      root.style.setProperty('--bg-shift-a', `${useDrift ? Math.round(y * 0.03) : 0}px`);
+      root.style.setProperty('--bg-shift-b', `${useDrift ? Math.round(y * -0.02) : 0}px`);
+      root.style.setProperty('--bg-shift-c', `${useDrift ? Math.round(y * 0.015) : 0}px`);
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(applyBackgroundDrift);
+    }, { passive: true });
+
+    applyBackgroundDrift();
+  }
+
   // Reveal-on-scroll
   const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
   revealNodes.forEach((node) => {
