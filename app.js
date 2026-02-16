@@ -30,6 +30,7 @@
   let themeCatalog = [...defaultThemeCatalog];
   let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
   let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
+  let fallbackThemeId = 'default';
 
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();
@@ -41,9 +42,17 @@
     return /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(stringValue) ? stringValue : '';
   };
 
+  const sanitizeThemeCssPath = (value) => {
+    const candidate = String(value || '').trim();
+    if (!candidate.startsWith('themes/')) return '';
+    if (candidate.includes('..') || candidate.includes('\\')) return '';
+    if (!candidate.endsWith('.css')) return '';
+    return /^themes\/[a-z0-9/_-]+\.css$/.test(candidate) ? candidate : '';
+  };
+
   const normalizeTheme = (value) => {
     const candidate = sanitizeThemeId(value);
-    return allowedThemes.has(candidate) ? candidate : 'default';
+    return allowedThemes.has(candidate) ? candidate : fallbackThemeId;
   };
 
   const getStoredTheme = () => {
@@ -70,7 +79,7 @@
   };
 
   const applyThemeStylesheet = (themeId) => {
-    const theme = themesById.get(themeId) || themesById.get('default');
+    const theme = themesById.get(themeId) || themesById.get(fallbackThemeId) || themeCatalog[0];
     if (!theme?.css) return;
 
     const link = ensureThemeStylesheet();
@@ -173,7 +182,7 @@
         .map((theme) => ({
           id: sanitizeThemeId(theme?.id),
           label: String(theme?.label || '').trim(),
-          css: String(theme?.css || '').trim(),
+          css: sanitizeThemeCssPath(theme?.css),
           description: String(theme?.description || '').trim(),
           accent: sanitizeThemeAccent(theme?.accent),
         }))
@@ -181,9 +190,14 @@
 
       if (!validated.length) return;
 
+      const requestedDefault = sanitizeThemeId(payload?.defaultTheme);
+      const manifestDefault = validated.find((theme) => theme.id === requestedDefault)?.id;
+      const explicitDefault = validated.find((theme) => theme.id === 'default')?.id;
+
       themeCatalog = validated;
       allowedThemes = new Set(validated.map((theme) => theme.id));
       themesById = new Map(validated.map((theme) => [theme.id, theme]));
+      fallbackThemeId = manifestDefault || explicitDefault || validated[0].id;
     } catch (e) {
       // Fallback to baked-in catalog
     }
