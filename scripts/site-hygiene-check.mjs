@@ -30,20 +30,25 @@ const walkHtml = (startDir, output = []) => {
 };
 
 const checkMetaPolicies = () => {
-  const indexPath = path.join(repoRoot, 'index.html');
-  const html = readUtf8(indexPath);
+  const htmlFiles = walkHtml(repoRoot);
 
   const required = [
     'http-equiv="Content-Security-Policy"',
     'http-equiv="Permissions-Policy"',
     'name="referrer" content="strict-origin-when-cross-origin"',
+    'name="theme-color"',
   ];
 
-  required.forEach((snippet) => {
-    if (!html.includes(snippet)) {
-      addIssue(`index.html missing required security meta: ${snippet}`);
-    }
-  });
+  for (const filePath of htmlFiles) {
+    const relPath = path.relative(repoRoot, filePath);
+    const html = readUtf8(filePath);
+
+    required.forEach((snippet) => {
+      if (!html.includes(snippet)) {
+        addIssue(`${relPath} missing required security/meta snippet: ${snippet}`);
+      }
+    });
+  }
 };
 
 const checkExternalLinkRel = () => {
@@ -62,6 +67,42 @@ const checkExternalLinkRel = () => {
         addIssue(`${relPath} has target="_blank" link without rel="noopener noreferrer": ${tag}`);
       }
     });
+  }
+};
+
+const checkInlineScripts = () => {
+  const htmlFiles = walkHtml(repoRoot);
+  const inlineScriptRegex = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+
+  for (const filePath of htmlFiles) {
+    const relPath = path.relative(repoRoot, filePath);
+    const html = readUtf8(filePath);
+
+    let match;
+    while ((match = inlineScriptRegex.exec(html)) !== null) {
+      const body = String(match[1] || '').trim();
+      if (!body) continue;
+
+      const tag = match[0].slice(0, 220).replace(/\s+/g, ' ').trim();
+      addIssue(`${relPath} contains inline script (disallowed by CSP baseline): ${tag}`);
+    }
+  }
+};
+
+const checkThemeBootstrapping = () => {
+  const htmlFiles = walkHtml(repoRoot);
+
+  for (const filePath of htmlFiles) {
+    const relPath = path.relative(repoRoot, filePath);
+    const html = readUtf8(filePath);
+
+    if (!/src="(?:\.\.\/)*theme-init\.js"/.test(html)) {
+      addIssue(`${relPath} missing theme-init.js bootstrap script include`);
+    }
+
+    if (/themes\/(?:default|arc)\.css/.test(html)) {
+      addIssue(`${relPath} still references legacy eager-loaded theme wrappers (themes/default.css or themes/arc.css)`);
+    }
   }
 };
 
@@ -134,6 +175,8 @@ const checkProjectsManifest = () => {
 try {
   checkMetaPolicies();
   checkExternalLinkRel();
+  checkInlineScripts();
+  checkThemeBootstrapping();
   checkThemesManifest();
   checkProjectsManifest();
 

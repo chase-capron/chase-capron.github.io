@@ -3,8 +3,22 @@
 
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
-  const THEME_MANIFEST_URL = 'themes/themes.json';
-  const PROJECT_MANIFEST_URL = 'projects/projects.json';
+  const appScript =
+    document.querySelector('script[src$="/app.js"]') ||
+    document.querySelector('script[src$="app.js"]');
+  const appBaseUrl = appScript?.src ? new URL('.', appScript.src).toString() : window.location.href;
+  const resolveAssetUrl = (assetPath) => {
+    const candidate = String(assetPath || '').trim();
+    if (!candidate) return '';
+
+    try {
+      return new URL(candidate, appBaseUrl).toString();
+    } catch (e) {
+      return candidate;
+    }
+  };
+  const THEME_MANIFEST_URL = resolveAssetUrl('themes/themes.json');
+  const PROJECT_MANIFEST_URL = resolveAssetUrl('projects/projects.json');
   const themeSelect = document.getElementById('themeSelect');
   const themeHint = document.getElementById('themeHint');
   const themePanelHint = document.getElementById('themePanelHint');
@@ -94,9 +108,12 @@
     const theme = themesById.get(themeId) || themesById.get(fallbackThemeId) || themeCatalog[0];
     if (!theme?.css) return;
 
+    const href = resolveAssetUrl(theme.css);
+    if (!href) return;
+
     const link = ensureThemeStylesheet();
-    if (link.getAttribute('href') !== theme.css) {
-      link.setAttribute('href', theme.css);
+    if (link.getAttribute('href') !== href) {
+      link.setAttribute('href', href);
     }
   };
 
