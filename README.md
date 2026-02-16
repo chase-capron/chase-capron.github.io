@@ -6,7 +6,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - `index.html` for site structure and content sections
 - `styles.css` for the full visual system, layout tokens, and animations
 - `themes/` for modular theme layers plus `themes.json` registry for future on-the-fly theme additions
-- `app.js` for reveal-on-scroll, theme persistence, and freshness date rendering
+- `app.js` for reveal-on-scroll, theme persistence, and freshness dates (page-level + per-project cards)
 - `projects/` for deeper project write-ups
 - `assets/` for site graphics
 

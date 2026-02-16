@@ -168,6 +168,63 @@
     updatedEl.title = modifiedDate.toISOString();
   }
 
+  const hydrateProjectFreshness = async () => {
+    const cards = Array.from(document.querySelectorAll('.project-card[href]'));
+    const localCards = cards.filter((card) => {
+      const href = card.getAttribute('href') || '';
+      if (!href || href.startsWith('#')) return false;
+
+      try {
+        const url = new URL(href, window.location.href);
+        return url.origin === window.location.origin && url.pathname.startsWith('/projects/');
+      } catch (e) {
+        return false;
+      }
+    });
+
+    if (!localCards.length) return;
+
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    });
+
+    const fetchCardLastUpdated = async (card) => {
+      const href = card.getAttribute('href') || '';
+      const url = new URL(href, window.location.href);
+
+      let modifiedDate = null;
+
+      try {
+        const response = await fetch(url.href, { method: 'HEAD', cache: 'no-store' });
+        if (response.ok) {
+          const headerValue = response.headers.get('last-modified');
+          const parsed = Date.parse(headerValue || '');
+          if (Number.isFinite(parsed)) modifiedDate = new Date(parsed);
+        }
+      } catch (e) {
+        // Graceful fallback below.
+      }
+
+      if (!modifiedDate) return;
+
+      let metaEl = card.querySelector('.project-card__meta');
+      if (!metaEl) {
+        metaEl = document.createElement('p');
+        metaEl.className = 'project-card__meta';
+        card.appendChild(metaEl);
+      }
+
+      metaEl.textContent = `Updated ${formatter.format(modifiedDate)}`;
+      metaEl.title = modifiedDate.toISOString();
+    };
+
+    await Promise.all(localCards.map(fetchCardLastUpdated));
+  };
+
+  void hydrateProjectFreshness();
+
   // Marquee: keep the HTML source clean (single set of tiles), but duplicate it at runtime
   // so the CSS animation (translateX(-50%)) loops seamlessly.
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
