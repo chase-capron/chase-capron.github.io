@@ -1035,7 +1035,10 @@ h1 {
 
 @media (max-width: 760px) {
   .header__row { flex-wrap: nowrap; padding: 8px 0; gap: 8px; }
-  .brand { min-width: 0; flex: 1 1 auto; }
+  .brand {
+    min-width: 44px;
+    flex: 0 0 auto;
+  }
   .brand__name { font-size: 15px; }
   .brand__role { display: none; }
   .nav { width: auto; justify-content: center; gap: 4px; }
@@ -1061,6 +1064,23 @@ h1 {
 }
 
 @media (max-width: 420px) {
+  .header__row {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .brand__text { display: none; }
+
+  .nav {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+  }
+
+  .header__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .hero__grid { grid-template-columns: 1fr; }
   .hero__logo { width: min(220px, 100%); height: auto; aspect-ratio: 1 / 1; }
 }
