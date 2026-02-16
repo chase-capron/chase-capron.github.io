@@ -7,14 +7,16 @@
       "label": "Default",
       "css": "themes/presets/default.css",
       "description": "Current site look",
-      "accent": "#2f83ff"
+      "accent": "#2f83ff",
+      "tags": ["Baseline", "High readability"]
     },
     {
       "id": "arc",
       "label": "Arc",
       "css": "themes/presets/arc.css",
       "description": "Neon tunnel motion theme",
-      "accent": "#ff3d00"
+      "accent": "#ff3d00",
+      "tags": ["Motion-forward", "Experimental"]
     }
   ]
 }

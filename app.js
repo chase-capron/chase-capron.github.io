@@ -17,6 +17,7 @@
       css: 'themes/presets/default.css',
       description: 'Current site look',
       accent: '#2f83ff',
+      tags: ['Baseline', 'High readability'],
     },
     {
       id: 'arc',
@@ -24,6 +25,7 @@
       css: 'themes/presets/arc.css',
       description: 'Neon tunnel motion theme',
       accent: '#ff3d00',
+      tags: ['Motion-forward', 'Experimental'],
     },
   ];
 
@@ -48,6 +50,16 @@
     if (candidate.includes('..') || candidate.includes('\\')) return '';
     if (!candidate.endsWith('.css')) return '';
     return /^themes\/[a-z0-9/_-]+\.css$/.test(candidate) ? candidate : '';
+  };
+
+  const sanitizeThemeTags = (value) => {
+    if (!Array.isArray(value)) return [];
+
+    return value
+      .map((tag) => String(tag || '').trim())
+      .filter(Boolean)
+      .map((tag) => tag.slice(0, 24))
+      .slice(0, 3);
   };
 
   const normalizeTheme = (value) => {
@@ -137,7 +149,18 @@
       description.className = 'theme-preset__desc';
       description.textContent = theme.description || 'Theme preset';
 
+      const tags = sanitizeThemeTags(theme.tags);
+      const tagsRow = document.createElement('span');
+      tagsRow.className = 'theme-preset__tags';
+      tags.forEach((tag) => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'theme-tag';
+        tagEl.textContent = tag;
+        tagsRow.appendChild(tagEl);
+      });
+
       button.append(header, description);
+      if (tags.length) button.appendChild(tagsRow);
       button.addEventListener('click', () => applyTheme(theme.id));
       themePresetList.appendChild(button);
     });
@@ -185,6 +208,7 @@
           css: sanitizeThemeCssPath(theme?.css),
           description: String(theme?.description || '').trim(),
           accent: sanitizeThemeAccent(theme?.accent),
+          tags: sanitizeThemeTags(theme?.tags),
         }))
         .filter((theme) => theme.id && theme.label && theme.css);
 

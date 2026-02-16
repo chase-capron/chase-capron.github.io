@@ -29,6 +29,8 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - External links are opened with `rel="noopener noreferrer"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
 - Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers.
+- Theme manifest (`themes/themes.json`) now supports lightweight `tags` metadata for future theme switcher UX without changing page structure.
+- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene, and manifest schema sanity.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 
 ## Deploy

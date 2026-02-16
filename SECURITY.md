@@ -22,4 +22,5 @@ If details are sensitive, provide a minimal public report and request a secure f
 - Re-check CSP when adding new scripts, fonts, or remote assets.
 - Keep `projects/projects.json` and `themes/themes.json` local-only, schema-valid, and free of untrusted HTML.
 - Ensure all new external links include `rel="noopener noreferrer"`.
+- Run `node scripts/site-hygiene-check.mjs` before push to validate security headers/link hygiene + manifest schema.
 - Prefer progressive enhancement and fail-safe defaults.
