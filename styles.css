@@ -845,6 +845,17 @@ h1 {
   height: 36px;
 }
 
+/* Per-icon visual normalization for source assets with inconsistent internal padding */
+.hardware-icon--boost-md {
+  transform: scale(1.14);
+  transform-origin: center;
+}
+
+.hardware-icon--boost-lg {
+  transform: scale(1.28);
+  transform-origin: center;
+}
+
 .hardware-card__name {
   margin-top: auto;
   font-size: 14px;
