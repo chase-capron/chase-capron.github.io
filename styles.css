@@ -413,6 +413,14 @@ h1 {
   transform-origin: center;
 }
 
+/* Hot Wheels wordmark is wide; tighten padding so it sits cleanly in square icon canvases */
+.project-card__icon--logo img.hotwheels-logo{
+  padding: 3px;
+}
+.app-icon--logo img.hotwheels-logo{
+  padding: 10px;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
