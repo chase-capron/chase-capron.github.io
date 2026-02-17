@@ -808,11 +808,10 @@ h1 {
 }
 .hardware-card {
   text-align: center;
-  min-height: 128px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  min-height: 140px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: stretch;
 }
 
 .hardware-card__icon {
@@ -822,6 +821,7 @@ h1 {
   width: 100%;
   display: grid;
   place-items: center;
+  align-self: stretch;
 }
 
 .hardware-card__icon--emoji {
@@ -847,32 +847,32 @@ h1 {
 
 /* Per-icon visual normalization for source assets with inconsistent internal padding */
 .hardware-icon--boost-md {
-  transform: scale(1.16) translateY(-1px);
+  transform: scale(1.16);
   transform-origin: center;
 }
 
 .hardware-icon--meta {
-  transform: scale(1.24) translateY(-2px);
+  transform: scale(1.24);
   transform-origin: center;
 }
 
 .hardware-icon--plant {
-  transform: scale(1.28) translateY(-2px);
+  transform: scale(1.28);
   transform-origin: center;
 }
 
 .hardware-icon--apple {
-  transform: scale(1.16) translateY(-2px);
+  transform: scale(1.16);
   transform-origin: center;
 }
 
 .hardware-icon--raspberry {
-  transform: scale(1.30) translateY(-1px);
+  transform: scale(1.30);
   transform-origin: center;
 }
 
 .hardware-card__name {
-  margin-top: auto;
+  margin-top: 0;
   font-size: 14px;
   font-weight: 800;
   color: var(--text-soft);
