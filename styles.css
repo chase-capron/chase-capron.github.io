@@ -406,6 +406,13 @@ h1 {
   padding: 4px;
 }
 
+/* Smart Heating uses Home Assistant mark; keep it slightly smaller in project modules */
+.tile-icon--logo img.smart-heating-logo,
+.project-card__icon--logo img.smart-heating-logo{
+  transform: scale(0.86);
+  transform-origin: center;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -852,12 +859,12 @@ h1 {
 }
 
 .hardware-icon--meta {
-  transform: scale(1.24);
+  transform: scale(1.58);
   transform-origin: center;
 }
 
 .hardware-icon--plant {
-  transform: scale(1.28);
+  transform: scale(1.62);
   transform-origin: center;
 }
 
@@ -867,7 +874,7 @@ h1 {
 }
 
 .hardware-icon--raspberry {
-  transform: scale(1.30);
+  transform: scale(1.66);
   transform-origin: center;
 }
 
