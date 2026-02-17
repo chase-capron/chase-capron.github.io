@@ -30,7 +30,7 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
 - Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers, plus short manifest notes for context.
 - Theme manifest (`themes/themes.json`) includes `generatedAt` + `tags` metadata so theme controls can stay flexible without changing page structure.
-- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene, manifest schema sanity, and homepage project-manifest coverage.
+- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene (including disallowed `javascript:`/`data:` anchor protocols), manifest schema sanity, and homepage project-manifest coverage.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 
 ## Deploy

@@ -70,6 +70,43 @@ const checkExternalLinkRel = () => {
   }
 };
 
+const checkDangerousLinkProtocols = () => {
+  const htmlFiles = walkHtml(repoRoot);
+  const anchorHrefRegex = /<a\s+[^>]*href="([^"]+)"[^>]*>/gi;
+
+  for (const filePath of htmlFiles) {
+    const relPath = path.relative(repoRoot, filePath);
+    const html = readUtf8(filePath);
+
+    let match;
+    while ((match = anchorHrefRegex.exec(html)) !== null) {
+      const href = String(match[1] || '').trim();
+      if (!href) continue;
+
+      const lower = href.toLowerCase();
+      const isSafeProtocol =
+        lower.startsWith('https://') ||
+        lower.startsWith('http://') ||
+        lower.startsWith('mailto:') ||
+        lower.startsWith('tel:') ||
+        lower.startsWith('#') ||
+        lower.startsWith('/') ||
+        lower.startsWith('./') ||
+        lower.startsWith('../') ||
+        /^[a-z0-9][a-z0-9/_-]*\/?$/i.test(href);
+
+      if (lower.startsWith('javascript:') || lower.startsWith('data:')) {
+        addIssue(`${relPath} contains disallowed anchor href protocol: ${href}`);
+        continue;
+      }
+
+      if (!isSafeProtocol) {
+        addIssue(`${relPath} anchor href uses unexpected protocol/path format: ${href}`);
+      }
+    }
+  }
+};
+
 const checkInlineScripts = () => {
   const htmlFiles = walkHtml(repoRoot);
   const inlineScriptRegex = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
@@ -210,6 +247,7 @@ const checkProjectsManifest = () => {
 try {
   checkMetaPolicies();
   checkExternalLinkRel();
+  checkDangerousLinkProtocols();
   checkInlineScripts();
   checkThemeBootstrapping();
   checkThemesManifest();
