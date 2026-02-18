@@ -254,9 +254,27 @@ h1 {
   --shine-y: 50%;
   --shine-opacity: 0;
   isolation: isolate;
-  transition: text-shadow 120ms ease, filter 120ms ease;
 }
 
+/* Small localized foreground gleam that can bleed outside glyph bounds */
+.hero-title-shine::before {
+  content: "";
+  position: absolute;
+  left: var(--shine-x);
+  top: var(--shine-y);
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.34) 0%, rgba(190,225,255,0.16) 42%, rgba(190,225,255,0) 72%);
+  filter: blur(7px);
+  mix-blend-mode: screen;
+  opacity: calc(var(--shine-opacity) * 0.75);
+  transition: opacity 80ms linear;
+}
+
+/* Text-only shimmer (not whole-line glow), tightly around pointer vicinity */
 .hero-title-shine::after {
   content: attr(data-text);
   position: absolute;
@@ -264,19 +282,19 @@ h1 {
   pointer-events: none;
   color: transparent;
   background:
-    radial-gradient(130px 90px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.72), rgba(255,255,255,0.18) 34%, rgba(255,255,255,0.0) 66%),
-    radial-gradient(190px 120px at var(--shine-x) var(--shine-y), rgba(170,218,255,0.28), rgba(170,218,255,0.0) 70%);
+    radial-gradient(95px 68px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.82), rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.0) 72%),
+    linear-gradient(112deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.55) 49%, rgba(255,255,255,0) 56%);
+  background-position: 0 0, calc(var(--shine-x) - 42px) calc(var(--shine-y) - 20px);
+  background-repeat: no-repeat;
+  background-size: auto, 84px 40px;
   -webkit-background-clip: text;
   background-clip: text;
   opacity: var(--shine-opacity);
-  transition: opacity 90ms ease;
+  transition: opacity 80ms linear;
 }
 
 .hero-title-shine.is-shining {
-  filter: brightness(1.015);
-  text-shadow:
-    0 0 10px rgba(188, 220, 255, 0.22),
-    0 1px 0 rgba(255, 255, 255, 0.22);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .lead {
