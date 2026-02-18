@@ -253,27 +253,28 @@ h1 {
   --shine-x: 50%;
   --shine-y: 50%;
   --shine-opacity: 0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.14);
-  transition: text-shadow 180ms ease;
+  transition: text-shadow 140ms ease, filter 140ms ease;
 }
 
 .hero-title-shine::after {
   content: "";
   position: absolute;
-  inset: -6% -2%;
+  inset: -8% -4%;
   pointer-events: none;
   background:
-    radial-gradient(140px 90px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.58), rgba(255,255,255,0.16) 34%, rgba(255,255,255,0.0) 68%),
-    radial-gradient(240px 140px at var(--shine-x) var(--shine-y), rgba(165,205,255,0.35), rgba(165,205,255,0.0) 70%);
+    radial-gradient(170px 110px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.9), rgba(255,255,255,0.34) 34%, rgba(255,255,255,0.0) 72%),
+    radial-gradient(280px 180px at var(--shine-x) var(--shine-y), rgba(173,221,255,0.55), rgba(173,221,255,0.0) 70%);
   mix-blend-mode: screen;
   opacity: var(--shine-opacity);
-  transition: opacity 150ms ease;
+  transition: opacity 120ms ease;
 }
 
 .hero-title-shine.is-shining {
+  filter: brightness(1.08) contrast(1.04);
   text-shadow:
-    0 0 22px rgba(163, 206, 255, 0.32),
-    0 1px 0 rgba(255, 255, 255, 0.25);
+    0 0 26px rgba(201, 228, 255, 0.55),
+    0 0 10px rgba(146, 202, 255, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .lead {
