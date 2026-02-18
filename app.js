@@ -494,6 +494,28 @@
     applyBackgroundDrift();
   }
 
+  // Hero title shine (flashlight-like hover)
+  const heroShineTitle = document.querySelector('.hero-title-shine');
+  if (heroShineTitle && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const onMove = (event) => {
+      const rect = heroShineTitle.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      heroShineTitle.style.setProperty('--shine-x', `${Math.max(0, Math.min(100, x))}%`);
+      heroShineTitle.style.setProperty('--shine-y', `${Math.max(0, Math.min(100, y))}%`);
+    };
+
+    heroShineTitle.addEventListener('mouseenter', () => {
+      heroShineTitle.classList.add('is-shining');
+      heroShineTitle.style.setProperty('--shine-opacity', '1');
+    });
+    heroShineTitle.addEventListener('mousemove', onMove);
+    heroShineTitle.addEventListener('mouseleave', () => {
+      heroShineTitle.classList.remove('is-shining');
+      heroShineTitle.style.setProperty('--shine-opacity', '0');
+    });
+  }
+
   // Reveal-on-scroll
   const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
   revealNodes.forEach((node) => {
