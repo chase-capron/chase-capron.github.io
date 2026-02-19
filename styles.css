@@ -1353,6 +1353,12 @@ h1 {
     height: auto;
     aspect-ratio: 1 / 1;
     margin-inline: auto;
+    padding: 10px;
+  }
+
+  .hero__logo img {
+    transform: scale(1.14);
+    transform-origin: center;
   }
 }
 
@@ -1397,5 +1403,10 @@ h1 {
     height: auto;
     aspect-ratio: 1 / 1;
     margin-inline: auto;
+    padding: 8px;
+  }
+
+  .hero__logo img {
+    transform: scale(1.16);
   }
 }
