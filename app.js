@@ -556,6 +556,21 @@
       rotatingTitleEl.dataset.text = `${prefix}${suffixText}`;
     };
 
+    const lockHeroTitleHeight = () => {
+      const initial = rotatingSuffixEl.textContent || phrases[0];
+      let maxHeight = rotatingTitleEl.offsetHeight;
+
+      for (const phrase of phrases) {
+        rotatingSuffixEl.textContent = phrase;
+        syncTitleText(phrase);
+        maxHeight = Math.max(maxHeight, rotatingTitleEl.offsetHeight);
+      }
+
+      rotatingSuffixEl.textContent = initial;
+      syncTitleText(initial);
+      rotatingTitleEl.style.minHeight = `${maxHeight}px`;
+    };
+
     const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
     const typeToPhrase = async (target) => {
@@ -586,6 +601,15 @@
     };
 
     syncTitleText(rotatingSuffixEl.textContent || phrases[0]);
+    lockHeroTitleHeight();
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        lockHeroTitleHeight();
+      }, 120);
+    });
 
     window.setInterval(async () => {
       if (animating) return;
