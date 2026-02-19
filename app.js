@@ -619,11 +619,23 @@
   }
 
   // Reveal-on-scroll
-  const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
-  revealNodes.forEach((node) => {
+  const allRevealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
+  allRevealNodes.forEach((node) => {
     const delay = Number(node.dataset.delay || 0);
     node.style.setProperty('--reveal-delay', `${delay}ms`);
   });
+
+  // Mobile-only override: keep the View Projects CTA visible on first load
+  // while preserving existing reveal behavior for the rest of the page.
+  if (window.matchMedia('(max-width: 760px)').matches) {
+    const mobileCta = document.querySelector('.hero__actions--mobile[data-reveal]');
+    if (mobileCta) {
+      mobileCta.classList.add('is-in');
+      mobileCta.style.setProperty('--reveal-delay', '0ms');
+    }
+  }
+
+  const revealNodes = allRevealNodes.filter((node) => !node.classList.contains('is-in'));
 
   if (!revealNodes.length) return;
 
