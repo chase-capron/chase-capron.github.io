@@ -618,21 +618,22 @@
     }, 5000);
   }
 
-  // Current stack: Tetris-like chip cycle (drop out every 10s, reshuffle, drop back in)
+  // Current stack: Tetris-style simulation (piece-by-piece drop + lateral movement)
   const stackRoot = document.querySelector('.chips--stack');
   if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const chips = Array.from(stackRoot.querySelectorAll('.chip'));
     if (chips.length > 0) {
       stackRoot.classList.add('chips--stack--tetris');
 
+      const CELL_H = 36;
       const GAP = 8;
       const CYCLE_MS = 10000;
-      const EXIT_MS = 760;
-      const ENTER_STAGGER_MS = 45;
-      let order = [...chips];
+      const DROP_STEP_MS = 170;
+      const BETWEEN_PIECES_MS = 140;
       let busy = false;
-      let chipHeight = 32;
-      let chipWidth = 148;
+      let cycleTimer = null;
+
+      const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
       const shuffle = (arr) => {
         const copy = [...arr];
@@ -643,83 +644,142 @@
         return copy;
       };
 
-      const layout = (list, { fromTop = false, instant = false } = {}) => {
-        const available = Math.max(220, stackRoot.clientWidth - 20);
-        const maxCols = Math.max(2, Math.floor((available + GAP) / (chipWidth + GAP)));
-        const cols = Math.min(4, maxCols);
-        chipWidth = Math.floor((available - GAP * (cols - 1)) / cols);
-
+      const prepareGeometry = () => {
         chips.forEach((chip) => {
-          chip.style.setProperty('--stack-chip-width', `${chipWidth}px`);
-          chip.style.width = `${chipWidth}px`;
+          chip.style.position = 'absolute';
+          chip.style.opacity = '1';
+          chip.style.transform = 'translate3d(-9999px,-9999px,0)';
+          chip.classList.remove('is-exiting', 'is-falling');
         });
 
-        chipHeight = Math.max(30, Math.ceil(chips[0].getBoundingClientRect().height || 32));
-        const rows = Math.ceil(list.length / cols);
-        const stackHeight = rows * chipHeight + (rows - 1) * GAP + 20;
-        stackRoot.style.minHeight = `${stackHeight}px`;
+        const sample = chips[0].getBoundingClientRect();
+        const chipH = Math.max(CELL_H, Math.ceil(sample.height));
+        const chipWList = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().width));
+        const maxChipW = Math.max(...chipWList);
+        const usableW = Math.max(240, stackRoot.clientWidth - 20);
+        const colW = maxChipW + GAP;
+        const cols = Math.max(2, Math.floor((usableW + GAP) / colW));
+        const rows = Math.max(3, Math.ceil(chips.length / cols) + 2);
 
-        list.forEach((chip, index) => {
-          const col = index % cols;
-          const row = Math.floor(index / cols);
-          const x = col * (chipWidth + GAP) + 10;
-          const y = row * (chipHeight + GAP) + 10;
-          chip.style.setProperty('--stack-x', `${x}px`);
-          chip.style.setProperty('--stack-y', `${y}px`);
+        stackRoot.style.minHeight = `${rows * (chipH + GAP) + 12}px`;
 
-          chip.style.transitionDelay = instant ? '0ms' : `${index * ENTER_STAGGER_MS}ms`;
-
-          if (fromTop) {
-            chip.style.transitionDuration = '0ms';
-            chip.style.opacity = '0';
-            chip.style.transform = `translate3d(${x}px, ${-chipHeight - 40 - Math.random() * 40}px, 0)`;
-            window.requestAnimationFrame(() => {
-              chip.style.transitionDuration = '620ms';
-              chip.style.opacity = '1';
-              chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-            });
-          } else {
-            chip.style.transitionDuration = instant ? '0ms' : '620ms';
-            chip.style.opacity = '1';
-            chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-          }
-        });
+        return { chipH, chipWList, cols, rows, colW };
       };
 
-      const cycle = async () => {
+      const fits = (grid, row, col, widthCells, rows, cols) => {
+        if (col < 0 || col + widthCells > cols) return false;
+        if (row >= rows) return false;
+        for (let c = col; c < col + widthCells; c += 1) {
+          if (grid[row][c]) return false;
+        }
+        return true;
+      };
+
+      const occupy = (grid, row, col, widthCells) => {
+        for (let c = col; c < col + widthCells; c += 1) grid[row][c] = 1;
+      };
+
+      const chooseTarget = (grid, widthCells, rows, cols) => {
+        const colOrder = shuffle(Array.from({ length: cols - widthCells + 1 }, (_, i) => i));
+        for (let row = 0; row < rows; row += 1) {
+          for (const col of colOrder) {
+            if (fits(grid, row, col, widthCells, rows, cols) && (row === rows - 1 || !fits(grid, row + 1, col, widthCells, rows, cols))) {
+              return { row, col };
+            }
+          }
+        }
+
+        for (let row = rows - 1; row >= 0; row -= 1) {
+          for (let col = 0; col <= cols - widthCells; col += 1) {
+            if (fits(grid, row, col, widthCells, rows, cols)) return { row, col };
+          }
+        }
+
+        return { row: 0, col: 0 };
+      };
+
+      const animateDrop = async (chip, startCol, targetCol, targetRow, widthCells, chipH, colW) => {
+        chip.classList.add('is-falling');
+        chip.style.opacity = '1';
+
+        let row = -2;
+        let col = startCol;
+        const lateralMoments = new Set([Math.max(0, Math.floor(targetRow * 0.33)), Math.max(1, Math.floor(targetRow * 0.66))]);
+
+        const moveTo = async () => {
+          const x = 10 + col * colW;
+          const y = 10 + row * (chipH + GAP);
+          chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          await sleep(DROP_STEP_MS);
+        };
+
+        while (row < targetRow) {
+          row += 1;
+
+          if (lateralMoments.has(row) && col !== targetCol) {
+            const dir = targetCol > col ? 1 : -1;
+            col += dir;
+          }
+
+          await moveTo();
+        }
+
+        chip.classList.remove('is-falling');
+      };
+
+      const runCycle = async () => {
         if (busy) return;
         busy = true;
 
+        const { chipH, chipWList, cols, rows, colW } = prepareGeometry();
+        const order = shuffle(chips);
+        const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+        for (let i = 0; i < order.length; i += 1) {
+          const chip = order[i];
+          const widthCells = Math.max(1, Math.min(cols, Math.ceil(chipWList[chips.indexOf(chip)] / colW)));
+          const { row: targetRow, col: targetCol } = chooseTarget(grid, widthCells, rows, cols);
+          occupy(grid, targetRow, targetCol, widthCells);
+
+          const startChoices = shuffle([0, Math.max(0, cols - widthCells), Math.floor((cols - widthCells) / 2), targetCol]);
+          const startCol = startChoices[0];
+
+          await animateDrop(chip, startCol, targetCol, targetRow, widthCells, chipH, colW);
+          await sleep(BETWEEN_PIECES_MS);
+        }
+
+        const linger = Math.max(1200, CYCLE_MS - order.length * (DROP_STEP_MS + BETWEEN_PIECES_MS) - 600);
+        await sleep(linger);
+
         const stackHeight = stackRoot.getBoundingClientRect().height;
         order.forEach((chip, index) => {
-          const x = chip.style.getPropertyValue('--stack-x') || '0px';
           chip.classList.add('is-exiting');
-          chip.style.transitionDelay = `${index * 28}ms`;
-          chip.style.transitionDuration = `${EXIT_MS}ms`;
-          chip.style.transform = `translate3d(${x}, ${stackHeight + 36 + Math.random() * 30}px, 0)`;
+          chip.style.transitionDuration = '520ms';
+          chip.style.transitionDelay = `${index * 24}ms`;
+          const x = chip.style.transform.match(/translate3d\(([^,]+)/)?.[1] || '0px';
+          chip.style.transform = `translate3d(${x}, ${stackHeight + 46 + Math.random() * 20}px, 0)`;
         });
 
-        await new Promise((resolve) => window.setTimeout(resolve, EXIT_MS + order.length * 28 + 80));
-
-        order = shuffle(order);
-        order.forEach((chip) => chip.classList.remove('is-exiting'));
-        layout(order, { fromTop: true });
-
-        await new Promise((resolve) => window.setTimeout(resolve, 900));
+        await sleep(760);
         busy = false;
+        cycleTimer = window.setTimeout(() => { void runCycle(); }, 120);
       };
-
-      layout(order, { instant: true });
 
       let resizeTimer = null;
       window.addEventListener('resize', () => {
         if (resizeTimer) window.clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(() => {
-          layout(order, { instant: true });
-        }, 140);
+          chips.forEach((chip) => {
+            chip.style.transitionDuration = '0ms';
+          });
+          if (!busy) {
+            if (cycleTimer) window.clearTimeout(cycleTimer);
+            void runCycle();
+          }
+        }, 180);
       });
 
-      window.setInterval(cycle, CYCLE_MS);
+      void runCycle();
     }
   }
 
