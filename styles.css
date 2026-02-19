@@ -375,6 +375,10 @@ h1 {
   gap: 10px;
 }
 
+.hero__actions--mobile {
+  display: none;
+}
+
 .hero__art {
   display: grid;
   place-items: center;
@@ -1222,6 +1226,13 @@ h1 {
   .hero__actions {
     order: 4;
     margin-top: 8px;
+    display: none;
+  }
+
+  .hero__actions--mobile {
+    display: flex;
+    order: 3;
+    margin-top: 2px;
   }
   .hero__lead {
     order: 2;
