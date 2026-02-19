@@ -655,10 +655,25 @@
           chip.style.transitionDuration = '260ms';
         });
 
-        const chipHeights = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().height));
-        const chipWidths = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().width));
-        const rowH = Math.max(...chipHeights, 32);
+        let chipHeights = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().height));
         const usableW = Math.max(220, stackRoot.clientWidth - PADDING_X * 2);
+
+        chips.forEach((chip) => {
+          chip.style.fontSize = '';
+          chip.style.padding = '';
+          if (chip.getBoundingClientRect().width > usableW) {
+            chip.style.fontSize = '11px';
+            chip.style.padding = '5px 9px';
+          }
+          if (chip.getBoundingClientRect().width > usableW) {
+            chip.style.fontSize = '10px';
+            chip.style.padding = '4px 8px';
+          }
+        });
+
+        chipHeights = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().height));
+        const chipWidths = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().width));
+        const rowH = Math.max(...chipHeights, 30);
         const usableH = Math.max(120, stackRoot.clientHeight - PADDING_Y * 2);
         const maxRows = Math.max(2, Math.floor((usableH + GAP) / (rowH + GAP)));
 
