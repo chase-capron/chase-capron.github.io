@@ -853,39 +853,66 @@ h1 {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.chips--stack {
+  position: relative;
+  isolation: isolate;
+}
+
+.chips--stack::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 18px;
+  background: radial-gradient(65% 90% at 20% 20%, rgba(88, 143, 255, 0.16), transparent 62%);
+  pointer-events: none;
+  opacity: 0.75;
+  animation: stackAuraPulse 3.8s ease-in-out infinite;
+}
+
 .chips--stack .chip {
-  animation: stackChipFloat 4.6s ease-in-out infinite, stackChipPulse 6.2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+  animation: stackChipFloat 3.4s ease-in-out infinite, stackChipPulse 4.8s ease-in-out infinite;
   will-change: transform, filter, box-shadow;
   transition: transform 160ms ease, box-shadow 180ms ease, filter 180ms ease;
 }
 
 .chips--stack .chip:nth-child(2n) {
-  animation-duration: 5.2s, 6.8s;
+  animation-duration: 3.9s, 5.4s;
 }
 
 .chips--stack .chip:nth-child(3n) {
-  animation-duration: 5.8s, 7.3s;
+  animation-duration: 4.4s, 5.9s;
 }
 
 .chips--stack .chip:nth-child(4n) {
-  animation-delay: 0.35s, 0.2s;
+  animation-delay: 0.3s, 0.15s;
+}
+
+.chips--stack .chip:nth-child(5n) {
+  animation-delay: 0.55s, 0.3s;
 }
 
 .chips--stack .chip:hover,
 .chips--stack .chip:focus-visible {
-  transform: translateY(-3px) scale(1.04);
-  filter: brightness(1.1);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+  transform: translateY(-5px) scale(1.08);
+  filter: brightness(1.16);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(255, 255, 255, 0.22) inset, 0 0 18px rgba(108, 169, 255, 0.28);
 }
 
 @keyframes stackChipFloat {
   0%, 100% { transform: translateY(0); filter: brightness(1); }
-  50% { transform: translateY(-2px); filter: brightness(1.06); }
+  50% { transform: translateY(-4px); filter: brightness(1.1); }
 }
 
 @keyframes stackChipPulse {
   0%, 100% { box-shadow: 0 0 0 rgba(90, 150, 255, 0); }
-  50% { box-shadow: 0 4px 16px rgba(90, 150, 255, 0.18); }
+  50% { box-shadow: 0 6px 18px rgba(90, 150, 255, 0.26); }
+}
+
+@keyframes stackAuraPulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.015); }
 }
 
 .chip--ha { color: #cfefff; border-color: rgba(65, 189, 245, 0.38); background: rgba(65, 189, 245, 0.12); }
