@@ -339,6 +339,21 @@ h1 {
     animation: none;
     transition: none;
   }
+
+  .chips--stack--tetris {
+    min-height: auto;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  .chips--stack--tetris .chip {
+    position: static;
+    width: auto;
+    opacity: 1;
+    transform: none !important;
+  }
 }
 
 .lead {
@@ -855,64 +870,51 @@ h1 {
 .chips--stack {
   position: relative;
   isolation: isolate;
+  min-height: 210px;
 }
 
-.chips--stack::before {
+.chips--stack--tetris {
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chips--stack--tetris::before {
   content: "";
   position: absolute;
-  inset: -8px;
-  border-radius: 18px;
-  background: radial-gradient(65% 90% at 20% 20%, rgba(88, 143, 255, 0.16), transparent 62%);
+  inset: 0;
   pointer-events: none;
-  opacity: 0.75;
-  animation: stackAuraPulse 3.8s ease-in-out infinite;
+  background:
+    linear-gradient(to bottom, rgba(115, 165, 255, 0.14), transparent 28%),
+    linear-gradient(to top, rgba(72, 118, 255, 0.12), transparent 30%);
 }
 
-.chips--stack .chip {
-  position: relative;
+.chips--stack--tetris .chip {
+  position: absolute;
+  left: 0;
+  top: 0;
   z-index: 1;
-  animation: stackChipFloat 3.4s ease-in-out infinite, stackChipPulse 4.8s ease-in-out infinite;
-  will-change: transform, filter, box-shadow;
-  transition: transform 160ms ease, box-shadow 180ms ease, filter 180ms ease;
+  width: var(--stack-chip-width, 148px);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  will-change: transform, opacity;
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
 }
 
-.chips--stack .chip:nth-child(2n) {
-  animation-duration: 3.9s, 5.4s;
+.chips--stack--tetris .chip:hover,
+.chips--stack--tetris .chip:focus-visible {
+  transform: translate3d(var(--stack-x, 0px), calc(var(--stack-y, 0px) - 2px), 0) scale(1.02) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
 }
 
-.chips--stack .chip:nth-child(3n) {
-  animation-duration: 4.4s, 5.9s;
+.chips--stack--tetris .chip.is-exiting {
+  opacity: 0.08;
 }
 
-.chips--stack .chip:nth-child(4n) {
-  animation-delay: 0.3s, 0.15s;
-}
-
-.chips--stack .chip:nth-child(5n) {
-  animation-delay: 0.55s, 0.3s;
-}
-
-.chips--stack .chip:hover,
-.chips--stack .chip:focus-visible {
-  transform: translateY(-5px) scale(1.08);
-  filter: brightness(1.16);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(255, 255, 255, 0.22) inset, 0 0 18px rgba(108, 169, 255, 0.28);
-}
-
-@keyframes stackChipFloat {
-  0%, 100% { transform: translateY(0); filter: brightness(1); }
-  50% { transform: translateY(-4px); filter: brightness(1.1); }
-}
-
-@keyframes stackChipPulse {
-  0%, 100% { box-shadow: 0 0 0 rgba(90, 150, 255, 0); }
-  50% { box-shadow: 0 6px 18px rgba(90, 150, 255, 0.26); }
-}
-
-@keyframes stackAuraPulse {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.015); }
-}
 
 .chip--ha { color: #cfefff; border-color: rgba(65, 189, 245, 0.38); background: rgba(65, 189, 245, 0.12); }
 .chip--python { color: #ffe8c8; border-color: rgba(255, 140, 64, 0.45); background: rgba(255, 140, 64, 0.12); }

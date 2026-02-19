@@ -618,6 +618,111 @@
     }, 5000);
   }
 
+  // Current stack: Tetris-like chip cycle (drop out every 10s, reshuffle, drop back in)
+  const stackRoot = document.querySelector('.chips--stack');
+  if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const chips = Array.from(stackRoot.querySelectorAll('.chip'));
+    if (chips.length > 0) {
+      stackRoot.classList.add('chips--stack--tetris');
+
+      const GAP = 8;
+      const CYCLE_MS = 10000;
+      const EXIT_MS = 760;
+      const ENTER_STAGGER_MS = 45;
+      let order = [...chips];
+      let busy = false;
+      let chipHeight = 32;
+      let chipWidth = 148;
+
+      const shuffle = (arr) => {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      };
+
+      const layout = (list, { fromTop = false, instant = false } = {}) => {
+        const available = Math.max(220, stackRoot.clientWidth - 20);
+        const maxCols = Math.max(2, Math.floor((available + GAP) / (chipWidth + GAP)));
+        const cols = Math.min(4, maxCols);
+        chipWidth = Math.floor((available - GAP * (cols - 1)) / cols);
+
+        chips.forEach((chip) => {
+          chip.style.setProperty('--stack-chip-width', `${chipWidth}px`);
+          chip.style.width = `${chipWidth}px`;
+        });
+
+        chipHeight = Math.max(30, Math.ceil(chips[0].getBoundingClientRect().height || 32));
+        const rows = Math.ceil(list.length / cols);
+        const stackHeight = rows * chipHeight + (rows - 1) * GAP + 20;
+        stackRoot.style.minHeight = `${stackHeight}px`;
+
+        list.forEach((chip, index) => {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+          const x = col * (chipWidth + GAP) + 10;
+          const y = row * (chipHeight + GAP) + 10;
+          chip.style.setProperty('--stack-x', `${x}px`);
+          chip.style.setProperty('--stack-y', `${y}px`);
+
+          chip.style.transitionDelay = instant ? '0ms' : `${index * ENTER_STAGGER_MS}ms`;
+
+          if (fromTop) {
+            chip.style.transitionDuration = '0ms';
+            chip.style.opacity = '0';
+            chip.style.transform = `translate3d(${x}px, ${-chipHeight - 40 - Math.random() * 40}px, 0)`;
+            window.requestAnimationFrame(() => {
+              chip.style.transitionDuration = '620ms';
+              chip.style.opacity = '1';
+              chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            });
+          } else {
+            chip.style.transitionDuration = instant ? '0ms' : '620ms';
+            chip.style.opacity = '1';
+            chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          }
+        });
+      };
+
+      const cycle = async () => {
+        if (busy) return;
+        busy = true;
+
+        const stackHeight = stackRoot.getBoundingClientRect().height;
+        order.forEach((chip, index) => {
+          const x = chip.style.getPropertyValue('--stack-x') || '0px';
+          chip.classList.add('is-exiting');
+          chip.style.transitionDelay = `${index * 28}ms`;
+          chip.style.transitionDuration = `${EXIT_MS}ms`;
+          chip.style.transform = `translate3d(${x}, ${stackHeight + 36 + Math.random() * 30}px, 0)`;
+        });
+
+        await new Promise((resolve) => window.setTimeout(resolve, EXIT_MS + order.length * 28 + 80));
+
+        order = shuffle(order);
+        order.forEach((chip) => chip.classList.remove('is-exiting'));
+        layout(order, { fromTop: true });
+
+        await new Promise((resolve) => window.setTimeout(resolve, 900));
+        busy = false;
+      };
+
+      layout(order, { instant: true });
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        if (resizeTimer) window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          layout(order, { instant: true });
+        }, 140);
+      });
+
+      window.setInterval(cycle, CYCLE_MS);
+    }
+  }
+
   // Reveal-on-scroll
   const allRevealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
   allRevealNodes.forEach((node) => {
