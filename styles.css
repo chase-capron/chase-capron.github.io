@@ -1214,9 +1214,9 @@ h1 {
   .hero-title-shine { order: 2; }
   .hero__art {
     order: 3;
-    grid-template-columns: minmax(0, 1.2fr) minmax(160px, 0.8fr);
-    align-items: end;
-    justify-items: stretch;
+    grid-template-columns: 1fr;
+    align-items: start;
+    justify-items: start;
     gap: 12px;
   }
   .hero__actions {
@@ -1224,18 +1224,18 @@ h1 {
     margin-top: 8px;
   }
   .hero__lead {
-    order: 1;
+    order: 2;
     margin-top: 0;
     max-width: 100%;
     font-size: 16px;
     text-align: left;
   }
   .hero__logo {
-    order: 2;
-    width: min(220px, 100%);
+    order: 1;
+    width: min(240px, 100%);
     height: auto;
     aspect-ratio: 1 / 1;
-    margin-inline: auto 0;
+    margin-inline: 0;
   }
 }
 
@@ -1276,6 +1276,6 @@ h1 {
     width: min(220px, 100%);
     height: auto;
     aspect-ratio: 1 / 1;
-    margin-inline: auto;
+    margin-inline: 0;
   }
 }
