@@ -618,22 +618,24 @@
     }, 5000);
   }
 
-  // Current stack: Tetris-style simulation (piece-by-piece drop + lateral movement)
+  // Current stack: Tetris-like row-fill simulation with natural chip widths
   const stackRoot = document.querySelector('.chips--stack');
   if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const chips = Array.from(stackRoot.querySelectorAll('.chip'));
     if (chips.length > 0) {
       stackRoot.classList.add('chips--stack--tetris');
 
-      const CELL_H = 36;
       const GAP = 8;
       const CYCLE_MS = 10000;
-      const DROP_STEP_MS = 170;
-      const BETWEEN_PIECES_MS = 140;
+      const DROP_STEP_MS = 80;
+      const LATERAL_STEP = 16;
+      const BETWEEN_PIECES_MS = 90;
+      const PADDING_X = 8;
+      const PADDING_Y = 8;
       let busy = false;
-      let cycleTimer = null;
+      let timer = null;
 
-      const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+      const pause = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
       const shuffle = (arr) => {
         const copy = [...arr];
@@ -644,142 +646,139 @@
         return copy;
       };
 
-      const prepareGeometry = () => {
+      const measure = () => {
         chips.forEach((chip) => {
-          chip.style.position = 'absolute';
-          chip.style.opacity = '1';
-          chip.style.transform = 'translate3d(-9999px,-9999px,0)';
           chip.classList.remove('is-exiting', 'is-falling');
+          chip.style.opacity = '1';
+          chip.style.transform = 'translate3d(-9999px, -9999px, 0)';
+          chip.style.transitionDelay = '0ms';
+          chip.style.transitionDuration = '260ms';
         });
 
-        const sample = chips[0].getBoundingClientRect();
-        const chipH = Math.max(CELL_H, Math.ceil(sample.height));
-        const chipWList = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().width));
-        const maxChipW = Math.max(...chipWList);
-        const usableW = Math.max(240, stackRoot.clientWidth - 20);
-        const colW = maxChipW + GAP;
-        const cols = Math.max(2, Math.floor((usableW + GAP) / colW));
-        const rows = Math.max(3, Math.ceil(chips.length / cols) + 2);
+        const chipHeights = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().height));
+        const chipWidths = chips.map((chip) => Math.ceil(chip.getBoundingClientRect().width));
+        const rowH = Math.max(...chipHeights, 32);
+        const usableW = Math.max(220, stackRoot.clientWidth - PADDING_X * 2);
+        const usableH = Math.max(120, stackRoot.clientHeight - PADDING_Y * 2);
+        const maxRows = Math.max(2, Math.floor((usableH + GAP) / (rowH + GAP)));
 
-        stackRoot.style.minHeight = `${rows * (chipH + GAP) + 12}px`;
-
-        return { chipH, chipWList, cols, rows, colW };
+        return { chipWidths, rowH, usableW, maxRows };
       };
 
-      const fits = (grid, row, col, widthCells, rows, cols) => {
-        if (col < 0 || col + widthCells > cols) return false;
-        if (row >= rows) return false;
-        for (let c = col; c < col + widthCells; c += 1) {
-          if (grid[row][c]) return false;
-        }
-        return true;
-      };
+      const pickRow = (rows, chipW, usableW) => {
+        let best = null;
 
-      const occupy = (grid, row, col, widthCells) => {
-        for (let c = col; c < col + widthCells; c += 1) grid[row][c] = 1;
-      };
-
-      const chooseTarget = (grid, widthCells, rows, cols) => {
-        const colOrder = shuffle(Array.from({ length: cols - widthCells + 1 }, (_, i) => i));
-        for (let row = 0; row < rows; row += 1) {
-          for (const col of colOrder) {
-            if (fits(grid, row, col, widthCells, rows, cols) && (row === rows - 1 || !fits(grid, row + 1, col, widthCells, rows, cols))) {
-              return { row, col };
-            }
+        rows.forEach((row, idx) => {
+          const nextUsed = row.used + (row.used > 0 ? GAP : 0) + chipW;
+          if (nextUsed <= usableW) {
+            const leftover = usableW - nextUsed;
+            if (!best || leftover < best.leftover) best = { idx, leftover };
           }
-        }
+        });
 
-        for (let row = rows - 1; row >= 0; row -= 1) {
-          for (let col = 0; col <= cols - widthCells; col += 1) {
-            if (fits(grid, row, col, widthCells, rows, cols)) return { row, col };
-          }
-        }
-
-        return { row: 0, col: 0 };
+        if (best) return best.idx;
+        return rows.length;
       };
 
-      const animateDrop = async (chip, startCol, targetCol, targetRow, widthCells, chipH, colW) => {
+      const buildPlacement = (order, chipWidths, rowH, usableW, maxRows) => {
+        const rows = [];
+        const placements = [];
+
+        order.forEach((chip) => {
+          const idx = chips.indexOf(chip);
+          const chipW = chipWidths[idx];
+          let rowIndex = pickRow(rows, chipW, usableW);
+
+          if (rowIndex >= maxRows) {
+            rowIndex = maxRows - 1;
+          }
+
+          while (rows.length <= rowIndex) {
+            rows.push({ used: 0 });
+          }
+
+          const row = rows[rowIndex];
+          const x = row.used + (row.used > 0 ? GAP : 0);
+          row.used = x + chipW;
+
+          const y = (maxRows - 1 - rowIndex) * (rowH + GAP);
+          placements.push({ chip, x: x + PADDING_X, y: y + PADDING_Y, rowIndex });
+        });
+
+        return { placements, rows };
+      };
+
+      const animateDrop = async ({ chip, x: tx, y: ty }) => {
         chip.classList.add('is-falling');
         chip.style.opacity = '1';
 
-        let row = -2;
-        let col = startCol;
-        const lateralMoments = new Set([Math.max(0, Math.floor(targetRow * 0.33)), Math.max(1, Math.floor(targetRow * 0.66))]);
+        const startXOptions = [PADDING_X, Math.max(PADDING_X, stackRoot.clientWidth - chip.getBoundingClientRect().width - PADDING_X), Math.max(PADDING_X, (stackRoot.clientWidth - chip.getBoundingClientRect().width) / 2)];
+        let x = startXOptions[Math.floor(Math.random() * startXOptions.length)];
+        let y = -40 - Math.random() * 24;
 
-        const moveTo = async () => {
-          const x = 10 + col * colW;
-          const y = 10 + row * (chipH + GAP);
-          chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-          await sleep(DROP_STEP_MS);
+        const lateralNudge = () => {
+          const diff = tx - x;
+          if (Math.abs(diff) < 2) return;
+          x += Math.sign(diff) * Math.min(Math.abs(diff), LATERAL_STEP);
         };
 
-        while (row < targetRow) {
-          row += 1;
-
-          if (lateralMoments.has(row) && col !== targetCol) {
-            const dir = targetCol > col ? 1 : -1;
-            col += dir;
-          }
-
-          await moveTo();
+        while (y < ty) {
+          lateralNudge();
+          y += Math.min(18, ty - y);
+          chip.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          await pause(DROP_STEP_MS);
         }
 
+        chip.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
         chip.classList.remove('is-falling');
       };
 
-      const runCycle = async () => {
+      const dropOut = async (order) => {
+        const floorY = stackRoot.clientHeight + 34;
+        order.forEach((chip, i) => {
+          chip.classList.add('is-exiting');
+          chip.style.transitionDelay = `${i * 22}ms`;
+          const xMatch = chip.style.transform.match(/translate3d\(([^,]+)/);
+          const x = xMatch ? xMatch[1] : '0px';
+          chip.style.transform = `translate3d(${x}, ${floorY}px, 0)`;
+        });
+
+        await pause(640);
+        order.forEach((chip) => chip.classList.remove('is-exiting'));
+      };
+
+      const run = async () => {
         if (busy) return;
         busy = true;
 
-        const { chipH, chipWList, cols, rows, colW } = prepareGeometry();
         const order = shuffle(chips);
-        const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+        const { chipWidths, rowH, usableW, maxRows } = measure();
+        const { placements } = buildPlacement(order, chipWidths, rowH, usableW, maxRows);
 
-        for (let i = 0; i < order.length; i += 1) {
-          const chip = order[i];
-          const widthCells = Math.max(1, Math.min(cols, Math.ceil(chipWList[chips.indexOf(chip)] / colW)));
-          const { row: targetRow, col: targetCol } = chooseTarget(grid, widthCells, rows, cols);
-          occupy(grid, targetRow, targetCol, widthCells);
-
-          const startChoices = shuffle([0, Math.max(0, cols - widthCells), Math.floor((cols - widthCells) / 2), targetCol]);
-          const startCol = startChoices[0];
-
-          await animateDrop(chip, startCol, targetCol, targetRow, widthCells, chipH, colW);
-          await sleep(BETWEEN_PIECES_MS);
+        for (const item of placements) {
+          await animateDrop(item);
+          await pause(BETWEEN_PIECES_MS);
         }
 
-        const linger = Math.max(1200, CYCLE_MS - order.length * (DROP_STEP_MS + BETWEEN_PIECES_MS) - 600);
-        await sleep(linger);
+        await pause(Math.max(1000, CYCLE_MS - placements.length * (DROP_STEP_MS + BETWEEN_PIECES_MS) - 700));
+        await dropOut(placements.map((p) => p.chip));
 
-        const stackHeight = stackRoot.getBoundingClientRect().height;
-        order.forEach((chip, index) => {
-          chip.classList.add('is-exiting');
-          chip.style.transitionDuration = '520ms';
-          chip.style.transitionDelay = `${index * 24}ms`;
-          const x = chip.style.transform.match(/translate3d\(([^,]+)/)?.[1] || '0px';
-          chip.style.transform = `translate3d(${x}, ${stackHeight + 46 + Math.random() * 20}px, 0)`;
-        });
-
-        await sleep(760);
         busy = false;
-        cycleTimer = window.setTimeout(() => { void runCycle(); }, 120);
+        timer = window.setTimeout(() => {
+          void run();
+        }, 120);
       };
 
       let resizeTimer = null;
       window.addEventListener('resize', () => {
         if (resizeTimer) window.clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(() => {
-          chips.forEach((chip) => {
-            chip.style.transitionDuration = '0ms';
-          });
-          if (!busy) {
-            if (cycleTimer) window.clearTimeout(cycleTimer);
-            void runCycle();
-          }
+          if (timer) window.clearTimeout(timer);
+          if (!busy) void run();
         }, 180);
       });
 
-      void runCycle();
+      void run();
     }
   }
 

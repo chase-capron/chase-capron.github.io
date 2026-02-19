@@ -870,13 +870,14 @@ h1 {
 .chips--stack {
   position: relative;
   isolation: isolate;
-  min-height: 210px;
 }
 
 .chips--stack--tetris {
   overflow: hidden;
   border-radius: 16px;
-  padding: 10px;
+  padding: 8px;
+  height: 132px;
+  min-height: 132px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
