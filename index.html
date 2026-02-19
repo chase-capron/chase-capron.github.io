@@ -342,29 +342,26 @@
       </div>
     </section>
 
-
-    <section class="section" id="appearance" data-reveal>
-      <div class="container">
-        <div class="section__top">
-          <p class="eyebrow">Display</p>
-          <h2>Theme presets</h2>
-          <p class="section__hint">Pick a visual style. Current look stays as the default baseline.</p>
-          <p class="section__micro" id="themeManifestStamp" hidden>Theme metadata refreshed recently.</p>
-        </div>
-
-        <article class="theme-panel" data-reveal data-delay="60">
-          <div class="theme-panel__head">
-            <h3>Theme selection</h3>
-            <p id="themePanelHint">Switch visual style instantly.</p>
-          </div>
-          <div class="theme-preset-grid" id="themePresetList" role="group" aria-label="Theme presets"></div>
-        </article>
-      </div>
-    </section>
-
   </main>
 
-  <footer class="footer">
+  <footer class="footer" id="appearance">
+    <div class="container footer__theme" data-reveal>
+      <div class="footer__theme-head">
+        <p class="eyebrow">Display</p>
+        <h2>Theme presets</h2>
+        <p class="section__hint">Pick a visual style. Current look stays as the default baseline.</p>
+        <p class="section__micro" id="themeManifestStamp" hidden>Theme metadata refreshed recently.</p>
+      </div>
+
+      <article class="theme-panel" data-reveal data-delay="60">
+        <div class="theme-panel__head">
+          <h3>Theme selection</h3>
+          <p id="themePanelHint">Switch visual style instantly.</p>
+        </div>
+        <div class="theme-preset-grid" id="themePresetList" role="group" aria-label="Theme presets"></div>
+      </article>
+    </div>
+
     <div class="container footer__inner">
       <p class="footer__copyright"><img class="footer__logo" src="assets/chase-logo.png" alt="" aria-hidden="true" /> © <span id="year"></span> Chase Capron</p>
       <p class="muted">Updated <span id="updated">today</span></p>
