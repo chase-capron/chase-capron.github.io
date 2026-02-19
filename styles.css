@@ -929,6 +929,10 @@ h1 {
 .chip--git { color: #f2f4f8; border-color: rgba(10, 12, 18, 0.65); background: rgba(10, 12, 18, 0.35); }
 .chip--linux { color: #ddffe8; border-color: rgba(64, 200, 120, 0.45); background: rgba(64, 200, 120, 0.12); }
 .chip--js { color: #1a1a12; border-color: rgba(255, 215, 64, 0.55); background: rgba(255, 215, 64, 0.55); }
+.chip--node { color: #ddffe8; border-color: rgba(104, 160, 99, 0.5); background: rgba(104, 160, 99, 0.18); }
+.chip--docker { color: #d8eeff; border-color: rgba(36, 150, 237, 0.5); background: rgba(36, 150, 237, 0.15); }
+.chip--openclaw { color: #f9e3ff; border-color: rgba(175, 103, 232, 0.5); background: rgba(175, 103, 232, 0.16); }
+.chip--chatops { color: #ffe6d8; border-color: rgba(239, 123, 72, 0.5); background: rgba(239, 123, 72, 0.16); }
 
 .chip--ai {
   color: #0b1020;
@@ -1294,6 +1298,13 @@ h1 {
   .grid { grid-template-columns: 1fr; }
   .project-grid { grid-template-columns: 1fr; }
   .hardware-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chips--stack {
+    gap: 6px;
+  }
+  .chips--stack .chip {
+    font-size: 11px;
+    padding: 5px 9px;
+  }
   .callout { flex-direction: column; }
   .footer__theme {
     margin-bottom: 12px;
