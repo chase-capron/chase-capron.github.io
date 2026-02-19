@@ -297,6 +297,31 @@ h1 {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
+.hero-title-prefix,
+.hero-rotating-suffix {
+  display: inline;
+}
+
+.hero-rotating-suffix {
+  position: relative;
+  border-right: 2px solid rgba(167, 196, 255, 0.8);
+  padding-right: 3px;
+  margin-right: 1px;
+  animation: heroCaretBlink 1s steps(1, end) infinite;
+}
+
+@keyframes heroCaretBlink {
+  0%, 49% { border-right-color: rgba(167, 196, 255, 0.86); }
+  50%, 100% { border-right-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rotating-suffix {
+    animation: none;
+    border-right-color: rgba(167, 196, 255, 0.55);
+  }
+}
+
 .lead {
   margin-top: 16px;
   max-width: 70ch;
@@ -399,7 +424,7 @@ h1 {
   animation: marquee 20s linear infinite;
 }
 
-.hero-marquee:hover .hero-marquee__track { animation-play-state: paused; }
+.hero-marquee:hover .hero-marquee__track { animation-play-state: running; }
 
 .project-tile {
   width: 292px;

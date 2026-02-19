@@ -516,6 +516,84 @@
     });
   }
 
+  // Hero rotating suffix (backspace + retype every cycle)
+  const rotatingSuffixEl = document.querySelector('#hero-rotating-suffix');
+  const rotatingTitleEl = rotatingSuffixEl?.closest('.hero-title-shine');
+  if (rotatingSuffixEl && rotatingTitleEl) {
+    const prefix = rotatingTitleEl.dataset.prefix || 'Home automation heavy, AI-assisted tooling, and ';
+    const phrases = [
+      'hands-on maker projects.',
+      'making coding cooler.',
+      'probably coding something right now.',
+      'building tiny tools that punch above their weight.',
+      'shipping practical automations daily.',
+      'turning coffee into shipped features.',
+      'making homelab workflows feel effortless.',
+      'connecting hardware with smarter software.',
+      'obsessing over clean UX and useful systems.',
+      'teaching machines to handle the boring stuff.',
+      'prototyping ideas into real tools fast.',
+      'stacking small wins into big systems.',
+      'engineering projects that actually get used.',
+      'automating what should have been automated years ago.',
+      'gluing APIs together until they feel like magic.',
+      'keeping the stack practical, reliable, and fun.',
+      'making smart-home chaos behave itself.',
+      'building tools that save clicks and time.',
+      'turning repetitive tasks into one-button flows.',
+      'crafting automations that just quietly work.',
+      'chaining APIs into useful everyday workflows.',
+      'debugging edge cases so you do not have to.',
+      'shipping maker ideas from sketch to reality.',
+      'balancing speed, polish, and reliability.',
+      'writing glue code that makes everything nicer.',
+    ];
+
+    let phraseIndex = 0;
+    let animating = false;
+
+    const syncTitleText = (suffixText) => {
+      rotatingTitleEl.dataset.text = `${prefix}${suffixText}`;
+    };
+
+    const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    const typeToPhrase = async (target) => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        rotatingSuffixEl.textContent = target;
+        syncTitleText(target);
+        return;
+      }
+
+      animating = true;
+      let current = rotatingSuffixEl.textContent || '';
+
+      while (current.length > 0) {
+        current = current.slice(0, -1);
+        rotatingSuffixEl.textContent = current;
+        syncTitleText(current);
+        await sleep(22);
+      }
+
+      for (const ch of target) {
+        current += ch;
+        rotatingSuffixEl.textContent = current;
+        syncTitleText(current);
+        await sleep(28);
+      }
+
+      animating = false;
+    };
+
+    syncTitleText(rotatingSuffixEl.textContent || phrases[0]);
+
+    window.setInterval(async () => {
+      if (animating) return;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      await typeToPhrase(phrases[phraseIndex]);
+    }, 5000);
+  }
+
   // Reveal-on-scroll
   const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
   revealNodes.forEach((node) => {
