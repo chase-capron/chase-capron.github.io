@@ -1219,9 +1219,11 @@ h1 {
   .hero__art {
     order: 3;
     grid-template-columns: 1fr;
-    align-items: start;
-    justify-items: start;
+    align-items: center;
+    justify-items: center;
     gap: 12px;
+    width: 100%;
+    text-align: center;
   }
   .hero__actions {
     order: 4;
@@ -1233,20 +1235,23 @@ h1 {
     display: flex;
     order: 3;
     margin-top: 2px;
+    justify-content: center;
+    width: 100%;
   }
   .hero__lead {
     order: 2;
     margin-top: 0;
-    max-width: 100%;
+    max-width: min(36ch, 100%);
     font-size: 16px;
-    text-align: left;
+    text-align: center;
+    margin-inline: auto;
   }
   .hero__logo {
     order: 1;
-    width: min(240px, 100%);
+    width: min(240px, 78vw);
     height: auto;
     aspect-ratio: 1 / 1;
-    margin-inline: 0;
+    margin-inline: auto;
   }
 }
 
@@ -1277,16 +1282,18 @@ h1 {
   .hero__art {
     grid-template-columns: 1fr;
     gap: 10px;
+    justify-items: center;
   }
   .hero__lead {
     order: 2;
     font-size: 15px;
+    text-align: center;
   }
   .hero__logo {
     order: 1;
-    width: min(220px, 100%);
+    width: min(220px, 76vw);
     height: auto;
     aspect-ratio: 1 / 1;
-    margin-inline: 0;
+    margin-inline: auto;
   }
 }
