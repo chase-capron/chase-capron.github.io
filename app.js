@@ -230,6 +230,7 @@
     ctx: null,
     columns: [],
     animationId: null,
+    startTimer: null,
     running: false,
     fontSize: 16,
     width: 0,
@@ -265,10 +266,11 @@
 
   const resizeMatrix = () => {
     const canvas = ensureMatrixCanvas();
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const dpr = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
     const width = window.innerWidth;
     const height = window.innerHeight;
 
+    matrixState.fontSize = width <= 768 ? 18 : 16;
     matrixState.width = width;
     matrixState.height = height;
     canvas.width = Math.floor(width * dpr);
@@ -280,7 +282,7 @@
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const columnsCount = Math.max(12, Math.floor(width / matrixState.fontSize));
+    const columnsCount = Math.max(10, Math.floor(width / matrixState.fontSize));
     matrixState.columns = Array.from({ length: columnsCount }, () =>
       Math.floor((Math.random() * height) / matrixState.fontSize)
     );
@@ -289,7 +291,7 @@
   const drawMatrixFrame = (now) => {
     if (!matrixState.running || !matrixState.ctx) return;
 
-    if (now - matrixState.lastFrameAt < 40) {
+    if (now - matrixState.lastFrameAt < 66) {
       matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
       return;
     }
@@ -322,6 +324,10 @@
 
   const stopMatrixRain = () => {
     matrixState.running = false;
+    if (matrixState.startTimer) {
+      window.clearTimeout(matrixState.startTimer);
+      matrixState.startTimer = null;
+    }
     if (matrixState.animationId) {
       window.cancelAnimationFrame(matrixState.animationId);
       matrixState.animationId = null;
@@ -335,17 +341,31 @@
   };
 
   const startMatrixRain = () => {
-    ensureMatrixCanvas();
-    resizeMatrix();
+    if (matrixState.running || matrixState.startTimer) return;
 
-    matrixState.running = true;
-    matrixState.lastFrameAt = 0;
+    const boot = () => {
+      matrixState.startTimer = null;
+      ensureMatrixCanvas();
+      resizeMatrix();
 
-    if (matrixState.animationId) {
-      window.cancelAnimationFrame(matrixState.animationId);
-    }
+      matrixState.running = true;
+      matrixState.lastFrameAt = 0;
 
-    matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
+      if (matrixState.animationId) {
+        window.cancelAnimationFrame(matrixState.animationId);
+      }
+
+      matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
+    };
+
+    // Let initial hero text animation render smoothly first.
+    matrixState.startTimer = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(boot, { timeout: 800 });
+      } else {
+        boot();
+      }
+    }, 900);
   };
 
   const syncMatrixRain = (themeId) => {
@@ -441,6 +461,19 @@
   } else if (typeof reducedMotionQuery.addListener === 'function') {
     reducedMotionQuery.addListener(handleReducedMotionChange);
   }
+
+  document.addEventListener('visibilitychange', () => {
+    const activeTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
+    if (document.hidden) {
+      if (matrixState.animationId) {
+        window.cancelAnimationFrame(matrixState.animationId);
+        matrixState.animationId = null;
+      }
+      matrixState.running = false;
+    } else if (shouldRunMatrixRain(activeTheme)) {
+      startMatrixRain();
+    }
+  });
 
   const yearEl = document.getElementById('year');
   if (yearEl) {
