@@ -249,7 +249,14 @@
     const canvas = document.createElement('canvas');
     canvas.id = 'matrixRainCanvas';
     canvas.setAttribute('aria-hidden', 'true');
-    document.body.prepend(canvas);
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '0';
+    document.body.appendChild(canvas);
 
     matrixState.canvas = canvas;
     matrixState.ctx = canvas.getContext('2d', { alpha: true });

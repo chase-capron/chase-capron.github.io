@@ -28,12 +28,24 @@
 
 :root[data-theme="matrix"] #matrixRainCanvas {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   opacity: 0.48;
+}
+
+:root[data-theme="matrix"] body {
+  overflow-x: hidden;
+}
+
+:root[data-theme="matrix"] body > :not(#matrixRainCanvas) {
+  position: relative;
+  z-index: 1;
 }
 
 :root[data-theme="matrix"] .site-header {
