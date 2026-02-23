@@ -225,6 +225,130 @@
     themeManifestStamp.title = generatedAt.toISOString();
   };
 
+  const matrixState = {
+    canvas: null,
+    ctx: null,
+    columns: [],
+    animationId: null,
+    running: false,
+    fontSize: 16,
+    width: 0,
+    height: 0,
+    lastFrameAt: 0,
+  };
+
+  const MATRIX_CHARS = 'アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*+-<>[]{}';
+
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const shouldRunMatrixRain = (themeId) => themeId === 'matrix' && !prefersReducedMotion();
+
+  const ensureMatrixCanvas = () => {
+    if (matrixState.canvas instanceof HTMLCanvasElement) return matrixState.canvas;
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'matrixRainCanvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.prepend(canvas);
+
+    matrixState.canvas = canvas;
+    matrixState.ctx = canvas.getContext('2d', { alpha: true });
+    return canvas;
+  };
+
+  const resizeMatrix = () => {
+    const canvas = ensureMatrixCanvas();
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    matrixState.width = width;
+    matrixState.height = height;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    const ctx = matrixState.ctx;
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const columnsCount = Math.max(12, Math.floor(width / matrixState.fontSize));
+    matrixState.columns = Array.from({ length: columnsCount }, () =>
+      Math.floor((Math.random() * height) / matrixState.fontSize)
+    );
+  };
+
+  const drawMatrixFrame = (now) => {
+    if (!matrixState.running || !matrixState.ctx) return;
+
+    if (now - matrixState.lastFrameAt < 40) {
+      matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
+      return;
+    }
+    matrixState.lastFrameAt = now;
+
+    const { ctx, width, height, fontSize, columns } = matrixState;
+
+    ctx.fillStyle = 'rgba(2, 10, 5, 0.18)';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.font = `${fontSize}px "Courier New", monospace`;
+
+    for (let i = 0; i < columns.length; i += 1) {
+      const x = i * fontSize;
+      const y = columns[i] * fontSize;
+      const char = MATRIX_CHARS.charAt(Math.floor(Math.random() * MATRIX_CHARS.length));
+
+      ctx.fillStyle = 'rgba(67, 255, 138, 0.9)';
+      ctx.fillText(char, x, y);
+
+      if (y > height && Math.random() > 0.975) {
+        columns[i] = 0;
+      } else {
+        columns[i] += 1;
+      }
+    }
+
+    matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
+  };
+
+  const stopMatrixRain = () => {
+    matrixState.running = false;
+    if (matrixState.animationId) {
+      window.cancelAnimationFrame(matrixState.animationId);
+      matrixState.animationId = null;
+    }
+    if (matrixState.canvas) {
+      matrixState.canvas.remove();
+      matrixState.canvas = null;
+      matrixState.ctx = null;
+      matrixState.columns = [];
+    }
+  };
+
+  const startMatrixRain = () => {
+    ensureMatrixCanvas();
+    resizeMatrix();
+
+    matrixState.running = true;
+    matrixState.lastFrameAt = 0;
+
+    if (matrixState.animationId) {
+      window.cancelAnimationFrame(matrixState.animationId);
+    }
+
+    matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
+  };
+
+  const syncMatrixRain = (themeId) => {
+    if (shouldRunMatrixRain(themeId)) {
+      startMatrixRain();
+    } else {
+      stopMatrixRain();
+    }
+  };
+
   const applyTheme = (theme) => {
     const nextTheme = normalizeTheme(theme);
 
@@ -238,6 +362,7 @@
     renderThemeOptions(nextTheme);
     renderThemePresetButtons(nextTheme);
     setThemeHint(nextTheme);
+    syncMatrixRain(nextTheme);
 
     try {
       localStorage.setItem(THEME_KEY, nextTheme);
@@ -293,6 +418,22 @@
     const nextTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
     applyTheme(nextTheme);
   });
+
+  window.addEventListener('resize', () => {
+    if (matrixState.running) resizeMatrix();
+  });
+
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const handleReducedMotionChange = () => {
+    const activeTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
+    syncMatrixRain(activeTheme);
+  };
+
+  if (typeof reducedMotionQuery.addEventListener === 'function') {
+    reducedMotionQuery.addEventListener('change', handleReducedMotionChange);
+  } else if (typeof reducedMotionQuery.addListener === 'function') {
+    reducedMotionQuery.addListener(handleReducedMotionChange);
+  }
 
   const yearEl = document.getElementById('year');
   if (yearEl) {

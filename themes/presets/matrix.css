@@ -26,48 +26,14 @@
     var(--bg);
 }
 
-:root[data-theme="matrix"] body::before,
-:root[data-theme="matrix"] body::after {
-  content: "";
+:root[data-theme="matrix"] #matrixRainCanvas {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
   z-index: -1;
-}
-
-:root[data-theme="matrix"] body::before {
-  opacity: 0.24;
-  background-size: 26px 220px, 26px 220px;
-  background-image:
-    repeating-linear-gradient(
-      180deg,
-      rgba(50, 255, 124, 0.22) 0,
-      rgba(50, 255, 124, 0.22) 1px,
-      transparent 1px,
-      transparent 12px,
-      rgba(132, 255, 175, 0.38) 12px,
-      rgba(132, 255, 175, 0.38) 13px,
-      transparent 13px,
-      transparent 26px
-    ),
-    repeating-linear-gradient(
-      180deg,
-      transparent 0,
-      transparent 8px,
-      rgba(21, 168, 82, 0.42) 8px,
-      rgba(21, 168, 82, 0.42) 9px,
-      transparent 9px,
-      transparent 22px
-    );
-  background-position: 0 0, 13px 0;
-  animation: matrix-rain-a 20s linear infinite;
-}
-
-:root[data-theme="matrix"] body::after {
-  opacity: 0.16;
-  background: linear-gradient(180deg, transparent 0%, rgba(22, 103, 60, 0.38) 60%, transparent 100%);
-  background-size: 100% 220px;
-  animation: matrix-rain-b 14s linear infinite;
+  opacity: 0.48;
 }
 
 :root[data-theme="matrix"] .site-header {
@@ -104,19 +70,8 @@
   box-shadow: 0 14px 48px rgba(0, 0, 0, 0.44);
 }
 
-@keyframes matrix-rain-a {
-  from { background-position: 0 0, 13px 0; }
-  to { background-position: 0 220px, 13px 330px; }
-}
-
-@keyframes matrix-rain-b {
-  from { background-position: 0 -220px; }
-  to { background-position: 0 220px; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme="matrix"] body::before,
-  :root[data-theme="matrix"] body::after {
-    animation: none;
+  :root[data-theme="matrix"] #matrixRainCanvas {
+    display: none;
   }
 }
