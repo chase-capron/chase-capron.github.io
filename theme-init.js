@@ -5,6 +5,7 @@
   const themeStylesById = {
     default: 'themes/presets/default.css',
     arc: 'themes/presets/arc.css',
+    matrix: 'themes/presets/matrix.css',
   };
 
   const sanitizeThemeId = (value) => {

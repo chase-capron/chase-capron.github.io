@@ -42,6 +42,14 @@
       accent: '#ff3d00',
       tags: ['Motion-forward', 'Experimental'],
     },
+    {
+      id: 'matrix',
+      label: 'Matrix',
+      css: 'themes/presets/matrix.css',
+      description: 'Falling green code + phosphor text treatment',
+      accent: '#36ff77',
+      tags: ['Cinematic', 'Animated', 'High contrast'],
+    },
   ];
 
   let themeCatalog = [...defaultThemeCatalog];

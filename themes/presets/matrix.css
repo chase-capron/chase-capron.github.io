@@ -1,0 +1,122 @@
+/* Matrix theme preset: green phosphor styling + subtle falling-code backdrop */
+:root[data-theme="matrix"] {
+  --bg: #020705;
+  --bg-soft: #06100b;
+  --surface: rgba(7, 22, 14, 0.74);
+  --surface-solid: #08170f;
+  --text: #cbffd9;
+  --text-soft: #79c494;
+  --line: rgba(80, 201, 120, 0.28);
+  --accent: #36ff77;
+  --accent-2: #0fbf57;
+  --shadow: 0 18px 52px rgba(0, 0, 0, 0.48);
+  --shadow-strong: 0 32px 88px rgba(0, 0, 0, 0.62);
+
+  --beam-1: #23ff6d;
+  --beam-2: #7dff9f;
+  --beam-3: #0dc35a;
+  --beam-4: #2d9f5a;
+}
+
+:root[data-theme="matrix"] body {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(43, 255, 119, 0.09), transparent 34%),
+    radial-gradient(circle at 85% 20%, rgba(34, 164, 92, 0.08), transparent 38%),
+    radial-gradient(circle at 45% 85%, rgba(24, 110, 64, 0.08), transparent 36%),
+    var(--bg);
+}
+
+:root[data-theme="matrix"] body::before,
+:root[data-theme="matrix"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+:root[data-theme="matrix"] body::before {
+  opacity: 0.24;
+  background-size: 26px 220px, 26px 220px;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      rgba(50, 255, 124, 0.22) 0,
+      rgba(50, 255, 124, 0.22) 1px,
+      transparent 1px,
+      transparent 12px,
+      rgba(132, 255, 175, 0.38) 12px,
+      rgba(132, 255, 175, 0.38) 13px,
+      transparent 13px,
+      transparent 26px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 8px,
+      rgba(21, 168, 82, 0.42) 8px,
+      rgba(21, 168, 82, 0.42) 9px,
+      transparent 9px,
+      transparent 22px
+    );
+  background-position: 0 0, 13px 0;
+  animation: matrix-rain-a 20s linear infinite;
+}
+
+:root[data-theme="matrix"] body::after {
+  opacity: 0.16;
+  background: linear-gradient(180deg, transparent 0%, rgba(22, 103, 60, 0.38) 60%, transparent 100%);
+  background-size: 100% 220px;
+  animation: matrix-rain-b 14s linear infinite;
+}
+
+:root[data-theme="matrix"] .site-header {
+  background: rgba(4, 13, 9, 0.82);
+  border-bottom-color: rgba(74, 224, 132, 0.24);
+}
+
+:root[data-theme="matrix"] .btn {
+  background: linear-gradient(140deg, #0f8f47, #36ff77);
+  color: #011308;
+  border-color: rgba(80, 255, 148, 0.5);
+}
+
+:root[data-theme="matrix"] .btn--ghost {
+  color: var(--text);
+  background: rgba(13, 45, 28, 0.65);
+  border-color: rgba(80, 255, 148, 0.34);
+}
+
+:root[data-theme="matrix"] .nav a:hover,
+:root[data-theme="matrix"] .nav a:focus,
+:root[data-theme="matrix"] .nav a[aria-current="page"] {
+  background: rgba(32, 134, 73, 0.5);
+  border-color: rgba(89, 255, 151, 0.52);
+}
+
+:root[data-theme="matrix"] .card,
+:root[data-theme="matrix"] .project-card,
+:root[data-theme="matrix"] .project-tile,
+:root[data-theme="matrix"] .hardware-card,
+:root[data-theme="matrix"] .callout,
+:root[data-theme="matrix"] .theme-panel {
+  border-color: rgba(80, 255, 148, 0.2);
+  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.44);
+}
+
+@keyframes matrix-rain-a {
+  from { background-position: 0 0, 13px 0; }
+  to { background-position: 0 220px, 13px 330px; }
+}
+
+@keyframes matrix-rain-b {
+  from { background-position: 0 -220px; }
+  to { background-position: 0 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="matrix"] body::before,
+  :root[data-theme="matrix"] body::after {
+    animation: none;
+  }
+}
