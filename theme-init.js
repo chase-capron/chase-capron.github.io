@@ -7,6 +7,7 @@
     arc: 'themes/presets/arc.css',
     matrix: 'themes/presets/matrix.css',
     'classic-mac': 'themes/presets/classic-mac.css',
+    simpsons: 'themes/presets/simpsons.css',
   };
 
   const sanitizeThemeId = (value) => {

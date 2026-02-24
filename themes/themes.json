@@ -34,6 +34,14 @@
       "description": "Retro Mac OS style UI with grayscale chrome",
       "accent": "#1d49c6",
       "tags": ["Retro", "Monochrome", "Classic UI"]
+    },
+    {
+      "id": "simpsons",
+      "label": "Springfield",
+      "css": "themes/presets/simpsons.css",
+      "description": "Cartoon sky theme with clouds-to-house scroll scene",
+      "accent": "#ffd841",
+      "tags": ["Playful", "Scrolling Scene", "Sky"]
     }
   ]
 }

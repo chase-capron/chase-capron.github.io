@@ -58,6 +58,14 @@
       accent: '#1d49c6',
       tags: ['Retro', 'Monochrome', 'Classic UI'],
     },
+    {
+      id: 'simpsons',
+      label: 'Springfield',
+      css: 'themes/presets/simpsons.css',
+      description: 'Cartoon sky theme with clouds-to-house scroll scene',
+      accent: '#ffd841',
+      tags: ['Playful', 'Scrolling Scene', 'Sky'],
+    },
   ];
 
   let themeCatalog = [...defaultThemeCatalog];
@@ -672,10 +680,15 @@
     let ticking = false;
     const applyBackgroundDrift = () => {
       const y = window.scrollY || window.pageYOffset || 0;
+      const doc = document.documentElement;
+      const maxScroll = Math.max(1, (doc.scrollHeight || 1) - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, y / maxScroll));
+
       const useDrift = (root.dataset.theme || 'default') !== 'arc';
       root.style.setProperty('--bg-shift-a', `${useDrift ? Math.round(y * 0.03) : 0}px`);
       root.style.setProperty('--bg-shift-b', `${useDrift ? Math.round(y * -0.02) : 0}px`);
       root.style.setProperty('--bg-shift-c', `${useDrift ? Math.round(y * 0.015) : 0}px`);
+      root.style.setProperty('--scroll-progress', progress.toFixed(4));
       ticking = false;
     };
 
@@ -826,7 +839,7 @@
       const GAP = 8;
       const CYCLE_MS = 10000;
       const DROP_STEP_MS = 80;
-      const LATERAL_STEP = 16;
+      const LATERAL_STEP = 8;
       const BETWEEN_PIECES_MS = 90;
       const PADDING_X = 8;
       const PADDING_Y = 8;
@@ -857,15 +870,12 @@
         const usableW = Math.max(220, stackRoot.clientWidth - PADDING_X * 2);
 
         chips.forEach((chip) => {
-          chip.style.fontSize = '';
-          chip.style.padding = '';
-          if (chip.getBoundingClientRect().width > usableW) {
-            chip.style.fontSize = '11px';
-            chip.style.padding = '5px 9px';
-          }
+          chip.style.maxWidth = `${usableW}px`;
+          chip.style.fontSize = '11px';
+          chip.style.padding = '4px 8px';
           if (chip.getBoundingClientRect().width > usableW) {
             chip.style.fontSize = '10px';
-            chip.style.padding = '4px 8px';
+            chip.style.padding = '3px 7px';
           }
         });
 
@@ -911,7 +921,11 @@
           }
 
           const row = rows[rowIndex];
-          const x = row.used + (row.used > 0 ? GAP : 0);
+          let x = row.used + (row.used > 0 ? GAP : 0);
+          if (x + chipW > usableW) {
+            x = 0;
+          }
+          x = Math.max(0, Math.min(x, Math.max(0, usableW - chipW)));
           row.used = x + chipW;
 
           const y = (maxRows - 1 - rowIndex) * (rowH + GAP);
@@ -925,9 +939,10 @@
         chip.classList.add('is-falling');
         chip.style.opacity = '1';
 
-        const startXOptions = [PADDING_X, Math.max(PADDING_X, stackRoot.clientWidth - chip.getBoundingClientRect().width - PADDING_X), Math.max(PADDING_X, (stackRoot.clientWidth - chip.getBoundingClientRect().width) / 2)];
-        let x = startXOptions[Math.floor(Math.random() * startXOptions.length)];
-        let y = -40 - Math.random() * 24;
+        const chipW = chip.getBoundingClientRect().width;
+        let x = tx + (Math.random() * 12 - 6);
+        x = Math.max(PADDING_X, Math.min(x, stackRoot.clientWidth - chipW - PADDING_X));
+        let y = -44 - Math.random() * 20;
 
         const lateralNudge = () => {
           const diff = tx - x;

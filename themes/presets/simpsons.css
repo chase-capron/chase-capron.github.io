@@ -1,0 +1,142 @@
+/* Springfield cartoon-inspired theme */
+:root[data-theme="simpsons"] {
+  --bg: #79c8ff;
+  --bg-soft: #a8dcff;
+  --surface: rgba(255, 246, 153, 0.88);
+  --surface-solid: #fff2a8;
+  --text: #102445;
+  --text-soft: rgba(16, 36, 69, 0.78);
+  --line: rgba(16, 36, 69, 0.22);
+  --accent: #ffd841;
+  --accent-2: #ff9f1c;
+  --shadow: 0 14px 34px rgba(16, 36, 69, 0.22);
+  --shadow-strong: 0 22px 60px rgba(16, 36, 69, 0.24);
+
+  --beam-1: #ffffff;
+  --beam-2: #ffe775;
+  --beam-3: #8ed5ff;
+  --beam-4: #ffd166;
+}
+
+:root[data-theme="simpsons"] body {
+  background:
+    linear-gradient(180deg, #85d3ff 0%, #7bc9ff 44%, #72c1fb 100%);
+  color: var(--text);
+  font-family: "Marker Felt", "Comic Sans MS", "Trebuchet MS", "Verdana", sans-serif;
+}
+
+/* Clouds at top (intro vibe) */
+:root[data-theme="simpsons"] body::before,
+:root[data-theme="simpsons"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+:root[data-theme="simpsons"] body::before {
+  background:
+    radial-gradient(48px 28px at calc(10% + (var(--scroll-progress, 0) * 4%)) calc(14% + (var(--scroll-progress, 0) * -18%)), rgba(255,255,255,.95) 0 90%, transparent 100%),
+    radial-gradient(58px 34px at calc(18% + (var(--scroll-progress, 0) * 8%)) calc(16% + (var(--scroll-progress, 0) * -20%)), rgba(255,255,255,.95) 0 90%, transparent 100%),
+    radial-gradient(52px 30px at calc(30% + (var(--scroll-progress, 0) * 10%)) calc(13% + (var(--scroll-progress, 0) * -18%)), rgba(255,255,255,.94) 0 90%, transparent 100%),
+    radial-gradient(44px 26px at calc(70% + (var(--scroll-progress, 0) * -8%)) calc(18% + (var(--scroll-progress, 0) * -24%)), rgba(255,255,255,.93) 0 90%, transparent 100%),
+    radial-gradient(62px 36px at calc(82% + (var(--scroll-progress, 0) * -6%)) calc(14% + (var(--scroll-progress, 0) * -22%)), rgba(255,255,255,.95) 0 90%, transparent 100%),
+    radial-gradient(46px 28px at calc(90% + (var(--scroll-progress, 0) * -6%)) calc(16% + (var(--scroll-progress, 0) * -20%)), rgba(255,255,255,.94) 0 90%, transparent 100%);
+  opacity: calc(0.95 - (var(--scroll-progress, 0) * 0.72));
+}
+
+/* House silhouette appears as you scroll down */
+:root[data-theme="simpsons"] body::after {
+  background:
+    linear-gradient(0deg, rgba(79, 166, 61, 0.94) 0 18%, transparent 18%),
+    linear-gradient(0deg,
+      transparent 0 25%,
+      #f4b266 25% 54%,
+      transparent 54%),
+    linear-gradient(0deg,
+      transparent 0 49%,
+      #d86b48 49% 58%,
+      transparent 58%),
+    linear-gradient(120deg,
+      transparent 0 44%,
+      #a24a30 44% 47%,
+      transparent 47%),
+    linear-gradient(240deg,
+      transparent 0 53%,
+      #a24a30 53% 56%,
+      transparent 56%),
+    radial-gradient(20px 20px at 51% 52%, #8ed5ff 0 98%, transparent 100%),
+    radial-gradient(12px 12px at 58% 51%, #ffe7b3 0 98%, transparent 100%),
+    radial-gradient(12px 12px at 44% 51%, #ffe7b3 0 98%, transparent 100%);
+  opacity: calc(var(--scroll-progress, 0) * 1.15);
+  transform: translateY(calc((1 - var(--scroll-progress, 0)) * 80px));
+  filter: saturate(1.04);
+}
+
+:root[data-theme="simpsons"] .site-header {
+  background: rgba(255, 236, 124, 0.92);
+  border-bottom: 2px solid rgba(16, 36, 69, 0.28);
+  backdrop-filter: none;
+}
+
+:root[data-theme="simpsons"] .brand__name,
+:root[data-theme="simpsons"] .brand__role,
+:root[data-theme="simpsons"] h1,
+:root[data-theme="simpsons"] h2,
+:root[data-theme="simpsons"] h3,
+:root[data-theme="simpsons"] .eyebrow,
+:root[data-theme="simpsons"] .theme-control__label,
+:root[data-theme="simpsons"] .nav a {
+  font-family: "Marker Felt", "Comic Sans MS", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+:root[data-theme="simpsons"] .btn,
+:root[data-theme="simpsons"] .nav a,
+:root[data-theme="simpsons"] .theme-control,
+:root[data-theme="simpsons"] .theme-control__select,
+:root[data-theme="simpsons"] .card,
+:root[data-theme="simpsons"] .project-card,
+:root[data-theme="simpsons"] .project-tile,
+:root[data-theme="simpsons"] .hardware-card,
+:root[data-theme="simpsons"] .callout,
+:root[data-theme="simpsons"] .theme-panel {
+  border: 2px solid rgba(16, 36, 69, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 8px 0 rgba(16, 36, 69, 0.14), var(--shadow);
+}
+
+:root[data-theme="simpsons"] .btn {
+  background: linear-gradient(140deg, #ffe660, #ffba3a);
+  color: #152744;
+  font-weight: 900;
+}
+
+:root[data-theme="simpsons"] .btn--ghost {
+  background: rgba(255, 246, 153, 0.78);
+  color: #152744;
+}
+
+:root[data-theme="simpsons"] .chip {
+  background: rgba(255, 244, 160, 0.94);
+  color: #173058;
+  border: 1px solid rgba(16, 36, 69, 0.22);
+}
+
+:root[data-theme="simpsons"] .tile-icon,
+:root[data-theme="simpsons"] .project-card__icon,
+:root[data-theme="simpsons"] .hardware-card__icon {
+  background: #ffe35d;
+  color: #173058;
+  border: 2px solid rgba(16, 36, 69, 0.24);
+  border-radius: 999px;
+  box-shadow: 0 5px 0 rgba(16, 36, 69, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="simpsons"] body::before,
+  :root[data-theme="simpsons"] body::after {
+    transform: none;
+  }
+}

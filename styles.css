@@ -898,6 +898,13 @@ h1 {
   left: 0;
   top: 0;
   z-index: 1;
+  max-width: calc(100% - 16px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  padding: 4px 8px;
+  line-height: 1.15;
   will-change: transform, opacity;
   transition: transform 260ms linear, opacity 220ms ease;
 }
