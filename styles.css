@@ -940,7 +940,7 @@ h1 {
 .chip--js { color: #1a1a12; border-color: rgba(255, 215, 64, 0.55); background: rgba(255, 215, 64, 0.55); }
 .chip--node { color: #ddffe8; border-color: rgba(104, 160, 99, 0.5); background: rgba(104, 160, 99, 0.18); }
 .chip--docker { color: #d8eeff; border-color: rgba(36, 150, 237, 0.5); background: rgba(36, 150, 237, 0.15); }
-.chip--openclaw { color: #f9e3ff; border-color: rgba(175, 103, 232, 0.5); background: rgba(175, 103, 232, 0.16); }
+.chip--agents { color: #f9e3ff; border-color: rgba(175, 103, 232, 0.5); background: rgba(175, 103, 232, 0.16); }
 .chip--chatops { color: #ffe6d8; border-color: rgba(239, 123, 72, 0.5); background: rgba(239, 123, 72, 0.16); }
 
 .chip--ai {
