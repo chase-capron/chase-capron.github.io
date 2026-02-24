@@ -1,0 +1,92 @@
+/* Classic Mac OS inspired theme */
+:root[data-theme="classic-mac"] {
+  --bg: #bfbfbf;
+  --bg-soft: #d7d7d7;
+  --surface: rgba(238, 238, 238, 0.95);
+  --surface-solid: #efefef;
+  --text: #111111;
+  --text-soft: #3a3a3a;
+  --line: rgba(0, 0, 0, 0.25);
+  --accent: #1d49c6;
+  --accent-2: #0f2f93;
+  --shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-strong: 3px 3px 0 rgba(0, 0, 0, 0.42);
+
+  --beam-1: #d0d0d0;
+  --beam-2: #ececec;
+  --beam-3: #c4c4c4;
+  --beam-4: #f4f4f4;
+}
+
+:root[data-theme="classic-mac"] body {
+  font-family: "Chicago", "Charcoal", "Geneva", "Helvetica", "Arial", sans-serif;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.04)),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 3px),
+    var(--bg);
+  color: var(--text);
+  letter-spacing: 0;
+}
+
+:root[data-theme="classic-mac"] .site-header {
+  background: #dcdcdc;
+  border-bottom: 1px solid #000;
+  backdrop-filter: none;
+}
+
+:root[data-theme="classic-mac"] .brand__logo,
+:root[data-theme="classic-mac"] .project-card,
+:root[data-theme="classic-mac"] .project-tile,
+:root[data-theme="classic-mac"] .card,
+:root[data-theme="classic-mac"] .hardware-card,
+:root[data-theme="classic-mac"] .callout,
+:root[data-theme="classic-mac"] .theme-panel {
+  border-radius: 2px;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #9b9b9b inset, 2px 2px 0 rgba(0, 0, 0, 0.25);
+  background: #efefef;
+}
+
+:root[data-theme="classic-mac"] .nav a,
+:root[data-theme="classic-mac"] .btn,
+:root[data-theme="classic-mac"] .btn--ghost,
+:root[data-theme="classic-mac"] .theme-control,
+:root[data-theme="classic-mac"] .theme-control__select {
+  border-radius: 2px;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #a4a4a4 inset;
+}
+
+:root[data-theme="classic-mac"] .btn,
+:root[data-theme="classic-mac"] .nav a[aria-current="page"] {
+  background: linear-gradient(180deg, #e8e8e8, #cfcfcf);
+  color: #000;
+}
+
+:root[data-theme="classic-mac"] .btn:hover,
+:root[data-theme="classic-mac"] .nav a:hover {
+  background: linear-gradient(180deg, #f5f5f5, #dcdcdc);
+}
+
+:root[data-theme="classic-mac"] .eyebrow,
+:root[data-theme="classic-mac"] .section__hint,
+:root[data-theme="classic-mac"] .section__micro,
+:root[data-theme="classic-mac"] .muted,
+:root[data-theme="classic-mac"] .brand__role {
+  color: #2f2f2f;
+}
+
+:root[data-theme="classic-mac"] .chip {
+  border-radius: 2px;
+  border: 1px solid #000;
+  background: #dfdfdf;
+  color: #111;
+}
+
+:root[data-theme="classic-mac"] .hero-title-shine,
+:root[data-theme="classic-mac"] h1,
+:root[data-theme="classic-mac"] h2,
+:root[data-theme="classic-mac"] h3 {
+  color: #000;
+  text-shadow: none;
+}

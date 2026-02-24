@@ -6,6 +6,7 @@
     default: 'themes/presets/default.css',
     arc: 'themes/presets/arc.css',
     matrix: 'themes/presets/matrix.css',
+    'classic-mac': 'themes/presets/classic-mac.css',
   };
 
   const sanitizeThemeId = (value) => {

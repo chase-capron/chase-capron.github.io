@@ -1,18 +1,33 @@
 :root[data-theme="arc"] {
-  --bg: #04060b;
-  --bg-soft: #070b12;
-  --surface: rgba(12, 16, 24, 0.72);
-  --surface-solid: #0a0f19;
+  --bg: #05070d;
+  --bg-soft: #0a111b;
+  --surface: rgba(12, 16, 24, 0.74);
+  --surface-solid: #0b1220;
   --text: #f3f6ff;
-  --text-soft: rgba(243, 246, 255, 0.72);
+  --text-soft: rgba(243, 246, 255, 0.74);
   --line: rgba(243, 246, 255, 0.16);
+
+  --beam-1: #ff5a2f;
+  --beam-2: #ffbf2f;
+  --beam-3: #35d8ff;
+  --beam-4: #45ff80; /* requested 4th line color: green */
+
   --accent: var(--beam-3);
-  --accent-2: var(--beam-2);
+  --accent-2: var(--beam-4);
   --shadow: 0 28px 88px rgba(0, 0, 0, 0.6);
   --shadow-strong: 0 40px 140px rgba(0, 0, 0, 0.62);
 }
 
-/* Arc theme: seamless straight tunnel-style moving beam stripes */
+/* Arc Raiders: live subway map vibe */
+:root[data-theme="arc"] body {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 90, 47, 0.12), transparent 32%),
+    radial-gradient(circle at 83% 22%, rgba(53, 216, 255, 0.12), transparent 34%),
+    radial-gradient(circle at 46% 82%, rgba(69, 255, 128, 0.1), transparent 36%),
+    var(--bg);
+}
+
+/* static network rails */
 :root[data-theme="arc"] body::before,
 :root[data-theme="arc"] body::after {
   content: "";
@@ -20,49 +35,95 @@
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      color-mix(in oklab, var(--beam-1) 62%, transparent) 0px,
-      color-mix(in oklab, var(--beam-1) 62%, transparent) 8px,
-      transparent 8px,
-      transparent 40px,
-      color-mix(in oklab, var(--beam-2) 58%, transparent) 40px,
-      color-mix(in oklab, var(--beam-2) 58%, transparent) 48px,
-      transparent 48px,
-      transparent 84px,
-      color-mix(in oklab, var(--beam-3) 58%, transparent) 84px,
-      color-mix(in oklab, var(--beam-3) 58%, transparent) 92px,
-      transparent 92px,
-      transparent 132px
-    );
-  background-size: 132px 100%;
-  background-repeat: repeat;
-  mix-blend-mode: screen;
-  opacity: 0.65;
-  filter: blur(0.8px) saturate(1.16);
-  animation: arcTunnelLinear 9s linear infinite;
 }
 
+:root[data-theme="arc"] body::before {
+  opacity: 0.55;
+  background-image:
+    linear-gradient(22deg,
+      transparent 0 18%,
+      color-mix(in oklab, var(--beam-1) 74%, transparent) 18% 19%,
+      transparent 19% 31%,
+      color-mix(in oklab, var(--beam-3) 72%, transparent) 31% 32%,
+      transparent 32% 44%,
+      color-mix(in oklab, var(--beam-2) 70%, transparent) 44% 45%,
+      transparent 45% 58%,
+      color-mix(in oklab, var(--beam-4) 76%, transparent) 58% 59%,
+      transparent 59% 100%),
+    linear-gradient(-28deg,
+      transparent 0 20%,
+      color-mix(in oklab, var(--beam-4) 72%, transparent) 20% 21%,
+      transparent 21% 38%,
+      color-mix(in oklab, var(--beam-1) 72%, transparent) 38% 39%,
+      transparent 39% 56%,
+      color-mix(in oklab, var(--beam-3) 70%, transparent) 56% 57%,
+      transparent 57% 73%,
+      color-mix(in oklab, var(--beam-2) 70%, transparent) 73% 74%,
+      transparent 74% 100%),
+    linear-gradient(90deg,
+      transparent 0 14%,
+      color-mix(in oklab, var(--beam-2) 58%, transparent) 14% 14.8%,
+      transparent 14.8% 33%,
+      color-mix(in oklab, var(--beam-4) 58%, transparent) 33% 33.8%,
+      transparent 33.8% 52%,
+      color-mix(in oklab, var(--beam-3) 58%, transparent) 52% 52.8%,
+      transparent 52.8% 70%,
+      color-mix(in oklab, var(--beam-1) 58%, transparent) 70% 70.8%,
+      transparent 70.8% 100%);
+  filter: blur(0.5px) saturate(1.18);
+}
+
+/* animated beam traffic */
 :root[data-theme="arc"] body::after {
-  opacity: 0.35;
-  filter: blur(8px) saturate(1.2);
-  animation-duration: 18s;
-  animation-direction: reverse;
+  opacity: 0.6;
+  background-image:
+    repeating-linear-gradient(90deg,
+      transparent 0 34px,
+      color-mix(in oklab, var(--beam-1) 84%, transparent) 34px 42px,
+      transparent 42px 82px,
+      color-mix(in oklab, var(--beam-2) 82%, transparent) 82px 90px,
+      transparent 90px 126px,
+      color-mix(in oklab, var(--beam-3) 82%, transparent) 126px 134px,
+      transparent 134px 170px,
+      color-mix(in oklab, var(--beam-4) 86%, transparent) 170px 178px,
+      transparent 178px 230px),
+    repeating-linear-gradient(-34deg,
+      transparent 0 80px,
+      color-mix(in oklab, var(--beam-3) 74%, transparent) 80px 86px,
+      transparent 86px 168px,
+      color-mix(in oklab, var(--beam-4) 74%, transparent) 168px 174px,
+      transparent 174px 255px),
+    repeating-linear-gradient(26deg,
+      transparent 0 95px,
+      color-mix(in oklab, var(--beam-1) 72%, transparent) 95px 101px,
+      transparent 101px 194px,
+      color-mix(in oklab, var(--beam-2) 72%, transparent) 194px 200px,
+      transparent 200px 286px);
+  mix-blend-mode: screen;
+  filter: blur(2.6px) saturate(1.24);
+  animation:
+    arcTrafficA 9s linear infinite,
+    arcTrafficB 13s linear infinite reverse,
+    arcPulse 3.8s ease-in-out infinite;
+}
+
+@keyframes arcTrafficA {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 230px 0, -180px 0, 160px 0; }
+}
+
+@keyframes arcTrafficB {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -8px, 0); }
+}
+
+@keyframes arcPulse {
+  0%, 100% { opacity: 0.52; }
+  50% { opacity: 0.68; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme="arc"] body::before,
   :root[data-theme="arc"] body::after {
     animation: none;
-  }
-}
-
-@keyframes arcTunnelLinear {
-  0% {
-    background-position-x: 0;
-  }
-  100% {
-    background-position-x: 132px;
   }
 }

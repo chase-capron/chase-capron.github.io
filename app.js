@@ -50,6 +50,14 @@
       accent: '#36ff77',
       tags: ['Cinematic', 'Animated', 'High contrast'],
     },
+    {
+      id: 'classic-mac',
+      label: 'Classic Mac',
+      css: 'themes/presets/classic-mac.css',
+      description: 'Retro Mac OS style UI with grayscale chrome',
+      accent: '#1d49c6',
+      tags: ['Retro', 'Monochrome', 'Classic UI'],
+    },
   ];
 
   let themeCatalog = [...defaultThemeCatalog];
