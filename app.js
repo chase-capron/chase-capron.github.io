@@ -918,10 +918,13 @@
         order.forEach((chip) => {
           const idx = chips.indexOf(chip);
           const chipW = chipWidths[idx];
-          let rowIndex = pickRow(rows, chipW, usableW);
+          const rowIndex = pickRow(rows, chipW, usableW);
 
+          // If we are out of rows, skip this chip for this cycle instead of overlapping.
           if (rowIndex >= maxRows) {
-            rowIndex = maxRows - 1;
+            chip.style.opacity = '0';
+            chip.style.transform = 'translate3d(-9999px, -9999px, 0)';
+            return;
           }
 
           while (rows.length <= rowIndex) {
@@ -929,11 +932,7 @@
           }
 
           const row = rows[rowIndex];
-          let x = row.used + (row.used > 0 ? GAP : 0);
-          if (x + chipW > usableW) {
-            x = 0;
-          }
-          x = Math.max(0, Math.min(x, Math.max(0, usableW - chipW)));
+          const x = row.used + (row.used > 0 ? GAP : 0);
           row.used = x + chipW;
 
           const y = (maxRows - 1 - rowIndex) * (rowH + GAP);
@@ -985,6 +984,10 @@
 
       const run = async () => {
         if (busy) return;
+        if (timer) {
+          window.clearTimeout(timer);
+          timer = null;
+        }
         busy = true;
 
         const order = shuffle(chips);

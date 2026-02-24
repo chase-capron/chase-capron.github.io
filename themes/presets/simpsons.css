@@ -94,9 +94,21 @@
 :root[data-theme="simpsons"] h3,
 :root[data-theme="simpsons"] .eyebrow,
 :root[data-theme="simpsons"] .theme-control__label,
+:root[data-theme="simpsons"] .theme-control__select,
+:root[data-theme="simpsons"] .theme-control__select option,
+:root[data-theme="simpsons"] .theme-preset,
+:root[data-theme="simpsons"] .theme-preset__title,
+:root[data-theme="simpsons"] .theme-preset__desc,
+:root[data-theme="simpsons"] .theme-tag,
 :root[data-theme="simpsons"] .nav a,
 :root[data-theme="simpsons"] .btn,
-:root[data-theme="simpsons"] .chip {
+:root[data-theme="simpsons"] .chip,
+:root[data-theme="simpsons"] .hardware-card__name,
+:root[data-theme="simpsons"] .project-card__title,
+:root[data-theme="simpsons"] footer,
+:root[data-theme="simpsons"] footer *,
+:root[data-theme="simpsons"] #updated,
+:root[data-theme="simpsons"] #year {
   font-family: "Simpsonfont", "Marker Felt", "Comic Sans MS", "Trebuchet MS", sans-serif;
   letter-spacing: 0.01em;
 }
