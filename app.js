@@ -63,8 +63,16 @@
       label: 'Springfield',
       css: 'themes/presets/simpsons.css',
       description: 'Cartoon sky theme with clouds-to-house scroll scene',
-      accent: '#ffd841',
+      accent: '#fed90f',
       tags: ['Playful', 'Scrolling Scene', 'Sky'],
+    },
+    {
+      id: 'jungle',
+      label: 'Jungle',
+      css: 'themes/presets/jungle.css',
+      description: 'Animated jungle canopy reveal with vines, grasses, and wildlife',
+      accent: '#8ae75a',
+      tags: ['Nature', 'Animated', 'Immersive'],
     },
   ];
 

@@ -1,0 +1,154 @@
+/* Jungle Expedition theme */
+:root[data-theme="jungle"] {
+  --bg: #0b2619;
+  --bg-soft: #153424;
+  --surface: rgba(18, 44, 30, 0.78);
+  --surface-solid: #1a4a33;
+  --text: #e9ffe9;
+  --text-soft: rgba(220, 247, 220, 0.82);
+  --line: rgba(120, 214, 140, 0.28);
+  --accent: #8ae75a;
+  --accent-2: #ffd166;
+  --shadow: 0 20px 56px rgba(0, 0, 0, 0.42);
+  --shadow-strong: 0 30px 90px rgba(0, 0, 0, 0.52);
+}
+
+:root[data-theme="jungle"] body {
+  background:
+    radial-gradient(1200px 620px at 50% -200px, rgba(145, 110, 58, 0.24), transparent 55%),
+    linear-gradient(180deg, #123822 0%, #0f311f 46%, #0b2619 100%);
+  color: var(--text);
+}
+
+/* Giant jungle trunk + vines */
+:root[data-theme="jungle"] body::before,
+:root[data-theme="jungle"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+:root[data-theme="jungle"] body::before {
+  background:
+    linear-gradient(90deg,
+      transparent 0 36%,
+      rgba(70, 42, 24, 0.68) 36% 40%,
+      rgba(92, 58, 36, 0.74) 40% 46%,
+      rgba(66, 38, 22, 0.66) 46% 50%,
+      transparent 50% 100%),
+    repeating-linear-gradient(180deg,
+      transparent 0 38px,
+      rgba(25, 95, 52, 0.55) 38px 42px,
+      transparent 42px 84px),
+    repeating-linear-gradient(168deg,
+      transparent 0 80px,
+      rgba(66, 161, 92, 0.34) 80px 84px,
+      transparent 84px 176px);
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  opacity: 0.6;
+  animation: jungleVines 12s linear infinite;
+}
+
+/* Top leaf reveal + bottom life */
+:root[data-theme="jungle"] body::after {
+  background:
+    radial-gradient(220px 180px at 8% 6%, rgba(36, 122, 62, 0.95) 0 64%, transparent 66%),
+    radial-gradient(260px 200px at 22% 2%, rgba(31, 112, 55, 0.95) 0 64%, transparent 66%),
+    radial-gradient(260px 200px at 78% 2%, rgba(31, 112, 55, 0.95) 0 64%, transparent 66%),
+    radial-gradient(220px 180px at 92% 6%, rgba(36, 122, 62, 0.95) 0 64%, transparent 66%),
+    linear-gradient(0deg, rgba(52, 148, 74, 0.68) 0 16%, transparent 16%);
+  transform-origin: top center;
+  animation: leafReveal 2.1s ease-out forwards;
+}
+
+:root[data-theme="jungle"] .site-header {
+  background: rgba(12, 40, 26, 0.88);
+  border-bottom-color: rgba(126, 221, 147, 0.28);
+}
+
+:root[data-theme="jungle"] .card,
+:root[data-theme="jungle"] .project-card,
+:root[data-theme="jungle"] .project-tile,
+:root[data-theme="jungle"] .hardware-card,
+:root[data-theme="jungle"] .callout,
+:root[data-theme="jungle"] .theme-panel {
+  border-color: rgba(136, 225, 146, 0.24);
+  background: linear-gradient(180deg, rgba(20, 52, 34, 0.84), rgba(14, 42, 28, 0.8));
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="jungle"] .btn {
+  background: linear-gradient(140deg, #6bcf4b, #b9ee6a);
+  color: #0d2115;
+  border-color: rgba(201, 248, 127, 0.58);
+}
+
+/* Tall grass in front of modules */
+:root[data-theme="jungle"] .section {
+  position: relative;
+}
+
+:root[data-theme="jungle"] .section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 54px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(82deg,
+      rgba(92, 205, 108, 0.48) 0 2px,
+      transparent 2px 10px,
+      rgba(128, 228, 119, 0.36) 10px 12px,
+      transparent 12px 20px);
+  opacity: 0.75;
+  filter: blur(0.3px);
+  animation: grassSway 4s ease-in-out infinite;
+}
+
+/* Bottom wildlife accents */
+:root[data-theme="jungle"] footer::before {
+  content: "🦜  🐒  🦋  🌺  🐸";
+  display: block;
+  text-align: center;
+  letter-spacing: 0.35em;
+  font-size: 24px;
+  padding-bottom: 8px;
+  opacity: 0.9;
+}
+
+@keyframes jungleVines {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 0 120px, 0 180px; }
+}
+
+@keyframes leafReveal {
+  0% {
+    opacity: 0.95;
+    transform: scaleY(1);
+  }
+  70% {
+    opacity: 0.65;
+    transform: scaleY(0.62);
+  }
+  100% {
+    opacity: 0.36;
+    transform: scaleY(0.45);
+  }
+}
+
+@keyframes grassSway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="jungle"] body::before,
+  :root[data-theme="jungle"] body::after,
+  :root[data-theme="jungle"] .section::after {
+    animation: none;
+  }
+}

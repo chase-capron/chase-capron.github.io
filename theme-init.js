@@ -8,6 +8,7 @@
     matrix: 'themes/presets/matrix.css',
     'classic-mac': 'themes/presets/classic-mac.css',
     simpsons: 'themes/presets/simpsons.css',
+    jungle: 'themes/presets/jungle.css',
   };
 
   const sanitizeThemeId = (value) => {

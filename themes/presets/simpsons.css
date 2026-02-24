@@ -1,14 +1,21 @@
 /* Springfield cartoon-inspired theme */
+@font-face {
+  font-family: "Simpsonfont";
+  src: url("../../assets/fonts/simpsons/Simpsonfont%20DEMO.otf") format("opentype");
+  font-display: swap;
+}
+
 :root[data-theme="simpsons"] {
+  --simpsons-yellow: #fed90f;
   --bg: #79c8ff;
   --bg-soft: #a8dcff;
-  --surface: rgba(255, 246, 153, 0.88);
-  --surface-solid: #fff2a8;
+  --surface: color-mix(in oklab, var(--simpsons-yellow) 30%, white 70%);
+  --surface-solid: color-mix(in oklab, var(--simpsons-yellow) 42%, white 58%);
   --text: #102445;
   --text-soft: rgba(16, 36, 69, 0.78);
   --line: rgba(16, 36, 69, 0.22);
-  --accent: #ffd841;
-  --accent-2: #ff9f1c;
+  --accent: var(--simpsons-yellow);
+  --accent-2: color-mix(in oklab, var(--simpsons-yellow) 78%, #ff9f1c 22%);
   --shadow: 0 14px 34px rgba(16, 36, 69, 0.22);
   --shadow-strong: 0 22px 60px rgba(16, 36, 69, 0.24);
 
@@ -75,7 +82,7 @@
 }
 
 :root[data-theme="simpsons"] .site-header {
-  background: rgba(255, 236, 124, 0.92);
+  background: color-mix(in oklab, var(--simpsons-yellow) 54%, white 46%);
   border-bottom: 2px solid rgba(16, 36, 69, 0.28);
   backdrop-filter: none;
 }
@@ -87,8 +94,10 @@
 :root[data-theme="simpsons"] h3,
 :root[data-theme="simpsons"] .eyebrow,
 :root[data-theme="simpsons"] .theme-control__label,
-:root[data-theme="simpsons"] .nav a {
-  font-family: "Marker Felt", "Comic Sans MS", "Trebuchet MS", sans-serif;
+:root[data-theme="simpsons"] .nav a,
+:root[data-theme="simpsons"] .btn,
+:root[data-theme="simpsons"] .chip {
+  font-family: "Simpsonfont", "Marker Felt", "Comic Sans MS", "Trebuchet MS", sans-serif;
   letter-spacing: 0.01em;
 }
 
@@ -108,18 +117,20 @@
 }
 
 :root[data-theme="simpsons"] .btn {
-  background: linear-gradient(140deg, #ffe660, #ffba3a);
+  background: linear-gradient(140deg,
+    color-mix(in oklab, var(--simpsons-yellow) 86%, white 14%),
+    color-mix(in oklab, var(--simpsons-yellow) 76%, #ffb43a 24%));
   color: #152744;
   font-weight: 900;
 }
 
 :root[data-theme="simpsons"] .btn--ghost {
-  background: rgba(255, 246, 153, 0.78);
+  background: color-mix(in oklab, var(--simpsons-yellow) 34%, white 66%);
   color: #152744;
 }
 
 :root[data-theme="simpsons"] .chip {
-  background: rgba(255, 244, 160, 0.94);
+  background: color-mix(in oklab, var(--simpsons-yellow) 30%, white 70%);
   color: #173058;
   border: 1px solid rgba(16, 36, 69, 0.22);
 }
@@ -127,7 +138,7 @@
 :root[data-theme="simpsons"] .tile-icon,
 :root[data-theme="simpsons"] .project-card__icon,
 :root[data-theme="simpsons"] .hardware-card__icon {
-  background: #ffe35d;
+  background: var(--simpsons-yellow);
   color: #173058;
   border: 2px solid rgba(16, 36, 69, 0.24);
   border-radius: 999px;
