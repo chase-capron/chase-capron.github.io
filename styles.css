@@ -271,6 +271,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: var(--space-2);
   min-width: 220px;
+  min-height: var(--tap-target-min);
 }
 
 .brand__logo {
@@ -517,21 +518,19 @@ h1 {
   transition: opacity var(--motion-duration-instant) var(--motion-ease-linear);
 }
 
-/* Text-only shimmer (not whole-line glow), tightly around pointer vicinity */
+/* Pointer-following shimmer overlay (decorative only; no duplicated text content). */
 .hero-title-shine::after {
-  content: attr(data-text);
+  content: "";
   position: absolute;
-  inset: 0;
+  inset: -6px;
   pointer-events: none;
-  color: transparent;
   background:
-    radial-gradient(95px 68px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.82), rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.0) 72%),
-    linear-gradient(112deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.55) 49%, rgba(255,255,255,0) 56%);
-  background-position: 0 0, calc(var(--shine-x) - 42px) calc(var(--shine-y) - 20px);
+    radial-gradient(112px 78px at var(--shine-x) var(--shine-y), rgba(255,255,255,0.18), rgba(195,225,255,0.06) 52%, rgba(190,225,255,0) 78%),
+    linear-gradient(112deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.24) 49%, rgba(255,255,255,0) 56%);
+  background-position: 0 0, calc(var(--shine-x) - 44px) calc(var(--shine-y) - 20px);
   background-repeat: no-repeat;
-  background-size: auto, 84px 40px;
-  -webkit-background-clip: text;
-  background-clip: text;
+  background-size: auto, 88px 42px;
+  mix-blend-mode: screen;
   opacity: var(--shine-opacity);
   transition: opacity var(--motion-duration-instant) var(--motion-ease-linear);
 }
@@ -962,7 +961,7 @@ h1 {
 
 .project-field__input,
 .project-field__select {
-  min-height: 40px;
+  min-height: var(--tap-target-min);
   border-radius: 12px;
   border: 1px solid color-mix(in oklab, var(--color-slate-0) 16%, transparent);
   background: color-mix(in oklab, var(--color-slate-0) 4%, transparent);
@@ -1569,6 +1568,9 @@ h1 {
   color: color-mix(in oklab, var(--color-accent) 86%, white 14%);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
+  min-height: var(--tap-target-min);
+  display: inline-flex;
+  align-items: center;
 }
 
 .proof-link:hover,
@@ -1901,8 +1903,8 @@ h1 {
   .theme-panel__head { flex-direction: column; align-items: flex-start; }
   .theme-preset-grid { grid-template-columns: 1fr; }
   .header__icon-btn {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
   }
   .header__icon-btn svg {
     width: 18px;

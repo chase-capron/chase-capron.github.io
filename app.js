@@ -1053,7 +1053,6 @@
   const rotatingSuffixEl = document.querySelector('#hero-rotating-suffix');
   const rotatingTitleEl = rotatingSuffixEl?.closest('.hero-title-shine');
   if (rotatingSuffixEl && rotatingTitleEl) {
-    const prefix = rotatingTitleEl.dataset.prefix || 'Home automation heavy, AI-assisted tooling, and ';
     const phrases = [
       'AI-assisted workflows.',
       'home systems that quietly run themselves.',
@@ -1075,22 +1074,16 @@
     let phraseIndex = 0;
     let animating = false;
 
-    const syncTitleText = (suffixText) => {
-      rotatingTitleEl.dataset.text = `${prefix}${suffixText}`;
-    };
-
     const lockHeroTitleHeight = () => {
       const initial = rotatingSuffixEl.textContent || phrases[0];
       let maxHeight = rotatingTitleEl.offsetHeight;
 
       for (const phrase of phrases) {
         rotatingSuffixEl.textContent = phrase;
-        syncTitleText(phrase);
         maxHeight = Math.max(maxHeight, rotatingTitleEl.offsetHeight);
       }
 
       rotatingSuffixEl.textContent = initial;
-      syncTitleText(initial);
       rotatingTitleEl.style.minHeight = `${maxHeight}px`;
     };
 
@@ -1099,7 +1092,6 @@
     const typeToPhrase = async (target) => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         rotatingSuffixEl.textContent = target;
-        syncTitleText(target);
         return;
       }
 
@@ -1109,21 +1101,18 @@
       while (current.length > 0) {
         current = current.slice(0, -1);
         rotatingSuffixEl.textContent = current;
-        syncTitleText(current);
         await sleep(22);
       }
 
       for (const ch of target) {
         current += ch;
         rotatingSuffixEl.textContent = current;
-        syncTitleText(current);
         await sleep(28);
       }
 
       animating = false;
     };
 
-    syncTitleText(rotatingSuffixEl.textContent || phrases[0]);
     lockHeroTitleHeight();
 
     let resizeTimer = null;
