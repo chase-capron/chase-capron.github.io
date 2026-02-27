@@ -3,9 +3,7 @@
 
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
-  const appScript =
-    document.querySelector('script[src$="/app.js"]') ||
-    document.querySelector('script[src$="app.js"]');
+  const appScript = document.querySelector('script[src*="app.js"]');
   const appBaseUrl = appScript?.src ? new URL('.', appScript.src).toString() : window.location.href;
   const resolveAssetUrl = (assetPath) => {
     const candidate = String(assetPath || '').trim();
@@ -500,6 +498,96 @@
     }
   });
 
+  const setupMobileNav = () => {
+    const header = document.querySelector('.site-header');
+    const nav = header?.querySelector('.nav');
+    if (!header || !nav) return;
+    if (header.querySelector('.nav-toggle')) return;
+
+    const navToggle = document.createElement('button');
+    navToggle.type = 'button';
+    navToggle.className = 'btn btn--ghost header__icon-btn nav-toggle u-hide-desktop';
+    navToggle.setAttribute('aria-label', 'Toggle navigation');
+
+    if (!nav.id) nav.id = 'primaryNav';
+    navToggle.setAttribute('aria-controls', nav.id);
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.innerHTML = `
+      <span class="nav-toggle__line"></span>
+      <span class="nav-toggle__line"></span>
+      <span class="nav-toggle__line"></span>
+    `;
+
+    const actions = header.querySelector('.header__actions') || header.querySelector('.header__row');
+    actions?.insertBefore(navToggle, actions.firstChild || null);
+    header.classList.add('has-mobile-nav');
+
+    const mobileQuery = window.matchMedia('(max-width: 760px)');
+
+    const closeNav = () => {
+      header.classList.remove('is-nav-open');
+      document.body.classList.remove('nav-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    const openNav = () => {
+      header.classList.add('is-nav-open');
+      document.body.classList.add('nav-open');
+      navToggle.setAttribute('aria-expanded', 'true');
+    };
+
+    navToggle.addEventListener('click', () => {
+      if (header.classList.contains('is-nav-open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    });
+
+    nav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (mobileQuery.matches) closeNav();
+      });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeNav();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!mobileQuery.matches || !header.classList.contains('is-nav-open')) return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (header.contains(target)) return;
+      closeNav();
+    });
+
+    const onMediaChange = () => {
+      if (!mobileQuery.matches) closeNav();
+    };
+
+    if (typeof mobileQuery.addEventListener === 'function') {
+      mobileQuery.addEventListener('change', onMediaChange);
+    } else if (typeof mobileQuery.addListener === 'function') {
+      mobileQuery.addListener(onMediaChange);
+    }
+  };
+
+  const optimizeImageLoading = () => {
+    const criticalSelectors = ['.brand__logo', '.hero__logo img', '.app-icon img'];
+
+    document.querySelectorAll('img').forEach((img) => {
+      if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+
+      const isCritical = criticalSelectors.some((selector) => img.matches(selector));
+      if (!isCritical && !img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+      if (!isCritical && !img.hasAttribute('fetchpriority')) img.setAttribute('fetchpriority', 'low');
+    });
+  };
+
+  setupMobileNav();
+  optimizeImageLoading();
+
   const yearEl = document.getElementById('year');
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
@@ -517,6 +605,63 @@
     });
     updatedEl.title = modifiedDate.toISOString();
   }
+
+  const STATUS_BADGE_META = {
+    complete: { icon: '●', detail: 'Production-ready', className: 'status--complete' },
+    dev: { icon: '▲', detail: 'Active build', className: 'status--dev' },
+    maker: { icon: '◆', detail: 'Prototype lane', className: 'status--maker' },
+    planned: { icon: '◌', detail: 'Discovery stage', className: 'status--planned' },
+  };
+
+  const detectStatusKey = (badge) => {
+    const explicit = String(badge.dataset.statusKey || '').trim().toLowerCase();
+    if (explicit && STATUS_BADGE_META[explicit]) return explicit;
+
+    if (badge.classList.contains('status--complete')) return 'complete';
+    if (badge.classList.contains('status--dev')) return 'dev';
+    if (badge.classList.contains('status--maker')) return 'maker';
+    if (badge.classList.contains('status--planned')) return 'planned';
+
+    const text = badge.textContent.toLowerCase();
+    if (text.includes('complete')) return 'complete';
+    if (text.includes('maker')) return 'maker';
+    if (text.includes('plan')) return 'planned';
+    return 'dev';
+  };
+
+  const enhanceStatusBadges = () => {
+    document.querySelectorAll('.status').forEach((badge) => {
+      if (badge.dataset.enhanced === 'true') return;
+
+      const key = detectStatusKey(badge);
+      const meta = STATUS_BADGE_META[key] || STATUS_BADGE_META.dev;
+      const textLabel = badge.textContent.trim() || 'In Development';
+
+      badge.dataset.statusKey = key;
+      badge.classList.add(meta.className);
+      badge.textContent = '';
+
+      const icon = document.createElement('span');
+      icon.className = 'status__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = meta.icon;
+
+      const label = document.createElement('span');
+      label.className = 'status__label';
+      label.textContent = textLabel;
+
+      const detail = document.createElement('small');
+      detail.className = 'status__detail';
+      detail.textContent = meta.detail;
+
+      badge.append(icon, label, detail);
+      badge.title = `${textLabel} · ${meta.detail}`;
+      badge.setAttribute('aria-label', `${textLabel}. ${meta.detail}.`);
+      badge.dataset.enhanced = 'true';
+    });
+  };
+
+  enhanceStatusBadges();
 
   const hydrateProjectFreshness = async () => {
     const cards = Array.from(document.querySelectorAll('.project-card[href]'));
@@ -644,6 +789,10 @@
       metaEl.textContent = `Updated ${formatter.format(modifiedDate)} (${formatRelativeDays(modifiedDate)}) · ${sourceLabel}`;
       metaEl.title = `${modifiedDate.toISOString()} · ${sourceLabel}`;
 
+      card.dataset.projectUpdated = modifiedDate.toISOString().slice(0, 10);
+      card.dataset.projectUpdatedTs = String(modifiedDate.getTime());
+      card.dataset.projectFreshness = freshnessClass(modifiedDate).replace('project-card__meta--', '');
+
       let noteEl = card.querySelector('.project-card__meta-note');
       if (freshnessNote) {
         if (!noteEl) {
@@ -659,9 +808,174 @@
     };
 
     await Promise.all(localCards.map(fetchCardLastUpdated));
+    document.dispatchEvent(new CustomEvent('projects:freshness-updated'));
   };
 
   void hydrateProjectFreshness();
+
+  const setupProjectCatalog = () => {
+    const catalogs = Array.from(document.querySelectorAll('[data-project-catalog]'));
+    if (!catalogs.length) return;
+
+    const normalizeText = (value) => String(value || '').trim().toLowerCase();
+    const statusRank = { complete: 0, dev: 1, maker: 2, planned: 3 };
+
+    const parseStatus = (card) => {
+      const badge = card.querySelector('.status');
+      if (!badge) return 'dev';
+      const key = detectStatusKey(badge);
+      return STATUS_BADGE_META[key] ? key : 'dev';
+    };
+
+    const parseLane = (card) => {
+      const explicit = normalizeText(card.dataset.projectLane);
+      if (explicit) return explicit;
+
+      const chipsText = normalizeText(
+        Array.from(card.querySelectorAll('.chip'))
+          .map((chip) => chip.textContent)
+          .join(' ')
+      );
+
+      if (chipsText.includes('home assistant') || chipsText.includes('automation') || chipsText.includes('mqtt')) {
+        return 'automation';
+      }
+      if (chipsText.includes('ai')) return 'ai';
+      if (chipsText.includes('cad') || chipsText.includes('prototyping') || chipsText.includes('maker')) {
+        return 'maker';
+      }
+      return 'systems';
+    };
+
+    const updateMetrics = (controls, visibleItems, allItems) => {
+      const metricsRoot = controls.querySelector('[data-project-metrics]');
+      if (!metricsRoot) return;
+
+      const visibleActive = visibleItems.filter((item) => item.status === 'dev').length;
+      const visibleComplete = visibleItems.filter((item) => item.status === 'complete').length;
+      const visibleMaker = visibleItems.filter((item) => item.status === 'maker').length;
+
+      const scope = visibleItems.length !== allItems.length ? 'filtered' : 'total';
+
+      const setMetric = (key, value) => {
+        const target = metricsRoot.querySelector(`[data-project-metric="${key}"]`);
+        if (target) target.textContent = value;
+      };
+
+      setMetric('active', `${visibleActive}`);
+      setMetric('complete', `${visibleComplete}`);
+      setMetric('maker', `${visibleMaker}`);
+      setMetric('scope', scope === 'filtered' ? 'Filtered view' : 'All projects');
+    };
+
+    catalogs.forEach((grid) => {
+      const cards = Array.from(grid.querySelectorAll('.project-card[href]'));
+      if (!cards.length) return;
+
+      const controls = grid.parentElement?.querySelector('[data-project-controls]');
+      if (!controls) return;
+
+      const searchInput = controls.querySelector('[data-project-search]');
+      const laneSelect = controls.querySelector('[data-project-lane]');
+      const statusSelect = controls.querySelector('[data-project-status]');
+      const sortSelect = controls.querySelector('[data-project-sort]');
+      const resetBtn = controls.querySelector('[data-project-reset]');
+      const summaryEl = controls.querySelector('[data-project-summary]');
+      const emptyStateEl = grid.parentElement?.querySelector('[data-project-empty]');
+
+      const items = cards.map((card, index) => {
+        const title = normalizeText(card.querySelector('h3')?.textContent || card.dataset.projectTitle || '');
+        const description = normalizeText(card.querySelector('p')?.textContent || '');
+        const tags = normalizeText(
+          Array.from(card.querySelectorAll('.chip'))
+            .map((chip) => chip.textContent)
+            .join(' ')
+        );
+
+        const lane = parseLane(card);
+        const status = parseStatus(card);
+        card.dataset.projectLane = lane;
+
+        return {
+          card,
+          index,
+          title,
+          status,
+          lane,
+          searchBlob: `${title} ${description} ${tags}`,
+        };
+      });
+
+      const apply = () => {
+        const query = normalizeText(searchInput?.value || '');
+        const lane = normalizeText(laneSelect?.value || 'all');
+        const status = normalizeText(statusSelect?.value || 'all');
+        const sort = normalizeText(sortSelect?.value || 'featured');
+
+        const filtered = items.filter((item) => {
+          if (query && !item.searchBlob.includes(query)) return false;
+          if (lane !== 'all' && item.lane !== lane) return false;
+          if (status !== 'all' && item.status !== status) return false;
+          return true;
+        });
+
+        const sorted = [...filtered].sort((a, b) => {
+          if (sort === 'title-asc') return a.title.localeCompare(b.title);
+          if (sort === 'updated-desc' || sort === 'updated-asc') {
+            const aDate = Number(a.card.dataset.projectUpdatedTs || 0);
+            const bDate = Number(b.card.dataset.projectUpdatedTs || 0);
+            if (aDate !== bDate) return sort === 'updated-desc' ? bDate - aDate : aDate - bDate;
+            return a.index - b.index;
+          }
+          if (sort === 'status') {
+            const rankDiff = (statusRank[a.status] ?? 99) - (statusRank[b.status] ?? 99);
+            return rankDiff || a.title.localeCompare(b.title);
+          }
+          return a.index - b.index;
+        });
+
+        items.forEach((item) => {
+          item.card.hidden = true;
+        });
+
+        sorted.forEach((item) => {
+          item.card.hidden = false;
+          grid.appendChild(item.card);
+        });
+
+        if (summaryEl) {
+          summaryEl.textContent = `Showing ${sorted.length} of ${items.length} projects`;
+        }
+
+        if (emptyStateEl) {
+          emptyStateEl.hidden = sorted.length > 0;
+        }
+
+        updateMetrics(controls, sorted, items);
+      };
+
+      [searchInput, laneSelect, statusSelect, sortSelect].forEach((field) => {
+        if (!field) return;
+        const eventName = field === searchInput ? 'input' : 'change';
+        field.addEventListener(eventName, apply);
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (searchInput) searchInput.value = '';
+          if (laneSelect) laneSelect.value = 'all';
+          if (statusSelect) statusSelect.value = 'all';
+          if (sortSelect) sortSelect.value = 'featured';
+          apply();
+        });
+      }
+
+      document.addEventListener('projects:freshness-updated', apply);
+      apply();
+    });
+  };
+
+  setupProjectCatalog();
 
   // Marquee: keep the HTML source clean (single set of tiles), but duplicate it at runtime
   // so the CSS animation (translateX(-50%)) loops seamlessly.
