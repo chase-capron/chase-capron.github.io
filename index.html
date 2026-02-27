@@ -9,7 +9,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#070b17" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), browsing-topics=()" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
 
   <meta property="og:title" content="Chase Capron · Computer Engineer" />
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
@@ -19,8 +19,8 @@
   <link rel="apple-touch-icon" href="assets/chase-logo.png" />
 
   <script src="theme-init.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260226" />
-  <script defer src="app.js?v=20260226"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -36,10 +36,8 @@
       </a>
 
       <nav class="nav" aria-label="Primary">
-        <a href="#value">Story</a>
-        <a href="#featured-work">Featured Work</a>
-        <a href="projects/">Project Archive</a>
-        <a href="#contact">Contact</a>
+        <a href="#top" aria-current="page">Home</a>
+        <a href="projects/">Projects</a>
       </nav>
 
       <div class="header__actions">
@@ -62,222 +60,98 @@
   <main id="main">
     <section class="hero" id="home" aria-label="intro">
       <div class="container hero__grid">
-        <div class="hero__copy">
-          <p class="eyebrow" data-reveal>Automation-first engineering</p>
-          <h1 class="hero-title-shine" data-reveal data-delay="40">
-            <span class="hero-title-prefix">I design practical automations that connect hardware, software, and </span><span id="hero-rotating-suffix" class="hero-rotating-suffix" aria-live="off">AI-assisted workflows.</span>
+        <div>
+          <p class="eyebrow" data-reveal>I build practical systems that help people automate the hard parts.</p>
+          <h1 class="hero-title-shine" data-prefix="Home automation heavy, AI-assisted tooling, and " data-text="Home automation heavy, AI-assisted tooling, and hands-on maker projects." data-reveal data-delay="40">
+            <span class="hero-title-prefix">Home automation heavy, AI-assisted tooling, and </span><span id="hero-rotating-suffix" class="hero-rotating-suffix" aria-live="off">hands-on maker projects.</span>
           </h1>
-          <p class="hero__lead" data-reveal data-delay="110">
-            I build real systems that reduce repetitive work, keep homes running smoothly, and make day-to-day workflows easier to maintain.
-          </p>
           <div class="hero__actions" data-reveal data-delay="150">
-            <a class="btn" href="#featured-work">See featured work</a>
-            <a class="btn btn--ghost" href="projects/">Browse project archive</a>
+            <a class="btn" href="#selected-work">View Projects</a>
           </div>
-
-          <ul class="hero-proof" data-reveal data-delay="200" aria-label="Core value points">
-            <li>
-              <strong>Built for daily use</strong>
-              <span>Everything ships with reliability and maintainability in mind.</span>
-            </li>
-            <li>
-              <strong>Software + hardware</strong>
-              <span>From Home Assistant automations to sensor-driven maker builds.</span>
-            </li>
-            <li>
-              <strong>AI where it helps</strong>
-              <span>AI-assisted planning and automation without overcomplicating workflows.</span>
-            </li>
-          </ul>
         </div>
 
         <div class="hero__art" data-reveal data-delay="120" aria-label="logo and focus">
           <div class="hero__logo">
             <img src="assets/chase-logo.png" alt="Chase logo" decoding="async" fetchpriority="high" />
           </div>
-          <div class="hero__actions hero__actions--mobile" data-reveal data-delay="160">
-            <a class="btn" href="#featured-work">See featured work</a>
-            <a class="btn btn--ghost" href="projects/">Project archive</a>
+          <div class="hero__actions hero__actions--mobile" data-reveal data-delay="150">
+            <a class="btn" href="#selected-work">View Projects</a>
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="section" id="value" data-reveal>
-      <div class="container">
-        <div class="section__top">
-          <p class="eyebrow">Value</p>
-          <h2>How I turn ideas into dependable systems</h2>
-        </div>
+      <div class="hero-marquee" aria-label="Project highlights" data-reveal data-delay="200">
+        <div class="hero-marquee__track" role="list">
+          <a class="project-tile" role="listitem" href="projects/midi-home-control/">
+            <h3>MIDI Home Control Rig</h3>
+            <p>Real-time routing from MIDI gestures into Home Assistant scenes and automations.</p>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon tile-icon--logo" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
+            </div>
+          </a>
 
-        <div class="grid grid--value" data-reveal data-delay="70">
-          <article class="card">
-            <h3>1) Find friction fast</h3>
-            <p>I map where time gets wasted and where context gets dropped, then target workflows with the highest everyday payoff.</p>
-          </article>
-          <article class="card">
-            <h3>2) Build practical automation</h3>
-            <p>I design integrations that stay understandable: clean event routing, predictable behavior, and clear fallback paths.</p>
-          </article>
-          <article class="card">
-            <h3>3) Keep improving in public</h3>
-            <p>Projects are documented, iterated, and measured over time so improvements stay visible and easy to continue.</p>
-          </article>
+          <a class="project-tile" role="listitem" href="projects/ai-nutritionist/">
+            <h3>AI Nutritionist and Meal Planner</h3>
+            <p>Label reading plus context memory to recommend meals and keep goals on track.</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon" aria-hidden="true"><span>🍱</span></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/greenthumb/">
+            <h3>GreenThumb</h3>
+            <p>Plant care automation with soil and ambient sensors feeding AI decision logic.</p>
+            <div class="project-tile__footer">
+              <span class="status status--dev">In Development</span>
+              <span class="tile-icon tile-icon--logo" aria-hidden="true"><img src="assets/hardware/plant.png" alt="GreenThumb logo" /></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/smart-heating/">
+            <h3>Smart Heating Control</h3>
+            <p>Room balancing automation using sensors, occupancy, weather, and preference logic.</p>
+            <div class="project-tile__footer">
+              <span class="status status--complete">Complete</span>
+              <span class="tile-icon tile-icon--logo" aria-hidden="true"><img class="smart-heating-logo" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" /></span>
+            </div>
+          </a>
+
+          <a class="project-tile" role="listitem" href="projects/laser-3d-printing/">
+            <h3>Laser Cutting + 3D Printing</h3>
+            <p>Prototyping enclosures, mounts, and practical household automation hardware.</p>
+            <div class="project-tile__footer">
+              <span class="status status--maker">Maker</span>
+              <span class="tile-icon tile-icon--logo" aria-hidden="true"><img src="assets/hardware/maker.png" alt="Laser cutting and 3D printing logo" /></span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
 
-    <section class="section section--alt" id="featured-work">
-      <div class="container">
-        <div class="section__top" data-reveal>
-          <p class="eyebrow">Featured work</p>
-          <h2>Projects organized for quick discovery</h2>
-          <p class="section__hint">Start with a lane below, then open the full archive for every build and update history.</p>
-          <p class="section__micro" id="projectManifestStamp" hidden>Project metadata refreshed recently.</p>
-          <ul class="freshness-legend" aria-label="Freshness indicator legend">
-            <li><span class="freshness-dot freshness-dot--fresh" aria-hidden="true"></span>Fresh ≤ 30 days</li>
-            <li><span class="freshness-dot freshness-dot--steady" aria-hidden="true"></span>Steady 31–120 days</li>
-            <li><span class="freshness-dot freshness-dot--stale" aria-hidden="true"></span>Older than 120 days</li>
-          </ul>
-        </div>
-
-        <nav class="work-lanes" aria-label="Jump to work lane" data-reveal data-delay="50">
-          <a class="work-lane" href="#project-midi">
-            <span>Automation Systems</span>
-            <small>Home Assistant + real-time controls</small>
-          </a>
-          <a class="work-lane" href="#project-ai-nutritionist">
-            <span>AI Workflows</span>
-            <small>Assistive planning and decision support</small>
-          </a>
-          <a class="work-lane" href="#project-laser">
-            <span>Maker Builds</span>
-            <small>Hardware prototypes and practical enclosures</small>
-          </a>
-        </nav>
-
-        <div class="project-grid" data-reveal data-delay="90">
-          <a class="project-card" id="project-midi" href="projects/midi-home-control/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">MIDI Home Control Rig</h3>
-              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/midi-live.png" alt="" loading="lazy" /></span>
-            </div>
-            <span class="status status--complete project-card__status" data-status-key="complete">Complete</span>
-            <p>Physical interface + automation pipeline for Home Assistant and real-time status interaction.</p>
-            <div class="chips">
-              <span class="chip chip--python">Python</span>
-              <span class="chip chip--mqtt">MQTT</span>
-              <span class="chip chip--ha">Home Assistant</span>
-              <span class="chip chip--automation">Automation</span>
-            </div>
-          </a>
-
-          <a class="project-card" id="project-ai-nutritionist" href="projects/ai-nutritionist/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">AI Nutritionist and Meal Planner</h3>
-              <span class="project-card__icon" aria-hidden="true"><span>🍱</span></span>
-            </div>
-            <span class="status status--dev project-card__status" data-status-key="dev">In Development</span>
-            <p>In-progress tool that reads nutrition labels, tracks goals, and plans meals with memory context.</p>
-            <div class="chips">
-              <span class="chip chip--ai">AI</span>
-              <span class="chip chip--python">Python</span>
-              <span class="chip chip--automation">Automation</span>
-            </div>
-          </a>
-
-          <a class="project-card" href="projects/greenthumb/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">GreenThumb</h3>
-              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/hardware/plant.png" alt="GreenThumb logo" loading="lazy" /></span>
-            </div>
-            <span class="status status--dev project-card__status" data-status-key="dev">In Development</span>
-            <p>Plant-care platform with soil + ambient sensing and AI recommendations based on plant type, season, and environment.</p>
-            <div class="chips">
-              <span class="chip chip--iot">IoT</span>
-              <span class="chip chip--ai">AI</span>
-              <span class="chip chip--sensors">Sensors</span>
-            </div>
-          </a>
-
-          <a class="project-card" href="projects/smart-heating/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">Smart Heating Control</h3>
-              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="smart-heating-logo" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" loading="lazy" /></span>
-            </div>
-            <span class="status status--complete project-card__status" data-status-key="complete">Complete</span>
-            <p>Home Assistant automation that balances uneven heating using room sensors, occupancy, weather, and preferences.</p>
-            <div class="chips">
-              <span class="chip chip--ha">Home Assistant</span>
-              <span class="chip chip--sensors">Sensors</span>
-              <span class="chip chip--automation">Automation</span>
-            </div>
-          </a>
-
-          <a class="project-card" id="project-laser" href="projects/laser-3d-printing/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">Laser Cutting + 3D Printing</h3>
-              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/hardware/maker.png" alt="Laser cutting and 3D printing logo" loading="lazy" /></span>
-            </div>
-            <span class="status status--maker project-card__status" data-status-key="maker">Maker</span>
-            <p>Workflow and builds for practical parts, enclosures, and small hardware utilities that support automation projects.</p>
-            <div class="chips">
-              <span class="chip chip--cad">CAD</span>
-              <span class="chip chip--proto">Prototyping</span>
-              <span class="chip chip--design">Design</span>
-            </div>
-          </a>
-
-          <a class="project-card" href="projects/hot-wheels-tracker/">
-            <div class="project-card__head">
-              <h3 class="project-card__title">Hot Wheels Tracker</h3>
-              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="hotwheels-logo" src="assets/hardware/hotwheels.png" alt="Hot Wheels logo" loading="lazy" /></span>
-            </div>
-            <span class="status status--dev project-card__status" data-status-key="dev">In Development</span>
-            <p>Collection tracker with pricing and inventory metadata for quick references and easy organization.</p>
-            <div class="chips">
-              <span class="chip chip--db">Database</span>
-              <span class="chip chip--catalog">Cataloging</span>
-            </div>
-          </a>
-        </div>
-
-        <article class="callout" data-reveal data-delay="140">
-          <div>
-            <h3>Need the full project list?</h3>
-            <p>Open the archive to browse every project page in one place, including active builds and planned additions.</p>
-          </div>
-          <a class="btn" href="projects/">Open project archive</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="capabilities" data-reveal>
+    <section class="section" id="about" data-reveal>
       <div class="container">
         <div class="section__top">
-          <p class="eyebrow">Capabilities</p>
-          <h2>Cross-stack execution from architecture to hardware</h2>
+          <p class="eyebrow">About</p>
+          <h2>Short snapshot</h2>
         </div>
 
-        <div class="capabilities-layout" data-reveal data-delay="60">
+        <div class="grid grid--about" data-reveal data-delay="60">
           <article class="card">
-            <h3>Core capability areas</h3>
-            <ul class="capability-list" aria-label="Capability pillars">
-              <li>
-                <h4>Automation orchestration</h4>
-                <p>Event-driven systems, Home Assistant integrations, and reliable control layers for real-world workflows.</p>
-              </li>
-              <li>
-                <h4>AI-assisted product thinking</h4>
-                <p>Practical AI features for planning, recommendations, and decision support without sacrificing clarity.</p>
-              </li>
-              <li>
-                <h4>Maker prototyping</h4>
-                <p>Rapid hardware iteration with sensors, enclosures, and physical interfaces that support software systems.</p>
-              </li>
-            </ul>
+            <h3>What I build</h3>
+            <p>
+              I focus on software and hardware that reduce manual work, solve real problems, and stay dependable when you need them most.
+              Practical, automation-first systems are the goal.
+            </p>
           </article>
-
+          <article class="card">
+            <h3>Operating principle</h3>
+            <p>
+              If it’s automatable, it should be automated.
+              My goal is practical systems that reduce the manual workload without losing clarity.
+            </p>
+          </article>
           <article class="card">
             <h3>Current stack</h3>
             <div class="chips chips--stack" aria-label="Core tools and platforms">
@@ -299,110 +173,174 @@
             </div>
           </article>
         </div>
+      </div>
+    </section>
 
-        <div class="section__top section__top--compact" data-reveal data-delay="100">
-          <h3>Primary hardware and platforms</h3>
+
+
+    <section class="section" id="hardware" data-reveal data-delay="120">
+      <div class="container">
+        <div class="section__top">
+          <p class="eyebrow">Hardware</p>
+          <h2>What I use</h2>
         </div>
 
-        <div class="hardware-grid" data-reveal data-delay="130">
-          <a class="hardware-card" href="https://www.meta.com/smart-glasses/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--png" src="assets/hardware/rayban.png" alt="Ray-Ban logo" /></p>
+        <div class="hardware-grid">
+          <a class="hardware-card" data-reveal data-delay="80" href="https://www.meta.com/smart-glasses/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png" src="assets/hardware/rayban.png" alt="Ray-Ban logo" /></p>
             <p class="hardware-card__name">Meta Ray-Ban Smart Glasses</p>
           </a>
-          <a class="hardware-card" href="https://www.meta.com/quest/quest-3/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--png hardware-icon--meta" src="assets/hardware/meta.png" alt="Meta logo" /></p>
+          <a class="hardware-card" data-reveal data-delay="120" href="https://www.meta.com/quest/quest-3/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png hardware-icon--meta" src="assets/hardware/meta.png" alt="Meta logo" /></p>
             <p class="hardware-card__name">Meta Quest 3</p>
           </a>
-          <a class="hardware-card" href="projects/greenthumb/">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--png hardware-icon--plant" src="assets/hardware/plant.png" alt="Plant sensor icon" /></p>
+          <a class="hardware-card" data-reveal data-delay="160" href="projects/greenthumb/">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png hardware-icon--plant" src="assets/hardware/plant.png" alt="Plant sensor icon" /></p>
             <p class="hardware-card__name">Plant Sensor Kits</p>
           </a>
-          <a class="hardware-card" href="https://www.adafruit.com/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--png hardware-icon--boost-md" src="assets/hardware/maker.png" alt="Maker tools icon" /></p>
+          <a class="hardware-card" data-reveal data-delay="200" href="https://www.adafruit.com/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png hardware-icon--boost-md" src="assets/hardware/maker.png" alt="Maker tools icon" /></p>
             <p class="hardware-card__name">Soldering + Maker Tools</p>
           </a>
-          <a class="hardware-card" href="https://www.apple.com/mac-mini/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--svg hardware-icon--apple" src="assets/hardware/apple.svg" alt="Apple logo" /></p>
-            <p class="hardware-card__name">Mac mini</p>
-          </a>
-          <a class="hardware-card" href="https://www.raspberrypi.com/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--png hardware-icon--raspberry" src="assets/hardware/raspberrypi.png" alt="Raspberry Pi logo" /></p>
-            <p class="hardware-card__name">Raspberry Pi</p>
-          </a>
-          <a class="hardware-card" href="https://www.home-assistant.io/" target="_blank" rel="noopener noreferrer">
-            <p class="hardware-card__icon"><img loading="lazy" class="hardware-icon hardware-icon--svg hardware-icon--boost-md" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" /></p>
-            <p class="hardware-card__name">Home Assistant</p>
-          </a>
-          <a class="hardware-card" href="projects/midi-home-control/">
+          <a class="hardware-card" data-reveal data-delay="240" href="projects/midi-home-control/">
             <p class="hardware-card__icon hardware-card__icon--emoji">♻️</p>
             <p class="hardware-card__name">Legacy Device Builds</p>
           </a>
+          <a class="hardware-card" data-reveal data-delay="280" href="https://www.apple.com/mac-mini/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--svg hardware-icon--apple" src="assets/hardware/apple.svg" alt="Apple logo" /></p>
+            <p class="hardware-card__name">Mac mini</p>
+          </a>
+          <a class="hardware-card" data-reveal data-delay="320" href="https://www.raspberrypi.com/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--png hardware-icon--raspberry" src="assets/hardware/raspberrypi.png" alt="Raspberry Pi logo" /></p>
+            <p class="hardware-card__name">Raspberry Pi</p>
+          </a>
+          <a class="hardware-card" data-reveal data-delay="360" href="https://www.home-assistant.io/" target="_blank" rel="noopener noreferrer">
+            <p class="hardware-card__icon"><img class="hardware-icon hardware-icon--svg hardware-icon--boost-md" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" /></p>
+            <p class="hardware-card__name">Home Assistant</p>
+          </a>
         </div>
       </div>
     </section>
-
-    <section class="section section--alt" id="social-proof">
+    <section class="section section--alt" id="selected-work">
       <div class="container">
         <div class="section__top" data-reveal>
-          <p class="eyebrow">Social proof</p>
-          <h2>Signals that these systems are real and active</h2>
+          <p class="eyebrow">Selected Work</p>
+          <h2>Project grid</h2>
+          <p class="section__hint">Each project card shows freshness using a local metadata manifest with same-origin Last-Modified fallback.</p>
+          <p class="section__micro" id="projectManifestStamp" hidden>Project metadata refreshed recently.</p>
+          <ul class="freshness-legend" aria-label="Freshness indicator legend">
+            <li><span class="freshness-dot freshness-dot--fresh" aria-hidden="true"></span>Fresh ≤ 30 days</li>
+            <li><span class="freshness-dot freshness-dot--steady" aria-hidden="true"></span>Steady 31–120 days</li>
+            <li><span class="freshness-dot freshness-dot--stale" aria-hidden="true"></span>Older than 120 days</li>
+          </ul>
         </div>
 
-        <div class="proof-grid" data-reveal data-delay="70">
-          <article class="card proof-card">
-            <h3>Public build trail</h3>
-            <p>Six public project pages make progress visible, not hidden behind vague claims.</p>
-            <a class="proof-link" href="projects/">Browse all project pages</a>
-          </article>
-          <article class="card proof-card">
-            <h3>Freshness transparency</h3>
-            <p>Project cards include freshness metadata so visitors can quickly see what is actively maintained.</p>
-            <a class="proof-link" href="#featured-work">See freshness indicators</a>
-          </article>
-          <article class="card proof-card">
-            <h3>Open-source presence</h3>
-            <p>Code and project history live on GitHub for technical review, collaboration, and long-term continuity.</p>
-            <a class="proof-link" href="https://github.com/chase-capron" target="_blank" rel="noopener noreferrer">Visit GitHub profile</a>
-          </article>
+        <div class="project-grid" data-reveal data-delay="80">
+          <a class="project-card" href="projects/midi-home-control/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">MIDI Home Control Rig</h3>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/midi-live.png" alt="" /></span>
+            </div>
+            <span class="status status--complete project-card__status">Complete</span>
+            <p>Physical interface + automation pipeline for Home Assistant and real-time status interaction.</p>
+            <div class="chips">
+              <span class="chip chip--python">Python</span>
+              <span class="chip chip--mqtt">MQTT</span>
+              <span class="chip chip--ha">Home Assistant</span>
+              <span class="chip chip--automation">Automation</span>
+            </div>
+          </a>
+
+          <a class="project-card" href="projects/ai-nutritionist/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">AI Nutritionist and Meal Planner</h3>
+              <span class="project-card__icon" aria-hidden="true"><span>🍱</span></span>
+            </div>
+            <span class="status status--dev project-card__status">In Development</span>
+            <p>In-progress tool that reads nutrition labels, tracks goals, and plans meals with memory context.</p>
+            <div class="chips">
+              <span class="chip chip--ai">AI</span>
+              <span class="chip chip--python">Python</span>
+              <span class="chip chip--automation">Automation</span>
+            </div>
+          </a>
+
+          <a class="project-card" href="projects/greenthumb/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">GreenThumb</h3>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/hardware/plant.png" alt="GreenThumb logo" /></span>
+            </div>
+            <span class="status status--dev project-card__status">In Development</span>
+            <p>Plant-care platform with soil + ambient sensing and AI recommendations based on plant type, season, and environment.</p>
+            <div class="chips">
+              <span class="chip chip--iot">IoT</span>
+              <span class="chip chip--ai">AI</span>
+              <span class="chip chip--sensors">Sensors</span>
+            </div>
+          </a>
+
+          <a class="project-card" href="projects/smart-heating/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">Smart Heating Control</h3>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="smart-heating-logo" src="assets/hardware/homeassistant.svg" alt="Home Assistant logo" /></span>
+            </div>
+            <span class="status status--complete project-card__status">Complete</span>
+            <p>Home Assistant automation that balances uneven heating using room sensors, occupancy, weather, and preferences.</p>
+            <div class="chips">
+              <span class="chip chip--ha">Home Assistant</span>
+              <span class="chip chip--sensors">Sensors</span>
+              <span class="chip chip--automation">Automation</span>
+            </div>
+          </a>
+
+          <a class="project-card" href="projects/laser-3d-printing/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">Laser Cutting + 3D Printing</h3>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="assets/hardware/maker.png" alt="Laser cutting and 3D printing logo" /></span>
+            </div>
+            <span class="status status--maker project-card__status">Maker</span>
+            <p>Workflow and builds for practical parts, enclosures, and small hardware utilities that support automation projects.</p>
+            <div class="chips">
+              <span class="chip chip--cad">CAD</span>
+              <span class="chip chip--proto">Prototyping</span>
+              <span class="chip chip--design">Design</span>
+            </div>
+          </a>
+
+          <a class="project-card" href="projects/hot-wheels-tracker/">
+            <div class="project-card__head">
+              <h3 class="project-card__title">Hot Wheels Tracker</h3>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="hotwheels-logo" src="assets/hardware/hotwheels.png" alt="Hot Wheels logo" /></span>
+            </div>
+            <span class="status status--dev project-card__status">In Development</span>
+            <p>Collection tracker with pricing and inventory metadata for quick references and easy organization.</p>
+            <div class="chips">
+              <span class="chip chip--db">Database</span>
+              <span class="chip chip--catalog">Cataloging</span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
-
-    <section class="section" id="contact">
+    <section class="section section--alt" id="current-goals">
       <div class="container">
-        <article class="card contact-panel" data-reveal>
-          <div>
-            <p class="eyebrow">Contact</p>
-            <h2>Want to collaborate on automation or AI tooling?</h2>
-            <p class="section__hint">The fastest path is GitHub. Share the problem you want solved, your current setup, and the outcome you care about.</p>
-            <div class="contact-actions">
-              <a
-                class="btn"
-                href="https://github.com/chase-capron"
-                target="_blank"
-                rel="noopener noreferrer"
-              >Open GitHub</a>
-              <a class="btn btn--ghost" href="projects/">View full project archive</a>
-            </div>
-          </div>
+        <div class="section__top" data-reveal>
+          <p class="eyebrow">Now</p>
+          <h2>Current goal</h2>
+        </div>
 
-          <ul class="contact-checklist" aria-label="Contact context checklist">
-            <li>
-              <strong>What you're solving</strong>
-              <span>The workflow, bottleneck, or manual process you want to automate.</span>
-            </li>
-            <li>
-              <strong>Current tools</strong>
-              <span>Home Assistant setup, hardware constraints, and preferred integrations.</span>
-            </li>
-            <li>
-              <strong>Definition of done</strong>
-              <span>What success looks like once the system is shipped and stable.</span>
-            </li>
-          </ul>
+        <article class="callout" data-reveal data-delay="80">
+          <div>
+            <h3>Organize all systems behind one AI assistant</h3>
+            <p>
+              Build one central AI assistant workflow that stays in sync with every project, then iterate each project in parallel with AI support.
+            </p>
+          </div>
+          <a class="btn" href="projects/">Open project archive</a>
         </article>
       </div>
     </section>
+
   </main>
 
   <footer class="footer" id="appearance">
