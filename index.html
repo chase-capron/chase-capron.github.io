@@ -343,6 +343,49 @@
 
   </main>
 
+  <section class="arcade-shell" id="retroArcade" aria-hidden="true">
+    <div class="arcade-shell__backdrop" data-arcade-close></div>
+    <div class="arcade-shell__panel" role="dialog" aria-modal="true" aria-label="Hidden Retro Arcade">
+      <header class="arcade-shell__head">
+        <h3>Retro Arcade.</h3>
+        <p>Unlocked. Keep this between friends.</p>
+        <button class="arcade-shell__close" type="button" data-arcade-close>Close</button>
+      </header>
+      <nav class="arcade-tabs" aria-label="Arcade games">
+        <button type="button" class="arcade-tab is-active" data-arcade-tab="pong">Pong</button>
+        <button type="button" class="arcade-tab" data-arcade-tab="tetris">Tetris</button>
+        <button type="button" class="arcade-tab" data-arcade-tab="pokemon">Battle</button>
+      </nav>
+      <div class="arcade-stage">
+        <section class="arcade-pane is-active" data-arcade-pane="pong">
+          <canvas id="arcadePong" width="720" height="360" aria-label="Pong simulator"></canvas>
+        </section>
+        <section class="arcade-pane" data-arcade-pane="tetris">
+          <canvas id="arcadeTetris" width="720" height="360" aria-label="Tetris simulator"></canvas>
+        </section>
+        <section class="arcade-pane" data-arcade-pane="pokemon">
+          <div class="battle-board" id="battleBoard">
+            <div class="battle-card battle-card--enemy">
+              <h4>Wild Debugmon</h4>
+              <p class="battle-hp"><span id="enemyHp">100</span>/100 HP</p>
+            </div>
+            <div class="battle-card battle-card--you">
+              <h4>Promptmon</h4>
+              <p class="battle-hp"><span id="playerHp">100</span>/100 HP</p>
+            </div>
+            <div class="battle-actions">
+              <button type="button" data-battle-move="ship">Ship Patch</button>
+              <button type="button" data-battle-move="lint">Lint Beam</button>
+              <button type="button" data-battle-move="rollback">Rollback</button>
+              <button type="button" data-battle-move="reboot">Reboot</button>
+            </div>
+            <p class="battle-log" id="battleLog">Battle ready.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer" id="appearance">
     <div class="container footer__theme" data-reveal>
       <div class="footer__theme-head">

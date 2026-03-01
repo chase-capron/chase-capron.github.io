@@ -779,6 +779,80 @@ h1 {
   font-size: 0.95rem;
 }
 
+.arcade-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+}
+
+.arcade-shell.is-open {
+  display: block;
+}
+
+.arcade-shell__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.arcade-shell__panel {
+  position: relative;
+  width: min(980px, calc(100% - 24px));
+  margin: min(8vh, 52px) auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--surface) 88%, black 12%);
+  box-shadow: var(--shadow-strong);
+  padding: 14px;
+}
+
+.arcade-shell__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.arcade-shell__head h3 { margin: 0; }
+.arcade-shell__head p { margin: 0; color: var(--text-soft); font-size: 13px; }
+.arcade-shell__close { margin-left: auto; }
+
+.arcade-tabs { display: flex; gap: 8px; margin: 10px 0 12px; flex-wrap: wrap; }
+.arcade-tab {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.arcade-tab.is-active { border-color: color-mix(in oklab, var(--accent) 60%, white 20%); }
+
+.arcade-pane { display: none; }
+.arcade-pane.is-active { display: block; }
+
+#arcadePong, #arcadeTetris {
+  width: 100%;
+  max-height: 55vh;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #050814;
+}
+
+.battle-board {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+}
+.battle-card { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.battle-card h4 { margin: 0; }
+.battle-hp { margin: 0; color: var(--text-soft); }
+.battle-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 10px 0; }
+.battle-actions button { min-height: 38px; }
+.battle-log { margin: 0; color: var(--text-soft); }
+
 .theme-preset-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

@@ -1131,6 +1131,149 @@
     }
   }
 
+  // Hidden Retro Arcade: unlocked by tapping Legacy Device Builds 10 times.
+  const legacyTrigger = Array.from(document.querySelectorAll('.hardware-card .hardware-card__name'))
+    .find((n) => n.textContent?.trim() === 'Legacy Device Builds')
+    ?.closest('a.hardware-card');
+  const arcadeShell = document.getElementById('retroArcade');
+  const arcadeTabs = Array.from(document.querySelectorAll('[data-arcade-tab]'));
+  const arcadePanes = Array.from(document.querySelectorAll('[data-arcade-pane]'));
+  const arcadeClosers = Array.from(document.querySelectorAll('[data-arcade-close]'));
+
+  const setArcadeTab = (id) => {
+    arcadeTabs.forEach((b) => b.classList.toggle('is-active', b.dataset.arcadeTab === id));
+    arcadePanes.forEach((p) => p.classList.toggle('is-active', p.dataset.arcadePane === id));
+  };
+
+  if (legacyTrigger && arcadeShell) {
+    let taps = 0;
+    let tapTimer = null;
+    legacyTrigger.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      taps += 1;
+      if (tapTimer) window.clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(() => { taps = 0; }, 6000);
+      if (taps >= 10) {
+        taps = 0;
+        arcadeShell.classList.add('is-open');
+        arcadeShell.setAttribute('aria-hidden', 'false');
+      }
+    });
+
+    arcadeTabs.forEach((btn) => btn.addEventListener('click', () => setArcadeTab(btn.dataset.arcadeTab)));
+    arcadeClosers.forEach((btn) => btn.addEventListener('click', () => {
+      arcadeShell.classList.remove('is-open');
+      arcadeShell.setAttribute('aria-hidden', 'true');
+    }));
+  }
+
+  // Pong simulator
+  const pongCanvas = document.getElementById('arcadePong');
+  if (pongCanvas) {
+    const ctx = pongCanvas.getContext('2d');
+    let w = pongCanvas.width; let h = pongCanvas.height;
+    const ball = { x: w / 2, y: h / 2, vx: 3.2, vy: 2.4, r: 7 };
+    const left = { y: h / 2 - 40, h: 80 };
+    const right = { y: h / 2 - 40, h: 80 };
+
+    const loop = () => {
+      ctx.fillStyle = '#050814'; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.setLineDash([6, 10]);
+      ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke(); ctx.setLineDash([]);
+
+      left.y += ((ball.y - left.h / 2) - left.y) * 0.08;
+      right.y += ((ball.y - right.h / 2) - right.y) * 0.08;
+
+      ball.x += ball.vx; ball.y += ball.vy;
+      if (ball.y < ball.r || ball.y > h - ball.r) ball.vy *= -1;
+
+      const hitLeft = ball.x - ball.r < 24 && ball.y > left.y && ball.y < left.y + left.h;
+      const hitRight = ball.x + ball.r > w - 24 && ball.y > right.y && ball.y < right.y + right.h;
+      if (hitLeft || hitRight) {
+        ball.vx *= -1.03;
+        ball.vy += (Math.random() * 1.2 - 0.6);
+      }
+      if (ball.x < -40 || ball.x > w + 40) {
+        ball.x = w / 2; ball.y = h / 2; ball.vx = (Math.random() > 0.5 ? 1 : -1) * 3.2; ball.vy = 2.4;
+      }
+
+      ctx.fillStyle = '#9ad1ff';
+      ctx.fillRect(14, left.y, 10, left.h);
+      ctx.fillRect(w - 24, right.y, 10, right.h);
+      ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+
+      requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
+  // Tetris simulator (auto drop demo)
+  const tetrisCanvas = document.getElementById('arcadeTetris');
+  if (tetrisCanvas) {
+    const ctx = tetrisCanvas.getContext('2d');
+    const cols = 12, rows = 20, size = 16;
+    const offX = (tetrisCanvas.width - cols * size) / 2;
+    const offY = (tetrisCanvas.height - rows * size) / 2;
+    const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+    let piece = { x: 5, y: 0, c: '#7ef29a' };
+
+    const draw = () => {
+      ctx.fillStyle = '#050814'; ctx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (grid[r][c]) { ctx.fillStyle = grid[r][c]; ctx.fillRect(offX + c * size, offY + r * size, size - 1, size - 1); }
+          else { ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(offX + c * size, offY + r * size, size - 1, size - 1); }
+        }
+      }
+      ctx.fillStyle = piece.c;
+      ctx.fillRect(offX + piece.x * size, offY + piece.y * size, size - 1, size - 1);
+    };
+
+    setInterval(() => {
+      if (piece.y < rows - 1 && !grid[piece.y + 1][piece.x]) piece.y += 1;
+      else {
+        grid[piece.y][piece.x] = piece.c;
+        piece = { x: Math.floor(Math.random() * cols), y: 0, c: ['#7ef29a','#6fc7ff','#ffd166','#ff8fab'][Math.floor(Math.random()*4)] };
+      }
+      // clear random full rows for arcade feel
+      for (let r = rows - 1; r >= 0; r--) {
+        if (grid[r].every(Boolean)) {
+          grid.splice(r, 1);
+          grid.unshift(Array(cols).fill(0));
+        }
+      }
+      draw();
+    }, 180);
+    draw();
+  }
+
+  // Pokemon-style battle simulator
+  const enemyHp = document.getElementById('enemyHp');
+  const playerHp = document.getElementById('playerHp');
+  const battleLog = document.getElementById('battleLog');
+  const moveButtons = Array.from(document.querySelectorAll('[data-battle-move]'));
+  if (enemyHp && playerHp && battleLog && moveButtons.length) {
+    let eh = 100; let ph = 100;
+    const moveText = {
+      ship: 'Promptmon used Ship Patch.',
+      lint: 'Promptmon used Lint Beam.',
+      rollback: 'Promptmon used Rollback.',
+      reboot: 'Promptmon used Reboot.'
+    };
+    const update = () => { enemyHp.textContent = String(Math.max(0, eh)); playerHp.textContent = String(Math.max(0, ph)); };
+    moveButtons.forEach((btn) => btn.addEventListener('click', () => {
+      if (eh <= 0 || ph <= 0) { eh = 100; ph = 100; battleLog.textContent = 'Battle reset.'; update(); return; }
+      const dmg = 12 + Math.floor(Math.random() * 14);
+      const counter = 8 + Math.floor(Math.random() * 12);
+      eh -= dmg;
+      if (eh > 0) ph -= counter;
+      if (eh <= 0) battleLog.textContent = `${moveText[btn.dataset.battleMove]} Wild Debugmon fainted.`;
+      else if (ph <= 0) battleLog.textContent = `${moveText[btn.dataset.battleMove]} Promptmon fainted.`;
+      else battleLog.textContent = `${moveText[btn.dataset.battleMove]} Wild Debugmon counters.`;
+      update();
+    }));
+  }
+
   const revealNodes = allRevealNodes.filter((node) => !node.classList.contains('is-in'));
 
   if (!revealNodes.length) return;
