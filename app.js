@@ -872,25 +872,35 @@
     const burstConfetti = () => {
       const host = heroLogoEgg.closest('.hero__logo') || heroLogoEgg.parentElement;
       if (!host) return;
-      const colors = ['#ff6e21', '#ffd166', '#2f83ff', '#6ee7b7', '#f472b6', '#ffffff'];
+      const colors = ['#ff6e21', '#ffd166', '#2f83ff', '#6ee7b7', '#f472b6', '#ffffff', '#8b5cf6'];
+      const pieceCount = 44;
       host.style.position = host.style.position || 'relative';
+      host.classList.remove('easter-active');
+      void host.offsetWidth;
+      host.classList.add('easter-active');
 
-      for (let i = 0; i < 28; i += 1) {
+      for (let i = 0; i < pieceCount; i += 1) {
         const piece = document.createElement('span');
         piece.className = 'logo-confetti-piece';
-        const angle = (Math.PI * 2 * i) / 28 + (Math.random() * 0.35 - 0.175);
-        const distance = 80 + Math.random() * 120;
+        if (i % 7 === 0) piece.classList.add('is-star');
+        if (i % 5 === 0) piece.classList.add('is-ribbon');
+        const angle = (Math.PI * 2 * i) / pieceCount + (Math.random() * 0.4 - 0.2);
+        const distance = 95 + Math.random() * 170;
         const dx = Math.cos(angle) * distance;
         const dy = Math.sin(angle) * distance;
+        const color = colors[Math.floor(Math.random() * colors.length)];
         piece.style.setProperty('--dx', `${dx}px`);
         piece.style.setProperty('--dy', `${dy}px`);
-        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.background = color;
+        piece.style.color = color;
         piece.style.left = '50%';
         piece.style.top = '50%';
         piece.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 360}deg)`;
         host.appendChild(piece);
         piece.addEventListener('animationend', () => piece.remove());
       }
+
+      window.setTimeout(() => host.classList.remove('easter-active'), 1300);
     };
 
     heroLogoEgg.addEventListener('click', () => {
