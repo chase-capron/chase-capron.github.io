@@ -4,11 +4,9 @@
 
   const themeStylesById = {
     default: 'themes/presets/default.css',
-    arc: 'themes/presets/arc.css',
     matrix: 'themes/presets/matrix.css',
     'classic-mac': 'themes/presets/classic-mac.css',
     simpsons: 'themes/presets/simpsons.css',
-    jungle: 'themes/presets/jungle.css',
   };
 
   const sanitizeThemeId = (value) => {
@@ -46,8 +44,8 @@
   try {
     const stored = sanitizeThemeId(localStorage.getItem(THEME_KEY));
     const legacyArc = localStorage.getItem(LEGACY_ARC_KEY) === 'true';
-    const preferred = stored !== 'default' ? stored : legacyArc ? 'arc' : 'default';
-    const initialTheme = Object.prototype.hasOwnProperty.call(themeStylesById, preferred) ? preferred : 'default';
+    const preferred = stored !== 'default' ? stored : legacyArc ? 'matrix' : 'matrix';
+    const initialTheme = Object.prototype.hasOwnProperty.call(themeStylesById, preferred) ? preferred : 'matrix';
 
     if (initialTheme !== 'default') {
       document.documentElement.dataset.theme = initialTheme;

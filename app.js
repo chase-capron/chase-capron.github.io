@@ -35,14 +35,6 @@
       tags: ['Baseline', 'High readability'],
     },
     {
-      id: 'arc',
-      label: 'Arc',
-      css: 'themes/presets/arc.css',
-      description: 'Neon tunnel motion theme',
-      accent: '#ff3d00',
-      tags: ['Motion-forward', 'Experimental'],
-    },
-    {
       id: 'matrix',
       label: 'Matrix',
       css: 'themes/presets/matrix.css',
@@ -66,20 +58,12 @@
       accent: '#fed90f',
       tags: ['Playful', 'Scrolling Scene', 'Sky'],
     },
-    {
-      id: 'jungle',
-      label: 'Jungle',
-      css: 'themes/presets/jungle.css',
-      description: 'Animated jungle canopy reveal with vines, grasses, and wildlife',
-      accent: '#8ae75a',
-      tags: ['Nature', 'Animated', 'Immersive'],
-    },
   ];
 
   let themeCatalog = [...defaultThemeCatalog];
   let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
   let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
-  let fallbackThemeId = 'default';
+  let fallbackThemeId = 'matrix';
 
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();

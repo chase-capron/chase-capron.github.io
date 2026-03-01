@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedAt": "2026-02-16T20:56:00Z",
-  "defaultTheme": "default",
+  "defaultTheme": "matrix",
   "themes": [
     {
       "id": "default",
@@ -10,14 +10,6 @@
       "description": "Current site look",
       "accent": "#2f83ff",
       "tags": ["Baseline", "High readability"]
-    },
-    {
-      "id": "arc",
-      "label": "Arc",
-      "css": "themes/presets/arc.css",
-      "description": "Neon tunnel motion theme",
-      "accent": "#ff3d00",
-      "tags": ["Motion-forward", "Experimental"]
     },
     {
       "id": "matrix",
@@ -42,14 +34,6 @@
       "description": "Cartoon sky theme with clouds-to-house scroll scene",
       "accent": "#fed90f",
       "tags": ["Playful", "Scrolling Scene", "Sky"]
-    },
-    {
-      "id": "jungle",
-      "label": "Jungle",
-      "css": "themes/presets/jungle.css",
-      "description": "Animated jungle canopy reveal with vines, grasses, and wildlife",
-      "accent": "#8ae75a",
-      "tags": ["Nature", "Animated", "Immersive"]
     }
   ]
 }
