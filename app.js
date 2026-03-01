@@ -831,14 +831,14 @@
       }, 120);
     });
 
-    const hintedPhrase = 'and if you\'re still here, tap me 10 times for a surprise';
+    const hintedPhrase = 'and if you\'re still here, tap me 10 times for a surprise.';
 
     const cycleLoop = async () => {
       while (true) {
         if (!animating) {
           cycleCount += 1;
 
-          if (cycleCount === 10) {
+          if (cycleCount % 5 === 0) {
             await typeToPhrase(hintedPhrase);
             await sleep(15000);
           } else {
@@ -869,6 +869,30 @@
       }
     };
 
+    const burstConfetti = () => {
+      const host = heroLogoEgg.closest('.hero__logo') || heroLogoEgg.parentElement;
+      if (!host) return;
+      const colors = ['#ff6e21', '#ffd166', '#2f83ff', '#6ee7b7', '#f472b6', '#ffffff'];
+      host.style.position = host.style.position || 'relative';
+
+      for (let i = 0; i < 28; i += 1) {
+        const piece = document.createElement('span');
+        piece.className = 'logo-confetti-piece';
+        const angle = (Math.PI * 2 * i) / 28 + (Math.random() * 0.35 - 0.175);
+        const distance = 80 + Math.random() * 120;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance;
+        piece.style.setProperty('--dx', `${dx}px`);
+        piece.style.setProperty('--dy', `${dy}px`);
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.left = '50%';
+        piece.style.top = '50%';
+        piece.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 360}deg)`;
+        host.appendChild(piece);
+        piece.addEventListener('animationend', () => piece.remove());
+      }
+    };
+
     heroLogoEgg.addEventListener('click', () => {
       tapCount += 1;
       if (tapTimer) window.clearTimeout(tapTimer);
@@ -879,6 +903,7 @@
         // force reflow so repeated triggers replay animation
         void heroLogoEgg.offsetWidth;
         heroLogoEgg.classList.add('easter-spin');
+        burstConfetti();
         resetTaps();
       }
     });
