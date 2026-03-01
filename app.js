@@ -736,6 +736,30 @@
   }
 
   // Hero rotating suffix (backspace + retype every cycle)
+  // Featured project cards baggage-claim easter animation
+  const baggageGrid = document.querySelector('.project-grid--baggage');
+  if (baggageGrid && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const cards = Array.from(baggageGrid.querySelectorAll('.project-card'));
+    cards.forEach((card, idx) => {
+      card.style.animationDelay = `${Math.min(900, idx * 130)}ms`;
+    });
+
+    // subtle bump collisions after initial drop-in
+    window.setTimeout(() => {
+      window.setInterval(() => {
+        if (cards.length < 2) return;
+        const i = Math.floor(Math.random() * cards.length);
+        const j = (i + 1 + Math.floor(Math.random() * (cards.length - 1))) % cards.length;
+        cards[i].classList.remove('bump');
+        cards[j].classList.remove('bump');
+        void cards[i].offsetWidth;
+        void cards[j].offsetWidth;
+        cards[i].classList.add('bump');
+        cards[j].classList.add('bump');
+      }, 2600);
+    }, 1400);
+  }
+
   const rotatingSuffixEl = document.querySelector('#hero-rotating-suffix');
   const rotatingTitleEl = rotatingSuffixEl?.closest('.hero-title-shine');
   if (rotatingSuffixEl && rotatingTitleEl) {
