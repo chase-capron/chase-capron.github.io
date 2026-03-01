@@ -667,6 +667,29 @@ h1 {
   font-size: 13px;
 }
 
+.theme-easter-egg {
+  margin: 12px 0 0;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius);
+  padding: 10px;
+}
+
+.theme-easter-egg img {
+  width: 100%;
+  max-width: 640px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.theme-easter-egg figcaption {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
 .theme-preset-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
