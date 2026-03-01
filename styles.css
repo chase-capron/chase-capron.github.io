@@ -438,6 +438,18 @@ h1 {
   filter: drop-shadow(0 22px 60px rgba(0, 0, 0, 0.35));
 }
 
+.hero__logo img.easter-spin {
+  animation: heroLogoEasterSpin 2.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: 50% 50%;
+}
+
+@keyframes heroLogoEasterSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  38% { transform: rotate(360deg) scale(1.22); }
+  68% { transform: rotate(720deg) scale(1.18); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+
 .hero-marquee {
   margin-top: 32px;
   border-top: 1px solid var(--line);

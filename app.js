@@ -769,6 +769,7 @@
     ];
 
     let phraseIndex = 0;
+    let cycleCount = 0;
     let animating = false;
 
     const syncTitleText = (suffixText) => {
@@ -830,11 +831,61 @@
       }, 120);
     });
 
-    window.setInterval(async () => {
-      if (animating) return;
-      phraseIndex = (phraseIndex + 1) % phrases.length;
-      await typeToPhrase(phrases[phraseIndex]);
-    }, 5000);
+    const hintedPhrase = 'and if you\'re still here, tap me 10 times for a surprise';
+
+    const cycleLoop = async () => {
+      while (true) {
+        if (!animating) {
+          cycleCount += 1;
+
+          if (cycleCount === 10) {
+            await typeToPhrase(hintedPhrase);
+            await sleep(15000);
+          } else {
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            await typeToPhrase(phrases[phraseIndex]);
+            await sleep(5000);
+          }
+        } else {
+          await sleep(250);
+        }
+      }
+    };
+
+    cycleLoop();
+  }
+
+  // Hero logo easter egg: 10 taps/clicks triggers spin + zoom animation
+  const heroLogoEgg = document.querySelector('#hero-logo-easter-egg');
+  if (heroLogoEgg) {
+    let tapCount = 0;
+    let tapTimer = null;
+
+    const resetTaps = () => {
+      tapCount = 0;
+      if (tapTimer) {
+        window.clearTimeout(tapTimer);
+        tapTimer = null;
+      }
+    };
+
+    heroLogoEgg.addEventListener('click', () => {
+      tapCount += 1;
+      if (tapTimer) window.clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(resetTaps, 6000);
+
+      if (tapCount >= 10) {
+        heroLogoEgg.classList.remove('easter-spin');
+        // force reflow so repeated triggers replay animation
+        void heroLogoEgg.offsetWidth;
+        heroLogoEgg.classList.add('easter-spin');
+        resetTaps();
+      }
+    });
+
+    heroLogoEgg.addEventListener('animationend', () => {
+      heroLogoEgg.classList.remove('easter-spin');
+    });
   }
 
   // Current stack: Tetris-like row-fill simulation with natural chip widths
