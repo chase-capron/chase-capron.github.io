@@ -530,6 +530,24 @@ h1 {
   }
 }
 
+.hero-marquee[data-baggage-fallback='scroll'] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+}
+
+.hero-marquee[data-baggage-fallback='scroll'] .hero-marquee__track {
+  width: max-content;
+  padding-left: max(14px, env(safe-area-inset-left));
+  padding-right: max(14px, env(safe-area-inset-right));
+}
+
+.hero-marquee[data-baggage-fallback='scroll'] .project-tile {
+  scroll-snap-align: start;
+}
+
 .hero-marquee__track {
   display: flex;
   width: max-content;
@@ -552,6 +570,7 @@ h1 {
   background: var(--surface);
   box-shadow: var(--shadow);
   position: relative;
+  transition: border-color 220ms ease, box-shadow 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .hero-marquee__track[data-baggage-sim='true'] .project-tile {
@@ -559,12 +578,14 @@ h1 {
   left: 0;
   top: 0;
   will-change: transform;
+  backface-visibility: hidden;
+  contain: layout paint;
 }
 
 .project-tile:hover,
 .project-tile:focus-visible {
-  border-color: rgba(47, 131, 255, 0.55);
-  box-shadow: 0 28px 88px rgba(0, 0, 0, 0.45);
+  border-color: color-mix(in oklab, var(--accent) 58%, transparent);
+  box-shadow: 0 28px 88px rgba(0, 0, 0, 0.45), 0 0 0 1px color-mix(in oklab, var(--accent) 24%, transparent);
 }
 
 .project-tile h3 { font-size: 18px; }
@@ -1815,6 +1836,19 @@ body.arcade-open {
   .hero__logo img {
     transform: scale(1.14);
     transform-origin: center;
+  }
+
+  .hero-marquee {
+    margin-top: 24px;
+    padding: 16px 0 14px;
+  }
+
+  .hero-marquee__track {
+    gap: 12px;
+  }
+
+  .project-tile {
+    width: min(292px, calc(100vw - 52px));
   }
 }
 

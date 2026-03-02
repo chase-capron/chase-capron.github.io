@@ -654,40 +654,48 @@
   void hydrateProjectFreshness();
 
   const initHeroBaggageLoop = () => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
     const marquee = document.querySelector('.hero-marquee');
     const track = marquee?.querySelector('.hero-marquee__track');
     if (!marquee || !track) return;
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mobileSafeFallback = window.matchMedia('(max-width: 760px) and (pointer: coarse)').matches;
+    if (prefersReducedMotion || mobileSafeFallback) {
+      marquee.dataset.baggageFallback = 'scroll';
+      return;
+    }
+
+    delete marquee.dataset.baggageFallback;
+
     const tiles = Array.from(track.querySelectorAll('.project-tile'));
     if (!tiles.length) return;
 
-    const STEP_SECONDS = 1 / 120;
-    const MAX_FRAME_SECONDS = 0.08;
-    const BELT_SPEED = 78;
-    const SPEED_CONVERGENCE = 8.2;
-    const BASE_GAP = 86;
-    const GAP_JITTER = 24;
-    const MIN_CONTACT_GAP = 10;
+    const STEP_SECONDS = 1 / 100;
+    const MAX_FRAME_SECONDS = 0.05;
+    const BELT_SPEED = 74;
+    const SPEED_CONVERGENCE = 6.6;
+    const BASE_GAP = 94;
+    const GAP_JITTER = 16;
+    const MIN_CONTACT_GAP = 12;
     const CONTACT_SOLVER_PASSES = 2;
-    const COLLISION_TRANSFER = 0.62;
-    const COLLISION_NUDGE = 0.22;
-    const GRAVITY = 1800;
-    const DROP_START_Y = -34;
-    const LANDING_BOUNCE = 0.2;
+    const CONTACT_CORRECTION_MAX = 14;
+    const COLLISION_TRANSFER = 0.46;
+    const COLLISION_NUDGE = 0.13;
+    const GRAVITY = 1560;
+    const DROP_START_Y = -30;
+    const LANDING_BOUNCE = 0.16;
     const RECYCLE_MARGIN = 120;
-    const MAX_ROTATION = 2.8;
-    const MAX_PROPAGATION_IMPULSE = 42;
-    const PROPAGATION_DECAY = 0.58;
-    const RANDOM_BUMP_MIN_SECONDS = 0.85;
-    const RANDOM_BUMP_MAX_SECONDS = 2.4;
-    const JAM_IDLE_MIN_SECONDS = 6;
-    const JAM_IDLE_MAX_SECONDS = 12.5;
-    const JAM_HOLD_MIN_SECONDS = 0.85;
-    const JAM_HOLD_MAX_SECONDS = 1.7;
-    const JAM_RELEASE_MIN_SECONDS = 0.4;
-    const JAM_RELEASE_MAX_SECONDS = 0.85;
+    const MAX_ROTATION = 2.2;
+    const MAX_PROPAGATION_IMPULSE = 34;
+    const PROPAGATION_DECAY = 0.52;
+    const RANDOM_BUMP_MIN_SECONDS = 1.25;
+    const RANDOM_BUMP_MAX_SECONDS = 3.1;
+    const JAM_IDLE_MIN_SECONDS = 7.2;
+    const JAM_IDLE_MAX_SECONDS = 13.5;
+    const JAM_HOLD_MIN_SECONDS = 0.7;
+    const JAM_HOLD_MAX_SECONDS = 1.35;
+    const JAM_RELEASE_MIN_SECONDS = 0.5;
+    const JAM_RELEASE_MAX_SECONDS = 0.95;
     const SEED = 24117;
 
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -715,9 +723,12 @@
         height: Math.max(140, rect.height || tile.offsetHeight || 168),
         x: 0,
         y: 0,
+        prevX: 0,
+        prevY: 0,
         vx: BELT_SPEED,
         vy: 0,
         rot: 0,
+        prevRot: 0,
         vrot: 0,
         baseSpeed: BELT_SPEED,
         mass: 1,
@@ -762,21 +773,21 @@
     };
 
     const applyBagProfile = (bag, sequence) => {
-      const speedVariance = 1 + signedNoise(sequence + 97) * 0.03;
+      const speedVariance = 1 + signedNoise(sequence + 97) * 0.022;
       bag.sequence = sequence;
       bag.baseSpeed = BELT_SPEED * speedVariance;
-      bag.mass = 0.92 + noise(sequence + 401) * 0.62;
-      bag.bumpGain = 0.86 + noise(sequence + 577) * 0.34;
+      bag.mass = 0.96 + noise(sequence + 401) * 0.44;
+      bag.bumpGain = 0.9 + noise(sequence + 577) * 0.24;
     };
 
     const applyImpulseToBag = (bag, impulse) => {
       const scaled = clamp(impulse * bag.bumpGain, -MAX_PROPAGATION_IMPULSE, MAX_PROPAGATION_IMPULSE);
       if (Math.abs(scaled) < 0.2) return;
 
-      const phaseScale = bag.phase === 'drop' ? 0.55 : 1;
+      const phaseScale = bag.phase === 'drop' ? 0.5 : 0.92;
       bag.vx = clamp(bag.vx + scaled * phaseScale, BELT_SPEED_MIN, BELT_SPEED_MAX);
-      bag.vy -= Math.abs(scaled) * 2.8 * phaseScale;
-      bag.vrot += signedNoise(bag.sequence + random() * 400) * (0.08 + Math.abs(scaled) * 0.01) * phaseScale;
+      bag.vy -= Math.abs(scaled) * 2.1 * phaseScale;
+      bag.vrot += signedNoise(bag.sequence + random() * 400) * (0.05 + Math.abs(scaled) * 0.008) * phaseScale;
     };
 
     const propagateImpulse = (sortedBags, startIndex, impulse, radius = 2) => {
@@ -817,7 +828,7 @@
       if (!candidates.length) return;
 
       const targetIndex = candidates[Math.floor(randomRange(0, candidates.length))];
-      const impulse = random() < 0.72 ? randomRange(8, 24) : randomRange(-14, -6);
+      const impulse = random() < 0.68 ? randomRange(6, 18) : randomRange(-10, -4);
       propagateImpulse(sortedBags, targetIndex, impulse, 2);
     };
 
@@ -856,9 +867,9 @@
       jamState.phase = 'hold';
       jamState.timer = randomRange(JAM_HOLD_MIN_SECONDS, JAM_HOLD_MAX_SECONDS);
       jamState.centerX = clamp(bagCenterX(centerBag), 120, Math.max(240, spawnX - 140));
-      jamState.radius = randomRange(170, 280);
-      jamState.strength = randomRange(0.38, 0.58);
-      jamState.releaseImpulse = randomRange(16, 30);
+      jamState.radius = randomRange(180, 265);
+      jamState.strength = randomRange(0.3, 0.48);
+      jamState.releaseImpulse = randomRange(12, 22);
       track.dataset.baggageJam = 'true';
     };
 
@@ -881,13 +892,13 @@
         if (influence <= 0) continue;
 
         if (releasing) {
-          const releaseTarget = bag.baseSpeed * (1 + influence * 0.24);
-          bag.vx += (releaseTarget - bag.vx) * (5.2 + influence * 8.4) * dt;
-          bag.vrot += signedNoise(bag.sequence + influence * 41) * 0.12 * influence;
+          const releaseTarget = bag.baseSpeed * (1 + influence * 0.2);
+          bag.vx += (releaseTarget - bag.vx) * (4.4 + influence * 7.2) * dt;
+          bag.vrot += signedNoise(bag.sequence + influence * 41) * 0.086 * influence;
         } else {
           const jamTarget = bag.baseSpeed * (1 - jamState.strength * influence);
-          bag.vx += (jamTarget - bag.vx) * (8 + influence * 10) * dt;
-          bag.vrot += signedNoise(bag.sequence + influence * 29) * 0.08 * influence;
+          bag.vx += (jamTarget - bag.vx) * (6.8 + influence * 8.6) * dt;
+          bag.vrot += signedNoise(bag.sequence + influence * 29) * 0.062 * influence;
         }
 
         bag.vx = clamp(bag.vx, BELT_SPEED_MIN, BELT_SPEED_MAX);
@@ -929,15 +940,18 @@
       applyBagProfile(bag, sequence);
 
       const gap = BASE_GAP + signedNoise(sequence + 31) * GAP_JITTER;
-      bag.vx = bag.baseSpeed * randomRange(0.52, 0.66);
+      bag.vx = bag.baseSpeed * randomRange(0.58, 0.72);
       bag.vy = 0;
       bag.y = DROP_START_Y;
-      bag.rot = signedNoise(sequence + 151) * 2.1;
-      bag.vrot = signedNoise(sequence + 211) * 2.6;
+      bag.rot = signedNoise(sequence + 151) * 1.7;
+      bag.vrot = signedNoise(sequence + 211) * 2;
       bag.phase = 'drop';
 
-      const spawnFromChute = spawnX + signedNoise(sequence + 271) * 12;
+      const spawnFromChute = spawnX + signedNoise(sequence + 271) * 8;
       bag.x = Math.max(spawnFromChute, rightmostEdge + gap);
+      bag.prevX = bag.x;
+      bag.prevY = bag.y;
+      bag.prevRot = bag.rot;
     };
 
     const initializePositions = () => {
@@ -952,15 +966,18 @@
         bag.vx = bag.baseSpeed;
         bag.vy = 0;
         bag.y = 0;
-        bag.rot = signedNoise(index + 89) * 0.45;
+        bag.rot = signedNoise(index + 89) * 0.35;
         bag.vrot = 0;
         bag.phase = 'belt';
         bag.x = cursor;
+        bag.prevX = bag.x;
+        bag.prevY = bag.y;
+        bag.prevRot = bag.rot;
 
         cursor += bag.width + gap;
       });
 
-      render();
+      render(1);
     };
 
     const canRecycle = (bag) => {
@@ -984,24 +1001,25 @@
           const totalMass = frontBag.mass + rearBag.mass;
           const frontShare = rearBag.mass / totalMass;
           const rearShare = frontBag.mass / totalMass;
-          const correctionScale = pass === 0 ? 0.96 : 0.64;
+          const correctionScale = pass === 0 ? 0.82 : 0.56;
+          const resolvedOverlap = Math.min(CONTACT_CORRECTION_MAX, overlap);
 
-          frontBag.x -= overlap * frontShare * correctionScale;
-          rearBag.x += overlap * rearShare * correctionScale;
+          frontBag.x -= resolvedOverlap * frontShare * correctionScale;
+          rearBag.x += resolvedOverlap * rearShare * correctionScale;
 
           const closingVelocity = rearBag.vx - frontBag.vx;
-          if (closingVelocity > 0.2) {
+          if (closingVelocity > 0.16) {
             const transfer = closingVelocity * COLLISION_TRANSFER;
             frontBag.vx = clamp(frontBag.vx + transfer * frontShare, BELT_SPEED_MIN, BELT_SPEED_MAX);
             rearBag.vx = clamp(rearBag.vx - transfer * rearShare, BELT_SPEED_MIN, BELT_SPEED_MAX);
           }
 
-          const bump = Math.min(3.2, overlap * COLLISION_NUDGE);
+          const bump = Math.min(2, resolvedOverlap * COLLISION_NUDGE);
           if (bump > 0.05) {
-            frontBag.vy -= bump * 2.4;
-            rearBag.vy -= bump * 1.5;
-            frontBag.vrot -= bump * 0.06;
-            rearBag.vrot += bump * 0.05;
+            frontBag.vy -= bump * 1.8;
+            rearBag.vy -= bump * 1.1;
+            frontBag.vrot -= bump * 0.042;
+            rearBag.vrot += bump * 0.036;
           }
         }
       }
@@ -1009,6 +1027,9 @@
 
     const step = (dt) => {
       for (const bag of bags) {
+        bag.prevX = bag.x;
+        bag.prevY = bag.y;
+        bag.prevRot = bag.rot;
         bag.vx += (bag.baseSpeed - bag.vx) * SPEED_CONVERGENCE * dt;
         bag.vx = clamp(bag.vx, BELT_SPEED_MIN, BELT_SPEED_MAX);
       }
@@ -1030,31 +1051,31 @@
           bag.vy += GRAVITY * dt;
           bag.y += bag.vy * dt;
           bag.rot += bag.vrot * dt;
-          bag.vrot *= Math.max(0, 1 - 6.5 * dt);
+          bag.vrot *= Math.max(0, 1 - 5.3 * dt);
 
           if (bag.y >= 0) {
             bag.y = 0;
-            if (Math.abs(bag.vy) < 45) {
+            if (Math.abs(bag.vy) < 40) {
               bag.vy = 0;
               bag.vrot = 0;
               bag.phase = 'belt';
             } else {
               bag.vy = -bag.vy * LANDING_BOUNCE;
-              bag.vrot += signedNoise(bag.sequence + 317) * 0.8;
+              bag.vrot += signedNoise(bag.sequence + 317) * 0.58;
             }
           }
         } else {
-          bag.vy += GRAVITY * 0.23 * dt;
+          bag.vy += GRAVITY * 0.2 * dt;
           bag.y += bag.vy * dt;
-          bag.y += (0 - bag.y) * Math.min(1, 14 * dt);
-          bag.vy *= Math.max(0, 1 - 8.4 * dt);
+          bag.y += (0 - bag.y) * Math.min(1, 12.5 * dt);
+          bag.vy *= Math.max(0, 1 - 7.2 * dt);
 
           bag.rot += bag.vrot * dt;
-          bag.vrot *= Math.max(0, 1 - 8.8 * dt);
-          bag.rot += (0 - bag.rot) * Math.min(1, 9 * dt);
+          bag.vrot *= Math.max(0, 1 - 7.8 * dt);
+          bag.rot += (0 - bag.rot) * Math.min(1, 7.4 * dt);
         }
 
-        bag.y = clamp(bag.y, -18, 12);
+        bag.y = clamp(bag.y, -14, 10);
         bag.rot = clamp(bag.rot, -MAX_ROTATION, MAX_ROTATION);
       }
 
@@ -1074,9 +1095,13 @@
       }
     };
 
-    const render = () => {
+    const render = (alpha = 1) => {
+      const blend = clamp(alpha, 0, 1);
       for (const bag of bags) {
-        bag.el.style.transform = `translate3d(${bag.x.toFixed(2)}px, ${bag.y.toFixed(2)}px, 0) rotate(${bag.rot.toFixed(2)}deg)`;
+        const x = bag.prevX + (bag.x - bag.prevX) * blend;
+        const y = bag.prevY + (bag.y - bag.prevY) * blend;
+        const rot = bag.prevRot + (bag.rot - bag.prevRot) * blend;
+        bag.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${rot.toFixed(2)}deg)`;
       }
     };
 
@@ -1093,7 +1118,7 @@
         accumulator -= STEP_SECONDS;
       }
 
-      render();
+      render(accumulator / STEP_SECONDS);
       rafId = window.requestAnimationFrame(frame);
     };
 
@@ -1126,9 +1151,12 @@
           const rect = bag.el.getBoundingClientRect();
           bag.width = Math.max(220, rect.width || bag.el.offsetWidth || 292);
           bag.height = Math.max(140, rect.height || bag.el.offsetHeight || 168);
+          bag.prevX = bag.x;
+          bag.prevY = bag.y;
+          bag.prevRot = bag.rot;
         });
         applyTrackHeight();
-      }, 120);
+      }, 140);
     };
 
     initializePositions();
