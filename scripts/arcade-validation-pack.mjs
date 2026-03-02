@@ -200,6 +200,14 @@ const checkShellBehaviorHints = () => {
   if (!/setTabsBusy\(/.test(shell)) {
     fail('arcade/shell.js missing tab gating during transition lifecycle');
   }
+
+  if (!/max-width: 760px/.test(shell) || !/pointer: coarse/.test(shell)) {
+    fail('arcade/shell.js missing compact-motion media query guard for mobile/coarse pointers');
+  }
+
+  if (!/dataset\.arcadeMotion/.test(shell)) {
+    fail('arcade/shell.js missing data-arcade-motion state token for motion profile debugging');
+  }
 };
 
 const checkThemeAdapterCoverage = () => {
@@ -220,6 +228,13 @@ const checkThemeAdapterCoverage = () => {
   });
 };
 
+const checkStateCoverage = () => {
+  const state = readUtf8('arcade/state.js');
+  if (!/dino3d/.test(state)) {
+    fail('arcade/state.js missing dino3d in allowed tab persistence set');
+  }
+};
+
 const checkSwitchStyles = () => {
   const css = readUtf8('styles.css');
 
@@ -234,6 +249,42 @@ const checkSwitchStyles = () => {
   requiredSelectors.forEach((selector) => {
     if (!css.includes(selector)) {
       fail(`styles.css missing phase-3 transition selector: ${selector}`);
+    }
+  });
+};
+
+const checkDinoGameplayPolishHints = () => {
+  const dino = readUtf8('arcade/games/dino3d.js');
+
+  const requiredMarkers = [
+    'prefers-reduced-motion: reduce',
+    'JUMP_BUFFER_SEC',
+    'jumpBuffer',
+    '(max-width: 760px), (pointer: coarse)',
+    'triStride',
+  ];
+
+  requiredMarkers.forEach((marker) => {
+    if (!dino.includes(marker)) {
+      fail(`arcade/games/dino3d.js missing phase-5 gameplay/perf marker: ${marker}`);
+    }
+  });
+};
+
+const checkMobileReducedMotionStyles = () => {
+  const css = readUtf8('styles.css');
+
+  const requiredMarkers = [
+    '.arcade-shell[data-arcade-motion="compact"] .arcade-tab.is-target',
+    '@media (max-width: 520px)',
+    '[data-control-group="dino3d"] button',
+    '@media (prefers-reduced-motion: reduce)',
+    '.hh-glass',
+  ];
+
+  requiredMarkers.forEach((marker) => {
+    if (!css.includes(marker)) {
+      fail(`styles.css missing phase-5 mobile/reduced-motion marker: ${marker}`);
     }
   });
 };
@@ -262,7 +313,10 @@ try {
   checkArcadeSecuritySurface();
   checkShellBehaviorHints();
   checkThemeAdapterCoverage();
+  checkStateCoverage();
   checkSwitchStyles();
+  checkDinoGameplayPolishHints();
+  checkMobileReducedMotionStyles();
   checkAssetAttributionDoc();
 
   if (issues.length) {

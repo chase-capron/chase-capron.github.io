@@ -41,6 +41,13 @@
         cartridgeMs: 120,
         warmMs: 140,
       },
+      compact: {
+        openMs: 170,
+        closeMs: 140,
+        powerDownMs: 70,
+        cartridgeMs: 92,
+        warmMs: 108,
+      },
       reduced: {
         openMs: 120,
         closeMs: 100,
@@ -59,7 +66,11 @@
     const reduceMotionQuery =
       typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
 
+    const compactMotionQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 760px), (pointer: coarse)') : null;
+
     let prefersReducedMotion = Boolean(reduceMotionQuery?.matches);
+    let prefersCompactMotion = Boolean(compactMotionQuery?.matches);
 
     const focusableSelector = [
       'a[href]',
@@ -99,10 +110,20 @@
       root.classList.toggle('is-closing', nextPhase === PHASE.CLOSING);
     };
 
-    const getMotion = () => (prefersReducedMotion ? MOTION.reduced : MOTION.full);
+    const getMotion = () => {
+      if (prefersReducedMotion) return MOTION.reduced;
+      if (prefersCompactMotion) return MOTION.compact;
+      return MOTION.full;
+    };
 
     const syncMotionAttrs = () => {
       const motion = getMotion();
+
+      root.dataset.arcadeMotion = prefersReducedMotion
+        ? 'reduced'
+        : prefersCompactMotion
+          ? 'compact'
+          : 'full';
 
       root.style.setProperty('--arcade-open-ms', `${motion.openMs}ms`);
       root.style.setProperty('--arcade-close-ms', `${motion.closeMs}ms`);
@@ -408,6 +429,11 @@
       syncMotionAttrs();
     };
 
+    const handleCompactMotionChange = (event) => {
+      prefersCompactMotion = Boolean(event?.matches);
+      syncMotionAttrs();
+    };
+
     tabs.forEach((tab) => {
       tab.addEventListener('click', handleTabClick);
       tab.addEventListener('keydown', handleTabKeydown);
@@ -419,6 +445,14 @@
         reduceMotionQuery.addEventListener('change', handleMotionPrefChange);
       } else if (typeof reduceMotionQuery.addListener === 'function') {
         reduceMotionQuery.addListener(handleMotionPrefChange);
+      }
+    }
+
+    if (compactMotionQuery) {
+      if (typeof compactMotionQuery.addEventListener === 'function') {
+        compactMotionQuery.addEventListener('change', handleCompactMotionChange);
+      } else if (typeof compactMotionQuery.addListener === 'function') {
+        compactMotionQuery.addListener(handleCompactMotionChange);
       }
     }
 
@@ -455,6 +489,14 @@
             reduceMotionQuery.removeEventListener('change', handleMotionPrefChange);
           } else if (typeof reduceMotionQuery.removeListener === 'function') {
             reduceMotionQuery.removeListener(handleMotionPrefChange);
+          }
+        }
+
+        if (compactMotionQuery) {
+          if (typeof compactMotionQuery.removeEventListener === 'function') {
+            compactMotionQuery.removeEventListener('change', handleCompactMotionChange);
+          } else if (typeof compactMotionQuery.removeListener === 'function') {
+            compactMotionQuery.removeListener(handleCompactMotionChange);
           }
         }
 

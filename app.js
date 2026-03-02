@@ -130,15 +130,17 @@
 
   const applyThemeStylesheet = (themeId) => {
     const theme = themesById.get(themeId) || themesById.get(fallbackThemeId) || themeCatalog[0];
-    if (!theme?.css) return;
+    if (!theme?.css) return null;
 
     const href = resolveAssetUrl(theme.css);
-    if (!href) return;
+    if (!href) return null;
 
     const link = ensureThemeStylesheet();
     if (link.getAttribute('href') !== href) {
       link.setAttribute('href', href);
     }
+
+    return link;
   };
 
   const renderThemeOptions = (activeTheme) => {
@@ -247,6 +249,30 @@
   };
 
   let arcadeController = null;
+  let arcadeThemeSyncToken = 0;
+
+  const scheduleArcadeThemeSync = (themeId, stylesheetLink = null) => {
+    if (!arcadeController || typeof arcadeController.syncTheme !== 'function') return;
+
+    const token = ++arcadeThemeSyncToken;
+    const runSync = () => {
+      if (token !== arcadeThemeSyncToken) return;
+      arcadeController.syncTheme(themeId);
+    };
+
+    runSync();
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(runSync);
+    });
+
+    if (stylesheetLink instanceof HTMLLinkElement) {
+      const onThemeCssLoaded = () => {
+        runSync();
+      };
+      stylesheetLink.addEventListener('load', onThemeCssLoaded, { once: true });
+    }
+  };
 
   const MATRIX_CHARS = 'アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*+-<>[]{}';
 
@@ -396,15 +422,12 @@
       root.dataset.theme = nextTheme;
     }
 
-    applyThemeStylesheet(nextTheme);
+    const themeLink = applyThemeStylesheet(nextTheme);
     renderThemeOptions(nextTheme);
     renderThemePresetButtons(nextTheme);
     setThemeHint(nextTheme);
     syncMatrixRain(nextTheme);
-
-    if (arcadeController && typeof arcadeController.syncTheme === 'function') {
-      arcadeController.syncTheme(nextTheme);
-    }
+    scheduleArcadeThemeSync(nextTheme, themeLink);
 
     try {
       localStorage.setItem(THEME_KEY, nextTheme);
@@ -1624,7 +1647,7 @@
   // app.js only boots the controller and forwards theme changes.
   if (window.ChaseArcade && typeof window.ChaseArcade.init === 'function') {
     arcadeController = window.ChaseArcade.init({ siteRoot: root });
-    arcadeController.syncTheme(root.dataset.theme || 'default');
+    scheduleArcadeThemeSync(root.dataset.theme || 'default', document.getElementById('themeStylesheet'));
   }
 
   const revealNodes = allRevealNodes.filter((node) => !node.classList.contains('is-in'));

@@ -111,6 +111,15 @@
     const W = canvas.width;
     const H = canvas.height;
 
+    const reducedMotionQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+    const compactMotionQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 760px), (pointer: coarse)') : null;
+
+    let prefersReducedMotion = Boolean(reducedMotionQuery?.matches);
+    let prefersCompactMotion = Boolean(compactMotionQuery?.matches);
+
     const camera = { x: 0, y: 6.8, z: 25.5, focal: 530, near: 0.6 };
     const lightDir = (() => {
       const x = -0.35;
@@ -155,7 +164,16 @@
     let rafId = null;
     let lastTs = 0;
     let elapsed = 0;
-    let jumpQueued = false;
+    let jumpBuffer = 0;
+
+    const JUMP_BUFFER_SEC = 0.14;
+
+    const hintText = () =>
+      prefersReducedMotion
+        ? 'Reduced motion mode. Jump with Space / ↑ / Tap.'
+        : 'Jump with Space / ↑ / Tap. Dodge the cacti.';
+
+    const cactusTriStride = () => (prefersCompactMotion || prefersReducedMotion ? 2 : 1);
 
     const updateHud = () => {
       if (scoreNode instanceof HTMLElement) {
@@ -169,6 +187,12 @@
     const setStatus = (text) => {
       if (statusNode instanceof HTMLElement) {
         statusNode.textContent = text;
+      }
+    };
+
+    const syncMotionStatus = () => {
+      if (alive) {
+        setStatus(hintText());
       }
     };
 
@@ -196,19 +220,19 @@
       speed = 11;
       spawnTimer = 0.65;
       elapsed = 0;
-      jumpQueued = false;
+      jumpBuffer = 0;
       player.y = 0;
       player.vy = 0;
       obstaclePool.forEach((item) => {
         item.active = false;
       });
-      setStatus('Jump with Space / ↑ / Tap. Dodge the cacti.');
+      setStatus(hintText());
       updateHud();
     };
 
     const queueJump = () => {
       if (alive) {
-        jumpQueued = true;
+        jumpBuffer = JUMP_BUFFER_SEC;
       } else {
         resetRound();
       }
@@ -220,7 +244,7 @@
 
       obstacle.active = true;
       obstacle.x = 27 + Math.random() * 8;
-      obstacle.z = -1.15 + Math.random() * 2.3;
+      obstacle.z = prefersReducedMotion ? 0 : -1.15 + Math.random() * 2.3;
       obstacle.scale = 0.8 + Math.random() * 0.55;
       obstacle.width = 1.2 * obstacle.scale;
       obstacle.height = 3.6 * obstacle.scale;
@@ -232,10 +256,11 @@
 
       if (!alive) return;
 
-      if (jumpQueued && player.y <= groundY + 0.001) {
+      jumpBuffer = Math.max(0, jumpBuffer - dt);
+      if (jumpBuffer > 0 && player.y <= groundY + 0.001) {
         player.vy = player.jumpVelocity;
+        jumpBuffer = 0;
       }
-      jumpQueued = false;
 
       player.vy -= player.gravity * dt;
       player.y += player.vy * dt;
@@ -262,7 +287,7 @@
       obstaclePool.forEach((obstacle) => {
         if (!obstacle.active) return;
         obstacle.x -= speed * dt;
-        obstacle.spin += dt * 0.7;
+        obstacle.spin += dt * (prefersReducedMotion ? 0.16 : 0.7);
 
         if (obstacle.x < -20) {
           obstacle.active = false;
@@ -345,6 +370,7 @@
       baseColor,
       wireColor,
       alpha = 1,
+      triStride = 1,
     }) => {
       const tri = mesh.triangles;
       for (let i = 0; i < mesh.triCount; i += 1) {
@@ -361,7 +387,9 @@
 
       mesh.triOrder.sort((a, b) => mesh.triDepth[b] - mesh.triDepth[a]);
 
-      for (let orderIndex = 0; orderIndex < mesh.triOrder.length; orderIndex += 1) {
+      const stride = Math.max(1, Math.floor(triStride) || 1);
+
+      for (let orderIndex = 0; orderIndex < mesh.triOrder.length; orderIndex += stride) {
         const triIndex = mesh.triOrder[orderIndex];
         const src = triIndex * 3;
 
@@ -457,10 +485,10 @@
 
       ctx.strokeStyle = 'rgba(72, 40, 21, 0.2)';
       ctx.lineWidth = 1;
-      const lineCount = 18;
+      const lineCount = prefersCompactMotion ? 12 : 18;
       for (let i = 0; i < lineCount; i += 1) {
         const y = horizonY + ((H - horizonY) / lineCount) * i;
-        const wave = Math.sin(elapsed * 0.65 + i * 0.85) * 4;
+        const wave = prefersReducedMotion ? 0 : Math.sin(elapsed * 0.65 + i * 0.85) * 4;
         ctx.beginPath();
         ctx.moveTo(0, y + wave);
         ctx.lineTo(W, y - wave * 0.2);
@@ -471,8 +499,8 @@
     const drawScene = () => {
       drawGround();
 
-      const stride = alive ? Math.sin(elapsed * 10.5) : 0;
-      const bob = alive ? Math.abs(stride) * 0.18 : 0;
+      const stride = alive && !prefersReducedMotion ? Math.sin(elapsed * 10.5) : 0;
+      const bob = alive && !prefersReducedMotion ? Math.abs(stride) * 0.18 : 0;
       const dinoPitch = alive
         ? clamp(player.vy * -0.045, -0.36, 0.34)
         : -0.22;
@@ -508,6 +536,7 @@
           baseColor: [62, 181, 101],
           wireColor: 'rgba(13, 52, 22, 0.35)',
           alpha: 0.98,
+          triStride: cactusTriStride(),
         });
       });
 
@@ -531,7 +560,8 @@
       ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
       ctx.font = '600 12px "JetBrains Mono", "SFMono-Regular", monospace';
       ctx.textAlign = 'right';
-      ctx.fillText(`speed ${speed.toFixed(1)}`, W - 16, 18);
+      const perfLabel = cactusTriStride() > 1 ? 'balanced' : 'quality';
+      ctx.fillText(`speed ${speed.toFixed(1)} · ${perfLabel}`, W - 16, 18);
     };
 
     const frame = (ts) => {
@@ -565,6 +595,7 @@
     };
 
     const onControlDown = (event) => {
+      if (!running) return;
       event.preventDefault();
       queueJump();
     };
@@ -573,6 +604,15 @@
       if (document.hidden) {
         stop();
       }
+    };
+
+    const onReducedMotionChange = (event) => {
+      prefersReducedMotion = Boolean(event?.matches);
+      syncMotionStatus();
+    };
+
+    const onCompactMotionChange = (event) => {
+      prefersCompactMotion = Boolean(event?.matches);
     };
 
     const stop = () => {
@@ -586,7 +626,24 @@
 
     controls.forEach((button) => {
       button.addEventListener('pointerdown', onControlDown);
+      button.addEventListener('click', onControlDown);
     });
+
+    if (reducedMotionQuery) {
+      if (typeof reducedMotionQuery.addEventListener === 'function') {
+        reducedMotionQuery.addEventListener('change', onReducedMotionChange);
+      } else if (typeof reducedMotionQuery.addListener === 'function') {
+        reducedMotionQuery.addListener(onReducedMotionChange);
+      }
+    }
+
+    if (compactMotionQuery) {
+      if (typeof compactMotionQuery.addEventListener === 'function') {
+        compactMotionQuery.addEventListener('change', onCompactMotionChange);
+      } else if (typeof compactMotionQuery.addListener === 'function') {
+        compactMotionQuery.addListener(onCompactMotionChange);
+      }
+    }
 
     window.addEventListener('keydown', onKeyDown);
     canvas.addEventListener('pointerdown', onPointerDown);
@@ -608,7 +665,25 @@
         stop();
         controls.forEach((button) => {
           button.removeEventListener('pointerdown', onControlDown);
+          button.removeEventListener('click', onControlDown);
         });
+
+        if (reducedMotionQuery) {
+          if (typeof reducedMotionQuery.removeEventListener === 'function') {
+            reducedMotionQuery.removeEventListener('change', onReducedMotionChange);
+          } else if (typeof reducedMotionQuery.removeListener === 'function') {
+            reducedMotionQuery.removeListener(onReducedMotionChange);
+          }
+        }
+
+        if (compactMotionQuery) {
+          if (typeof compactMotionQuery.removeEventListener === 'function') {
+            compactMotionQuery.removeEventListener('change', onCompactMotionChange);
+          } else if (typeof compactMotionQuery.removeListener === 'function') {
+            compactMotionQuery.removeListener(onCompactMotionChange);
+          }
+        }
+
         window.removeEventListener('keydown', onKeyDown);
         canvas.removeEventListener('pointerdown', onPointerDown);
         document.removeEventListener('visibilitychange', onVisibility);

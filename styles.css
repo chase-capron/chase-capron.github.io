@@ -880,6 +880,10 @@ body.arcade-open {
   isolation: isolate;
 }
 
+.arcade-shell[data-arcade-motion="compact"] .hh-device {
+  transform: rotateX(2.5deg);
+}
+
 .hh-device::before,
 .hh-device::after {
   content: "";
@@ -1054,6 +1058,10 @@ body.arcade-open {
   transform: translateY(-4px) scale(1.02);
   border-color: color-mix(in oklab, var(--hh-accent) 70%, white 20%);
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--hh-accent) 52%, transparent), 0 12px 20px rgba(2, 8, 20, 0.3);
+}
+
+.arcade-shell[data-arcade-motion="compact"] .arcade-tab.is-target {
+  transform: translateY(-2px) scale(1.01);
 }
 
 .arcade-shell.is-switching .arcade-tab {
@@ -1254,6 +1262,11 @@ body.arcade-open {
   margin-inline: auto;
 }
 
+[data-control-group="dino3d"] button {
+  min-height: 48px;
+  font-size: clamp(14px, 2.8vw, 16px);
+}
+
 .arcade-controls button,
 .battle-actions button,
 .arcade-row button {
@@ -1266,6 +1279,10 @@ body.arcade-open {
   font-weight: 700;
   touch-action: manipulation;
   box-shadow: 0 5px 10px rgba(1, 7, 18, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.arcade-controls[data-control-group="dino3d"] button {
+  min-height: 48px;
 }
 
 .arcade-controls button.is-active,
@@ -1597,6 +1614,14 @@ body.arcade-open {
     font-size: 13px;
   }
 
+  #arcadeDino3d {
+    max-height: min(48vh, 260px);
+  }
+
+  [data-control-group="dino3d"] {
+    max-width: 100%;
+  }
+
   .hh-utility {
     flex-wrap: wrap;
     gap: 8px;
@@ -1630,6 +1655,11 @@ body.arcade-open {
   .arcade-shell.is-switching .arcade-pane.is-active {
     transform: none;
     filter: none;
+  }
+
+  .hh-glass {
+    opacity: 0.2;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 52%);
   }
 
   .arcade-tab,
