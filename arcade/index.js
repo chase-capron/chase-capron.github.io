@@ -8,10 +8,13 @@
     destroy: () => {},
   };
 
-  const findLegacyTrigger = () =>
-    Array.from(document.querySelectorAll('.hardware-card .hardware-card__name'))
-      .find((node) => node.textContent?.trim() === 'Legacy Device Builds')
-      ?.closest('a.hardware-card');
+  const findLegacyTrigger = () => {
+    const card = Array.from(document.querySelectorAll('a.hardware-card')).find(
+      (node) => node.querySelector('.hardware-card__name')?.textContent?.trim() === 'Legacy Device Builds'
+    );
+
+    return card?.querySelector('.hardware-card__icon') || card || null;
+  };
 
   const stopGames = (games) => {
     games.forEach((game) => {
@@ -29,6 +32,16 @@
     const shellNode = shellRoot instanceof HTMLElement ? shellRoot : document.getElementById('retroArcade');
 
     if (!trigger || !shellNode) return noopController;
+
+    const triggerCard =
+      trigger instanceof HTMLAnchorElement
+        ? trigger
+        : trigger.closest?.('a.hardware-card') || null;
+
+    const markDiscovered = () => {
+      trigger.setAttribute('data-arcade-discovered', 'true');
+      triggerCard?.setAttribute('data-arcade-discovered', 'true');
+    };
 
     const createStateStore = ns.createStateStore;
     const createThemeAdapter = ns.createThemeAdapter;
@@ -155,7 +168,7 @@
       },
       onUnlock: () => {
         state.markDiscovered();
-        trigger.setAttribute('data-arcade-discovered', 'true');
+        markDiscovered();
         announce('Retro arcade unlocked.');
         shell.open();
       },
@@ -167,7 +180,7 @@
     });
 
     if (initialState.discovered) {
-      trigger.setAttribute('data-arcade-discovered', 'true');
+      markDiscovered();
     }
 
     return {

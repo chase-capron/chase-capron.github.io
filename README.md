@@ -31,7 +31,9 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers, plus short manifest notes for context.
 - Theme manifest (`themes/themes.json`) includes `generatedAt` + `tags` metadata so theme controls can stay flexible without changing page structure.
 - Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene (including disallowed `javascript:`/`data:` anchor protocols), manifest schema sanity, and homepage project-manifest coverage.
+- Run `node scripts/arcade-validation-pack.mjs` before pushing arcade changes to validate stealth trigger guardrails, shell accessibility hooks, and static security constraints.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
+- Final phase-5 QA/security report: `docs/arcade-phase-5-qa-security.md`.
 
 ## Deploy
 - GitHub Pages serves from `main`
