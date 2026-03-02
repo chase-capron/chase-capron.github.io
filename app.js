@@ -708,6 +708,7 @@
     const DROP_START_Y = -220;
     const LANDING_BOUNCE = 0.16;
     const RECYCLE_MARGIN = 120;
+    const CHUTE_VISIBLE_HEIGHT = 210;
     const MAX_ROTATION = 2.2;
     const MAX_PROPAGATION_IMPULSE = 36;
     const PROPAGATION_DECAY = 0.52;
@@ -788,7 +789,7 @@
 
     const applyTrackHeight = () => {
       const tallest = bags.reduce((maxHeight, bag) => Math.max(maxHeight, bag.height), 0);
-      track.style.height = `${Math.ceil(tallest + 2)}px`;
+      track.style.height = `${Math.ceil(tallest + CHUTE_VISIBLE_HEIGHT + 6)}px`;
     };
 
     const computeSpawnX = () => {
@@ -1149,8 +1150,9 @@
       for (const bag of bags) {
         const x = bag.prevX + (bag.x - bag.prevX) * blend;
         const y = bag.prevY + (bag.y - bag.prevY) * blend;
+        const displayY = y + CHUTE_VISIBLE_HEIGHT;
         const rot = bag.prevRot + (bag.rot - bag.prevRot) * blend;
-        bag.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+        bag.el.style.transform = `translate3d(${x.toFixed(2)}px, ${displayY.toFixed(2)}px, 0) rotate(${rot.toFixed(2)}deg)`;
       }
     };
 
