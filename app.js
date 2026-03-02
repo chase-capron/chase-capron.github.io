@@ -653,25 +653,239 @@
 
   void hydrateProjectFreshness();
 
-  // Marquee: keep the HTML source clean (single set of tiles), but duplicate it at runtime
-  // so the CSS animation (translateX(-50%)) loops seamlessly.
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const track = document.querySelector('.hero-marquee__track');
-    if (track && track.dataset.cloned !== 'true') {
-      const children = Array.from(track.children);
-      children.forEach((node) => {
-        const clone = node.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        if (clone instanceof HTMLElement) {
-          clone.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach((el) => {
-            if (el instanceof HTMLElement) el.tabIndex = -1;
-          });
-        }
-        track.appendChild(clone);
+  const initHeroBaggageLoop = () => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const marquee = document.querySelector('.hero-marquee');
+    const track = marquee?.querySelector('.hero-marquee__track');
+    if (!marquee || !track) return;
+
+    const tiles = Array.from(track.querySelectorAll('.project-tile'));
+    if (!tiles.length) return;
+
+    const STEP_SECONDS = 1 / 120;
+    const MAX_FRAME_SECONDS = 0.08;
+    const BELT_SPEED = 78;
+    const SPEED_CONVERGENCE = 8.2;
+    const BASE_GAP = 86;
+    const GAP_JITTER = 24;
+    const GRAVITY = 1800;
+    const DROP_START_Y = -34;
+    const LANDING_BOUNCE = 0.2;
+    const RECYCLE_MARGIN = 120;
+    const MAX_ROTATION = 2.8;
+    const SEED = 24117;
+
+    const fractional = (value) => value - Math.floor(value);
+    const noise = (key) => fractional(Math.sin((key + SEED) * 12.9898) * 43758.5453123);
+    const signedNoise = (key) => noise(key) * 2 - 1;
+
+    track.dataset.baggageSim = 'true';
+
+    const bags = tiles.map((tile, index) => {
+      const rect = tile.getBoundingClientRect();
+      return {
+        el: tile,
+        width: Math.max(220, rect.width || tile.offsetWidth || 292),
+        height: Math.max(140, rect.height || tile.offsetHeight || 168),
+        x: 0,
+        y: 0,
+        vx: BELT_SPEED,
+        vy: 0,
+        rot: 0,
+        vrot: 0,
+        baseSpeed: BELT_SPEED,
+        sequence: index,
+        phase: 'belt',
+      };
+    });
+
+    let recycleSequence = bags.length;
+    let spawnX = 0;
+    let recycleX = -RECYCLE_MARGIN;
+    let running = false;
+    let inViewport = true;
+    let hidden = document.hidden;
+    let accumulator = 0;
+    let lastTimestamp = 0;
+    let rafId = 0;
+
+    const applyTrackHeight = () => {
+      const tallest = bags.reduce((maxHeight, bag) => Math.max(maxHeight, bag.height), 0);
+      track.style.height = `${Math.ceil(tallest + 2)}px`;
+    };
+
+    const computeSpawnX = () => {
+      const bounds = marquee.getBoundingClientRect();
+      const width = Math.max(320, bounds.width || marquee.clientWidth || 320);
+      spawnX = width + RECYCLE_MARGIN;
+    };
+
+    const resetBagForSpawn = (bag, rightmostEdge) => {
+      const sequence = recycleSequence;
+      recycleSequence += 1;
+
+      const gap = BASE_GAP + signedNoise(sequence + 31) * GAP_JITTER;
+      const speedVariance = 1 + signedNoise(sequence + 97) * 0.03;
+
+      bag.sequence = sequence;
+      bag.baseSpeed = BELT_SPEED * speedVariance;
+      bag.vx = bag.baseSpeed * 0.58;
+      bag.vy = 0;
+      bag.y = DROP_START_Y;
+      bag.rot = signedNoise(sequence + 151) * 2.1;
+      bag.vrot = signedNoise(sequence + 211) * 2.6;
+      bag.phase = 'drop';
+
+      const spawnFromChute = spawnX + signedNoise(sequence + 271) * 12;
+      bag.x = Math.max(spawnFromChute, rightmostEdge + gap);
+    };
+
+    const initializePositions = () => {
+      applyTrackHeight();
+      computeSpawnX();
+
+      let cursor = -Math.min(80, bags[0].width * 0.25);
+      bags.forEach((bag, index) => {
+        const gap = BASE_GAP + signedNoise(index + 19) * GAP_JITTER;
+        const speedVariance = 1 + signedNoise(index + 53) * 0.03;
+
+        bag.sequence = index;
+        bag.baseSpeed = BELT_SPEED * speedVariance;
+        bag.vx = bag.baseSpeed;
+        bag.vy = 0;
+        bag.y = 0;
+        bag.rot = signedNoise(index + 89) * 0.45;
+        bag.vrot = 0;
+        bag.phase = 'belt';
+        bag.x = cursor;
+
+        cursor += bag.width + gap;
       });
-      track.dataset.cloned = 'true';
-    }
-  }
+
+      render();
+    };
+
+    const canRecycle = (bag) => {
+      const active = document.activeElement;
+      if (!active || !(active instanceof HTMLElement)) return true;
+      return active !== bag.el && !bag.el.contains(active);
+    };
+
+    const step = (dt) => {
+      let rightmostEdge = -Infinity;
+      for (const bag of bags) {
+        if (bag !== null) {
+          rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
+        }
+      }
+
+      for (const bag of bags) {
+        bag.vx += (bag.baseSpeed - bag.vx) * SPEED_CONVERGENCE * dt;
+        bag.x -= bag.vx * dt;
+
+        if (bag.phase === 'drop') {
+          bag.vy += GRAVITY * dt;
+          bag.y += bag.vy * dt;
+          bag.rot += bag.vrot * dt;
+          bag.vrot *= Math.max(0, 1 - 6.5 * dt);
+
+          if (bag.y >= 0) {
+            bag.y = 0;
+            if (Math.abs(bag.vy) < 45) {
+              bag.vy = 0;
+              bag.vrot = 0;
+              bag.phase = 'belt';
+            } else {
+              bag.vy = -bag.vy * LANDING_BOUNCE;
+              bag.vrot += signedNoise(bag.sequence + 317) * 0.8;
+            }
+          }
+        } else {
+          bag.y += (0 - bag.y) * Math.min(1, 14 * dt);
+          bag.rot += (0 - bag.rot) * Math.min(1, 9 * dt);
+        }
+
+        bag.rot = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, bag.rot));
+
+        if (bag.x + bag.width < recycleX && canRecycle(bag)) {
+          resetBagForSpawn(bag, rightmostEdge);
+          rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
+        }
+      }
+    };
+
+    const render = () => {
+      for (const bag of bags) {
+        bag.el.style.transform = `translate3d(${bag.x.toFixed(2)}px, ${bag.y.toFixed(2)}px, 0) rotate(${bag.rot.toFixed(2)}deg)`;
+      }
+    };
+
+    const frame = (timestamp) => {
+      if (!running) return;
+
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const elapsed = Math.min(MAX_FRAME_SECONDS, (timestamp - lastTimestamp) / 1000);
+      lastTimestamp = timestamp;
+      accumulator += elapsed;
+
+      while (accumulator >= STEP_SECONDS) {
+        step(STEP_SECONDS);
+        accumulator -= STEP_SECONDS;
+      }
+
+      render();
+      rafId = window.requestAnimationFrame(frame);
+    };
+
+    const updateRunningState = () => {
+      const shouldRun = inViewport && !hidden;
+      if (shouldRun === running) return;
+
+      running = shouldRun;
+      if (running) {
+        accumulator = 0;
+        lastTimestamp = 0;
+        rafId = window.requestAnimationFrame(frame);
+      } else if (rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    };
+
+    const handleVisibility = () => {
+      hidden = document.hidden;
+      updateRunningState();
+    };
+
+    let resizeTimer = null;
+    const handleResize = () => {
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        computeSpawnX();
+      }, 120);
+    };
+
+    initializePositions();
+    recycleX = -RECYCLE_MARGIN;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        inViewport = Boolean(entry?.isIntersecting && entry.intersectionRatio > 0.02);
+        updateRunningState();
+      },
+      { threshold: [0, 0.02, 0.1] }
+    );
+
+    observer.observe(marquee);
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    updateRunningState();
+  };
+
+  initHeroBaggageLoop();
 
   // Subtle standard-theme background drift on scroll
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -726,29 +940,6 @@
   }
 
   // Hero rotating suffix (backspace + retype every cycle)
-  // Hero marquee project tiles: baggage-claim style drop + bump collisions
-  const heroTrack = document.querySelector('.hero-marquee__track');
-  if (heroTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const tiles = Array.from(heroTrack.querySelectorAll('.project-tile'));
-    tiles.forEach((tile, idx) => {
-      tile.style.animationDelay = `${Math.min(700, idx * 120)}ms`;
-    });
-
-    window.setTimeout(() => {
-      window.setInterval(() => {
-        if (tiles.length < 2) return;
-        const i = Math.floor(Math.random() * tiles.length);
-        const j = (i + 1 + Math.floor(Math.random() * (tiles.length - 1))) % tiles.length;
-        tiles[i].classList.remove('bump');
-        tiles[j].classList.remove('bump');
-        void tiles[i].offsetWidth;
-        void tiles[j].offsetWidth;
-        tiles[i].classList.add('bump');
-        tiles[j].classList.add('bump');
-      }, 2400);
-    }, 1100);
-  }
-
   const rotatingSuffixEl = document.querySelector('#hero-rotating-suffix');
   const rotatingTitleEl = rotatingSuffixEl?.closest('.hero-title-shine');
   if (rotatingSuffixEl && rotatingTitleEl) {

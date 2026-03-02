@@ -522,7 +522,6 @@ h1 {
   }
 
   .hero-marquee__track {
-    animation: none;
     width: max-content;
   }
 
@@ -535,10 +534,14 @@ h1 {
   display: flex;
   width: max-content;
   gap: 14px;
-  animation: marquee 20s linear infinite;
 }
 
-.hero-marquee:hover .hero-marquee__track { animation-play-state: running; }
+.hero-marquee__track[data-baggage-sim='true'] {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 0;
+}
 
 .project-tile {
   width: 292px;
@@ -551,26 +554,11 @@ h1 {
   position: relative;
 }
 
-
-.hero-marquee__track .project-tile {
+.hero-marquee__track[data-baggage-sim='true'] .project-tile {
+  position: absolute;
+  left: 0;
+  top: 0;
   will-change: transform;
-  animation: marqueeBaggageDrop 620ms cubic-bezier(0.24, 0.9, 0.2, 1) both;
-}
-
-.hero-marquee__track .project-tile.bump {
-  animation: tileBump 240ms ease-out;
-}
-
-@keyframes marqueeBaggageDrop {
-  0% { transform: translateY(-26px) rotate(-4deg) scale(0.96); }
-  68% { transform: translateY(4px) rotate(1.2deg) scale(1.01); }
-  100% { transform: translateY(0) rotate(0deg) scale(1); }
-}
-
-@keyframes tileBump {
-  0% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-2px) rotate(0.7deg); }
-  100% { transform: translateY(0) rotate(0deg); }
 }
 
 .project-tile:hover,
@@ -628,11 +616,6 @@ h1 {
 }
 .app-icon--logo img.hotwheels-logo{
   padding: 10px;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
 
 .section { padding: 60px 0; }
