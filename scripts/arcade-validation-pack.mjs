@@ -298,6 +298,7 @@ const checkAssetAttributionDoc = () => {
     'CC0',
     'trex-quaternius.obj',
     'cactus-oga.obj',
+    'opengameart-cactus-license.txt',
   ];
 
   requiredMarkers.forEach((marker) => {

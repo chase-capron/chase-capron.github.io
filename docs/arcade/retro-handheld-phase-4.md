@@ -52,6 +52,16 @@ Updated `scripts/arcade-validation-pack.mjs` to cover:
 - new tab/pane/canvas/control hooks
 - presence of asset attribution document markers
 
+## Retry pass (2026-03-02, later window)
+
+- Re-ran sourcing + license verification for the same free-to-use asset set (Quaternius + OpenGameArt CC0).
+- Added extra local provenance artifact:
+  - `assets/arcade/models/licenses/opengameart-cactus-license.txt`
+- Applied additional runtime perf tuning in `arcade/games/dino3d.js`:
+  - adaptive quality tiers (`quality`/`balanced`/`performance`)
+  - cached per-triangle normals/centers for lower per-frame CPU load
+  - dynamic triangle stride + wireframe suppression under heavy frame pressure
+
 ## Verification
 
 ```bash

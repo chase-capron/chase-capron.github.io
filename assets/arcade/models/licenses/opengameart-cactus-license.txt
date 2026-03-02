@@ -1,0 +1,12 @@
+OpenGameArt asset provenance note
+
+Asset: cactus
+Author: Phani29
+Source page: https://opengameart.org/content/cactus-4
+Direct file URL: https://opengameart.org/sites/default/files/Cactus.obj
+Retrieved for local project use: 2026-03-02 (America/New_York)
+
+License on source page: CC0 1.0 (Public Domain Dedication)
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+
+Attribution is not required under CC0, but this file is kept for auditability.

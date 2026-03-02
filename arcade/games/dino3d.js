@@ -47,8 +47,56 @@
       vertices[src + 2] = z * scale;
     }
 
-    for (let i = 0; i < triangles.length; i += 1) {
-      triangles[i] = raw.triangles[i];
+    const triNormal = new Float32Array(triCount * 3);
+    const triCenter = new Float32Array(triCount * 3);
+
+    for (let i = 0; i < triCount; i += 1) {
+      const triSrc = i * 3;
+      const ia = raw.triangles[triSrc];
+      const ib = raw.triangles[triSrc + 1];
+      const ic = raw.triangles[triSrc + 2];
+
+      triangles[triSrc] = ia;
+      triangles[triSrc + 1] = ib;
+      triangles[triSrc + 2] = ic;
+
+      const a = ia * 3;
+      const b = ib * 3;
+      const c = ic * 3;
+
+      const ax = vertices[a];
+      const ay = vertices[a + 1];
+      const az = vertices[a + 2];
+      const bx = vertices[b];
+      const by = vertices[b + 1];
+      const bz = vertices[b + 2];
+      const cx = vertices[c];
+      const cy = vertices[c + 1];
+      const cz = vertices[c + 2];
+
+      const abx = bx - ax;
+      const aby = by - ay;
+      const abz = bz - az;
+      const acx = cx - ax;
+      const acy = cy - ay;
+      const acz = cz - az;
+
+      let nx = aby * acz - abz * acy;
+      let ny = abz * acx - abx * acz;
+      let nz = abx * acy - aby * acx;
+
+      const nLen = Math.hypot(nx, ny, nz) || 1;
+      nx /= nLen;
+      ny /= nLen;
+      nz /= nLen;
+
+      triNormal[triSrc] = nx;
+      triNormal[triSrc + 1] = ny;
+      triNormal[triSrc + 2] = nz;
+
+      triCenter[triSrc] = (ax + bx + cx) / 3;
+      triCenter[triSrc + 1] = (ay + by + cy) / 3;
+      triCenter[triSrc + 2] = (az + bz + cz) / 3;
     }
 
     return {
@@ -56,11 +104,15 @@
       triangles,
       vertexCount,
       triCount,
+      triNormal,
+      triCenter,
       world: new Float32Array(vertexCount * 3),
       screenX: new Float32Array(vertexCount),
       screenY: new Float32Array(vertexCount),
       depth: new Float32Array(vertexCount),
       triDepth: new Float32Array(triCount),
+      triShade: new Float32Array(triCount),
+      triVisible: new Uint8Array(triCount),
       triOrder: Array.from({ length: triCount }, (_, idx) => idx),
     };
   };
@@ -120,6 +172,20 @@
     let prefersReducedMotion = Boolean(reducedMotionQuery?.matches);
     let prefersCompactMotion = Boolean(compactMotionQuery?.matches);
 
+    const perfTierFloor = () => (prefersReducedMotion ? 2 : prefersCompactMotion ? 1 : 0);
+    const perfTierLabel = (tier) => (tier >= 2 ? 'performance' : tier === 1 ? 'balanced' : 'quality');
+
+    let perfTier = perfTierFloor();
+    let frameBudgetEma = 16.7;
+    let perfTierCooldown = 0;
+
+    const syncPerfTierFloor = () => {
+      const floor = perfTierFloor();
+      if (perfTier < floor) {
+        perfTier = floor;
+      }
+    };
+
     const camera = { x: 0, y: 6.8, z: 25.5, focal: 530, near: 0.6 };
     const lightDir = (() => {
       const x = -0.35;
@@ -173,7 +239,15 @@
         ? 'Reduced motion mode. Jump with Space / ↑ / Tap.'
         : 'Jump with Space / ↑ / Tap. Dodge the cacti.';
 
-    const cactusTriStride = () => (prefersCompactMotion || prefersReducedMotion ? 2 : 1);
+    const cactusTriStride = () => {
+      if (perfTier >= 2) return 3;
+      if (perfTier === 1) return 2;
+      return 1;
+    };
+
+    const dinoTriStride = () => (perfTier >= 2 ? 2 : 1);
+    const shouldDrawWire = () => perfTier < 2;
+    const wireAlpha = () => (perfTier === 1 ? 0.62 : 1);
 
     const updateHud = () => {
       if (scoreNode instanceof HTMLElement) {
@@ -364,6 +438,19 @@
         mesh.screenX[i] = W * 0.5 + (vx * camera.focal) / vz;
         mesh.screenY[i] = H * 0.56 - (vy * camera.focal) / vz;
       }
+
+      return {
+        x,
+        y,
+        z,
+        sx,
+        sy,
+        sz,
+        sinY,
+        cosY,
+        sinX,
+        cosX,
+      };
     };
 
     const renderMesh = (mesh, {
@@ -371,20 +458,67 @@
       wireColor,
       alpha = 1,
       triStride = 1,
-      cullBackfaces = true,
-      strokeWidth = 0,
+      transform,
+      drawWire = true,
+      wireOpacity = 1,
     }) => {
+      if (!transform) return;
+
       const tri = mesh.triangles;
+      const triNormal = mesh.triNormal;
+      const triCenter = mesh.triCenter;
+
       for (let i = 0; i < mesh.triCount; i += 1) {
         const src = i * 3;
-        const ia = tri[src];
-        const ib = tri[src + 1];
-        const ic = tri[src + 2];
 
-        const za = mesh.depth[ia];
-        const zb = mesh.depth[ib];
-        const zc = mesh.depth[ic];
-        mesh.triDepth[i] = (za + zb + zc) / 3;
+        let cx = triCenter[src] * transform.sx;
+        let cy = triCenter[src + 1] * transform.sy;
+        let cz = triCenter[src + 2] * transform.sz;
+
+        const cxzX = cx * transform.cosY + cz * transform.sinY;
+        const cxzZ = -cx * transform.sinY + cz * transform.cosY;
+        cx = cxzX;
+        cz = cxzZ;
+
+        const cyzY = cy * transform.cosX - cz * transform.sinX;
+        const cyzZ = cy * transform.sinX + cz * transform.cosX;
+        cy = cyzY;
+        cz = cyzZ;
+
+        const centerWorldX = cx + transform.x;
+        const centerWorldY = cy + transform.y;
+        const centerWorldZ = cz + transform.z;
+
+        let nx = triNormal[src];
+        let ny = triNormal[src + 1];
+        let nz = triNormal[src + 2];
+
+        const nxzX = nx * transform.cosY + nz * transform.sinY;
+        const nxzZ = -nx * transform.sinY + nz * transform.cosY;
+        nx = nxzX;
+        nz = nxzZ;
+
+        const nyzY = ny * transform.cosX - nz * transform.sinX;
+        const nyzZ = ny * transform.sinX + nz * transform.cosX;
+        ny = nyzY;
+        nz = nyzZ;
+
+        const viewX = camera.x - centerWorldX;
+        const viewY = camera.y - centerWorldY;
+        const viewZ = camera.z - centerWorldZ;
+        const facing = nx * viewX + ny * viewY + nz * viewZ;
+
+        if (facing <= 0) {
+          mesh.triVisible[i] = 0;
+          mesh.triDepth[i] = Number.NEGATIVE_INFINITY;
+          continue;
+        }
+
+        mesh.triVisible[i] = 1;
+        mesh.triDepth[i] = viewZ;
+
+        const diffuse = nx * lightDir.x + ny * lightDir.y + nz * lightDir.z;
+        mesh.triShade[i] = clamp(0.26 + Math.max(0, diffuse) * 0.78, 0.22, 1);
       }
 
       mesh.triOrder.sort((a, b) => mesh.triDepth[b] - mesh.triDepth[a]);
@@ -393,6 +527,8 @@
 
       for (let orderIndex = 0; orderIndex < mesh.triOrder.length; orderIndex += stride) {
         const triIndex = mesh.triOrder[orderIndex];
+        if (!mesh.triVisible[triIndex]) continue;
+
         const src = triIndex * 3;
 
         const ia = tri[src];
@@ -410,45 +546,8 @@
           continue;
         }
 
-        const awx = mesh.world[ia * 3];
-        const awy = mesh.world[ia * 3 + 1];
-        const awz = mesh.world[ia * 3 + 2];
-        const bwx = mesh.world[ib * 3];
-        const bwy = mesh.world[ib * 3 + 1];
-        const bwz = mesh.world[ib * 3 + 2];
-        const cwx = mesh.world[ic * 3];
-        const cwy = mesh.world[ic * 3 + 1];
-        const cwz = mesh.world[ic * 3 + 2];
-
-        const abx = bwx - awx;
-        const aby = bwy - awy;
-        const abz = bwz - awz;
-        const acx = cwx - awx;
-        const acy = cwy - awy;
-        const acz = cwz - awz;
-
-        let nx = aby * acz - abz * acy;
-        let ny = abz * acx - abx * acz;
-        let nz = abx * acy - aby * acx;
-
-        const nLen = Math.hypot(nx, ny, nz);
-        if (nLen < 0.0001) continue;
-
-        nx /= nLen;
-        ny /= nLen;
-        nz /= nLen;
-
-        const viewX = camera.x - awx;
-        const viewY = camera.y - awy;
-        const viewZ = camera.z - awz;
-        const facing = nx * viewX + ny * viewY + nz * viewZ;
-        if (cullBackfaces && facing <= 0) continue;
-
-        const diffuse = nx * lightDir.x + ny * lightDir.y + nz * lightDir.z;
-        const shade = clamp(0.26 + Math.max(0, diffuse) * 0.78, 0.22, 1);
-
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = mixColor(baseColor, shade);
+        ctx.fillStyle = mixColor(baseColor, mesh.triShade[triIndex]);
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.lineTo(bx, by);
@@ -456,9 +555,10 @@
         ctx.closePath();
         ctx.fill();
 
-        if (strokeWidth > 0) {
+        if (drawWire) {
+          ctx.globalAlpha = alpha * wireOpacity;
           ctx.strokeStyle = wireColor;
-          ctx.lineWidth = strokeWidth;
+          ctx.lineWidth = 0.5;
           ctx.stroke();
         }
       }
@@ -509,7 +609,7 @@
         ? clamp(player.vy * -0.045, -0.36, 0.34)
         : -0.22;
 
-      transformMesh(trexMesh, {
+      const dinoTransform = transformMesh(trexMesh, {
         x: player.x,
         y: player.y + bob,
         z: -0.5,
@@ -527,7 +627,7 @@
       activeObstacles.sort((a, b) => b.x - a.x);
 
       activeObstacles.forEach((obstacle) => {
-        transformMesh(cactusMesh, {
+        const cactusTransform = transformMesh(cactusMesh, {
           x: obstacle.x,
           y: 0,
           z: obstacle.z,
@@ -538,21 +638,23 @@
         });
         renderMesh(cactusMesh, {
           baseColor: [62, 181, 101],
-          wireColor: 'rgba(13, 52, 22, 0.15)',
+          wireColor: 'rgba(13, 52, 22, 0.32)',
           alpha: 0.98,
-          triStride: 1,
-          cullBackfaces: false,
-          strokeWidth: 0,
+          triStride: cactusTriStride(),
+          transform: cactusTransform,
+          drawWire: shouldDrawWire(),
+          wireOpacity: wireAlpha(),
         });
       });
 
       renderMesh(trexMesh, {
         baseColor: alive ? [118, 220, 178] : [204, 140, 126],
-        wireColor: 'rgba(6, 30, 26, 0.12)',
+        wireColor: 'rgba(6, 30, 26, 0.22)',
         alpha: 1,
-        triStride: 1,
-        cullBackfaces: false,
-        strokeWidth: 0,
+        triStride: dinoTriStride(),
+        transform: dinoTransform,
+        drawWire: shouldDrawWire(),
+        wireOpacity: wireAlpha(),
       });
 
       if (!alive) {
@@ -569,8 +671,8 @@
       ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
       ctx.font = '600 12px "JetBrains Mono", "SFMono-Regular", monospace';
       ctx.textAlign = 'right';
-      const perfLabel = cactusTriStride() > 1 ? 'balanced' : 'quality';
-      ctx.fillText(`speed ${speed.toFixed(1)} · ${perfLabel}`, W - 16, 18);
+      const perfLabel = perfTierLabel(perfTier);
+      ctx.fillText(`speed ${speed.toFixed(1)} · ${perfLabel} · ${Math.round(frameBudgetEma)}ms`, W - 16, 18);
     };
 
     const frame = (ts) => {
@@ -579,6 +681,20 @@
 
       const dt = Math.min(0.032, (ts - lastTs) / 1000);
       lastTs = ts;
+
+      frameBudgetEma = frameBudgetEma * 0.92 + dt * 1000 * 0.08;
+      perfTierCooldown = Math.max(0, perfTierCooldown - dt);
+
+      if (!prefersReducedMotion && perfTierCooldown <= 0) {
+        const floor = perfTierFloor();
+        if (frameBudgetEma > 22 && perfTier < 2) {
+          perfTier += 1;
+          perfTierCooldown = 1.25;
+        } else if (frameBudgetEma < 15.5 && perfTier > floor) {
+          perfTier -= 1;
+          perfTierCooldown = 1.75;
+        }
+      }
 
       updatePhysics(dt);
       drawScene();
@@ -617,11 +733,13 @@
 
     const onReducedMotionChange = (event) => {
       prefersReducedMotion = Boolean(event?.matches);
+      syncPerfTierFloor();
       syncMotionStatus();
     };
 
     const onCompactMotionChange = (event) => {
       prefersCompactMotion = Boolean(event?.matches);
+      syncPerfTierFloor();
     };
 
     const stop = () => {
