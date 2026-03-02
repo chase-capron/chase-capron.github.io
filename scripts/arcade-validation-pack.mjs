@@ -34,6 +34,8 @@ const checkIndexStructure = () => {
     'arcade/games/tetris.js',
     'arcade/games/game2048.js',
     'arcade/games/battle.js',
+    'arcade/games/dino3d-assets.js',
+    'arcade/games/dino3d.js',
     'arcade/index.js',
   ];
 
@@ -80,6 +82,22 @@ const checkIndexStructure = () => {
 
   if (!/class="arcade-tabs[^"]*"[^>]*role="tablist"/.test(html)) {
     fail('Arcade tablist role missing on cartridge strip nav');
+  }
+
+  if (!/data-arcade-tab="dino3d"/.test(html)) {
+    fail('index.html missing Dino 3D cartridge tab (data-arcade-tab="dino3d")');
+  }
+
+  if (!/data-arcade-pane="dino3d"/.test(html)) {
+    fail('index.html missing Dino 3D pane (data-arcade-pane="dino3d")');
+  }
+
+  if (!/id="arcadeDino3d"/.test(html)) {
+    fail('index.html missing Dino 3D canvas id="arcadeDino3d"');
+  }
+
+  if (!/data-dino3d-control="jump"/.test(html)) {
+    fail('index.html missing Dino 3D jump control hook (data-dino3d-control="jump")');
   }
 };
 
@@ -220,6 +238,24 @@ const checkSwitchStyles = () => {
   });
 };
 
+const checkAssetAttributionDoc = () => {
+  const attribution = readUtf8('docs/arcade/asset-attribution.md');
+
+  const requiredMarkers = [
+    'Quaternius',
+    'OpenGameArt',
+    'CC0',
+    'trex-quaternius.obj',
+    'cactus-oga.obj',
+  ];
+
+  requiredMarkers.forEach((marker) => {
+    if (!attribution.includes(marker)) {
+      fail(`docs/arcade/asset-attribution.md missing marker: ${marker}`);
+    }
+  });
+};
+
 try {
   checkIndexStructure();
   checkTriggerGuardrails();
@@ -227,6 +263,7 @@ try {
   checkShellBehaviorHints();
   checkThemeAdapterCoverage();
   checkSwitchStyles();
+  checkAssetAttributionDoc();
 
   if (issues.length) {
     console.error('❌ Arcade handheld validation failed:');

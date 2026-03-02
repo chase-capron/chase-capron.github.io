@@ -1027,7 +1027,7 @@ body.arcade-open {
 
 .arcade-tabs {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -1223,6 +1223,7 @@ body.arcade-open {
 
 #arcadePong,
 #arcadeTetris,
+#arcadeDino3d,
 #battleScene {
   width: 100%;
   max-height: min(55vh, 430px);
@@ -1241,6 +1242,16 @@ body.arcade-open {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(94px, 1fr));
   gap: 8px;
+}
+
+#arcadeDino3d {
+  touch-action: manipulation;
+}
+
+[data-control-group="dino3d"] {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 220px;
+  margin-inline: auto;
 }
 
 .arcade-controls button,

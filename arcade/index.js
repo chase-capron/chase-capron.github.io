@@ -92,6 +92,16 @@
         }),
       ],
       [
+        'dino3d',
+        ns.createDino3DGame?.({
+          canvas: document.getElementById('arcadeDino3d'),
+          controlsRoot: document.querySelector('[data-control-group="dino3d"]'),
+          scoreNode: document.getElementById('dino3dScore'),
+          bestNode: document.getElementById('dino3dBest'),
+          statusNode: document.getElementById('dino3dStatus'),
+        }),
+      ],
+      [
         'pokemon',
         ns.createBattleGame?.({
           enemyHp: document.getElementById('enemyHp'),

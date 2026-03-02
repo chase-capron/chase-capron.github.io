@@ -28,6 +28,8 @@
   <script defer src="arcade/games/tetris.js"></script>
   <script defer src="arcade/games/game2048.js"></script>
   <script defer src="arcade/games/battle.js"></script>
+  <script defer src="arcade/games/dino3d-assets.js"></script>
+  <script defer src="arcade/games/dino3d.js"></script>
   <script defer src="arcade/index.js"></script>
   <script defer src="app.js"></script>
 </head>
@@ -419,6 +421,18 @@
             <button
               type="button"
               class="arcade-tab hh-cartridge"
+              data-arcade-tab="dino3d"
+              role="tab"
+              id="arcade-tab-dino3d"
+              aria-controls="arcade-pane-dino3d"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Dino 3D
+            </button>
+            <button
+              type="button"
+              class="arcade-tab hh-cartridge"
               data-arcade-tab="pokemon"
               role="tab"
               id="arcade-tab-pokemon"
@@ -504,6 +518,25 @@
                       <p class="arcade-help" id="game2048Status">Combine tiles to 2048.</p>
                     </div>
                   </div>
+                </section>
+                <section
+                  class="arcade-pane"
+                  data-arcade-pane="dino3d"
+                  role="tabpanel"
+                  id="arcade-pane-dino3d"
+                  aria-labelledby="arcade-tab-dino3d"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <div class="arcade-hud" aria-live="polite">
+                    <p>Run <span id="dino3dScore">0</span></p>
+                    <p>Best <span id="dino3dBest">0</span></p>
+                  </div>
+                  <canvas id="arcadeDino3d" width="720" height="360" aria-label="3D dinosaur desert runner"></canvas>
+                  <div class="arcade-controls" data-control-group="dino3d" aria-label="Dino 3D controls" role="group">
+                    <button type="button" data-dino3d-control="jump" aria-label="Jump over obstacle">Jump</button>
+                  </div>
+                  <p class="arcade-help" id="dino3dStatus">Jump with Space / ↑ / Tap. Dodge the cacti.</p>
                 </section>
                 <section
                   class="arcade-pane"
