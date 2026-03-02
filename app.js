@@ -697,15 +697,15 @@
     const MAX_FRAME_SECONDS = 0.05;
     const BELT_SPEED = 73;
     const SPEED_CONVERGENCE = 6.6;
-    const BASE_GAP = 88;
-    const GAP_JITTER = 18;
-    const MIN_CONTACT_GAP = 12;
+    const BASE_GAP = 10;
+    const GAP_JITTER = 7;
+    const MIN_CONTACT_GAP = 0;
     const CONTACT_SOLVER_PASSES = 2;
     const CONTACT_CORRECTION_MAX = 14;
     const COLLISION_TRANSFER = 0.5;
     const COLLISION_NUDGE = 0.15;
     const GRAVITY = 1560;
-    const DROP_START_Y = -30;
+    const DROP_START_Y = -220;
     const LANDING_BOUNCE = 0.16;
     const RECYCLE_MARGIN = 120;
     const MAX_ROTATION = 2.2;
@@ -758,6 +758,8 @@
         bumpGain: 1,
         sequence: index,
         phase: 'belt',
+        targetX: 0,
+        chuteX: 0,
       };
     });
 
@@ -793,6 +795,24 @@
       const bounds = marquee.getBoundingClientRect();
       const width = Math.max(320, bounds.width || marquee.clientWidth || 320);
       spawnX = width + RECYCLE_MARGIN;
+    };
+
+
+    const findSpawnSlotX = (sortedBags, bagWidth) => {
+      if (!sortedBags.length) return null;
+      const viable = [];
+      for (let i = 0; i < sortedBags.length - 1; i += 1) {
+        const left = sortedBags[i];
+        const right = sortedBags[i + 1];
+        const gapStart = left.x + left.width + MIN_CONTACT_GAP;
+        const gapEnd = right.x - MIN_CONTACT_GAP;
+        const gapSize = gapEnd - gapStart;
+        if (gapSize > bagWidth + 24) {
+          viable.push(gapStart + (gapSize - bagWidth) * randomRange(0.12, 0.88));
+        }
+      }
+      if (!viable.length) return null;
+      return viable[Math.floor(randomRange(0, viable.length))];
     };
 
     const applyBagProfile = (bag, sequence) => {
@@ -956,7 +976,7 @@
       }
     };
 
-    const resetBagForSpawn = (bag, rightmostEdge) => {
+    const resetBagForSpawn = (bag, rightmostEdge, sortedBags) => {
       const sequence = recycleSequence;
       recycleSequence += 1;
 
@@ -970,8 +990,11 @@
       bag.vrot = signedNoise(sequence + 211) * 2;
       bag.phase = 'drop';
 
-      const spawnFromChute = spawnX + signedNoise(sequence + 271) * 8;
-      bag.x = Math.max(spawnFromChute, rightmostEdge + gap);
+      const slotX = findSpawnSlotX(sortedBags, bag.width);
+      const fallbackX = rightmostEdge + gap;
+      bag.targetX = Number.isFinite(slotX) ? slotX : fallbackX;
+      bag.chuteX = bag.targetX + randomRange(70, 170);
+      bag.x = Math.max(bag.chuteX, spawnX - randomRange(8, 26));
       bag.prevX = bag.x;
       bag.prevY = bag.y;
       bag.prevRot = bag.rot;
@@ -993,6 +1016,8 @@
         bag.vrot = 0;
         bag.phase = 'belt';
         bag.x = cursor;
+        bag.targetX = bag.x;
+        bag.chuteX = bag.x;
         bag.prevX = bag.x;
         bag.prevY = bag.y;
         bag.prevRot = bag.rot;
@@ -1068,9 +1093,8 @@
       updateJamState(sortedBags, dt);
 
       for (const bag of bags) {
-        bag.x -= bag.vx * dt;
-
         if (bag.phase === 'drop') {
+          bag.x += (bag.targetX - bag.x) * Math.min(1, 4.8 * dt);
           bag.vy += GRAVITY * dt;
           bag.y += bag.vy * dt;
           bag.rot += bag.vrot * dt;
@@ -1082,12 +1106,14 @@
               bag.vy = 0;
               bag.vrot = 0;
               bag.phase = 'belt';
+              bag.targetX = bag.x;
             } else {
               bag.vy = -bag.vy * LANDING_BOUNCE;
               bag.vrot += signedNoise(bag.sequence + 317) * 0.58;
             }
           }
         } else {
+          bag.x -= bag.vx * dt;
           bag.vy += GRAVITY * 0.2 * dt;
           bag.y += bag.vy * dt;
           bag.y += (0 - bag.y) * Math.min(1, 12.5 * dt);
@@ -1112,7 +1138,7 @@
 
       for (const bag of bags) {
         if (bag.x + bag.width < recycleX && canRecycle(bag)) {
-          resetBagForSpawn(bag, rightmostEdge);
+          resetBagForSpawn(bag, rightmostEdge, postMoveSorted);
           rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
         }
       }
