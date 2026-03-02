@@ -810,6 +810,13 @@ body.arcade-open {
   --hh-shadow-elev-2: 0 16px 38px rgba(2, 5, 14, 0.44);
   --hh-shadow-elev-3: 0 26px 68px rgba(2, 5, 14, 0.56);
 
+  --arcade-open-ms: 220ms;
+  --arcade-close-ms: 180ms;
+  --arcade-switch-powerdown-ms: 90ms;
+  --arcade-switch-cartridge-ms: 120ms;
+  --arcade-switch-warm-ms: 140ms;
+  --arcade-switch-crossfade-ms: 110ms;
+
   position: fixed;
   inset: 0;
   z-index: 80;
@@ -825,6 +832,17 @@ body.arcade-open {
   inset: 0;
   background: rgba(5, 8, 20, 0.74);
   backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity var(--arcade-open-ms) ease;
+}
+
+.arcade-shell.is-open .arcade-shell__backdrop {
+  opacity: 1;
+}
+
+.arcade-shell.is-closing .arcade-shell__backdrop {
+  transition-duration: var(--arcade-close-ms);
+  opacity: 0;
 }
 
 .arcade-shell__panel {
@@ -880,8 +898,12 @@ body.arcade-open {
   box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.24), inset 1px 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.arcade-shell.is-open .hh-device {
-  animation: hh-lift 220ms cubic-bezier(0.22, 1, 0.36, 1);
+.arcade-shell.is-opening .hh-device {
+  animation: hh-lift var(--arcade-open-ms) cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.arcade-shell.is-closing .hh-device {
+  animation: hh-drop var(--arcade-close-ms) cubic-bezier(0.2, 0, 0, 1) forwards;
 }
 
 @keyframes hh-lift {
@@ -892,6 +914,17 @@ body.arcade-open {
   to {
     transform: translateY(0) scale(1) rotateX(3.8deg);
     opacity: 1;
+  }
+}
+
+@keyframes hh-drop {
+  from {
+    transform: translateY(0) scale(1) rotateX(3.8deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(10px) scale(0.985) rotateX(2.1deg);
+    opacity: 0;
   }
 }
 
@@ -1017,6 +1050,21 @@ body.arcade-open {
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--hh-accent) 45%, transparent), 0 8px 16px rgba(2, 8, 20, 0.25);
 }
 
+.arcade-tab.is-target {
+  transform: translateY(-4px) scale(1.02);
+  border-color: color-mix(in oklab, var(--hh-accent) 70%, white 20%);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hh-accent) 52%, transparent), 0 12px 20px rgba(2, 8, 20, 0.3);
+}
+
+.arcade-shell.is-switching .arcade-tab {
+  pointer-events: none;
+}
+
+.arcade-shell.is-switching .arcade-tab.is-active:not(.is-target) {
+  opacity: 0.58;
+  transform: translateY(2px) scale(0.98);
+}
+
 .arcade-tab:not(.is-active):hover {
   transform: translateY(-1px);
 }
@@ -1079,12 +1127,79 @@ body.arcade-open {
   z-index: 2;
 }
 
+.arcade-stage::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 50%;
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--hh-accent) 80%, white 20%);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--hh-accent) 55%, transparent);
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0.05);
+  transform-origin: center;
+  pointer-events: none;
+  transition: opacity var(--arcade-switch-powerdown-ms) ease, transform var(--arcade-switch-powerdown-ms) ease;
+}
+
 .arcade-pane {
   display: none;
+  transform-origin: center;
 }
 
 .arcade-pane.is-active {
   display: block;
+}
+
+.arcade-shell.is-switching .arcade-stage {
+  pointer-events: none;
+}
+
+.arcade-shell.is-switching[data-arcade-switch-phase="powerdown"] .arcade-stage::before {
+  opacity: 0.92;
+  transform: translateY(-50%) scaleX(1);
+}
+
+.arcade-shell.is-switching[data-arcade-switch-phase="powerdown"] .arcade-pane.is-active {
+  opacity: 0.16;
+  filter: saturate(0.5) brightness(0.5);
+  transform: scaleY(0.06);
+  transition:
+    opacity var(--arcade-switch-powerdown-ms) ease,
+    filter var(--arcade-switch-powerdown-ms) ease,
+    transform var(--arcade-switch-powerdown-ms) ease;
+}
+
+.arcade-shell.is-switching[data-arcade-switch-phase="cartridge"] .arcade-pane.is-active {
+  opacity: 0;
+  transform: scale(0.985);
+  transition:
+    opacity var(--arcade-switch-cartridge-ms) ease,
+    transform var(--arcade-switch-cartridge-ms) ease;
+}
+
+.arcade-shell.is-switching[data-arcade-switch-phase="warm"] .arcade-pane.is-active {
+  animation: hh-screen-warm var(--arcade-switch-warm-ms) cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.arcade-shell.is-switching[data-arcade-switch-phase="crossfade"] .arcade-pane.is-active {
+  opacity: 0.2;
+  transition: opacity var(--arcade-switch-crossfade-ms) ease;
+}
+
+@keyframes hh-screen-warm {
+  from {
+    opacity: 0.2;
+    filter: saturate(1.35) brightness(1.2);
+    transform: scale(1.012);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: scale(1);
+  }
 }
 
 .arcade-hud {
@@ -1482,8 +1597,28 @@ body.arcade-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .arcade-shell.is-open .hh-device {
+  .arcade-shell {
+    --arcade-open-ms: 120ms;
+    --arcade-close-ms: 100ms;
+    --arcade-switch-powerdown-ms: 0ms;
+    --arcade-switch-cartridge-ms: 0ms;
+    --arcade-switch-warm-ms: 0ms;
+    --arcade-switch-crossfade-ms: 110ms;
+  }
+
+  .arcade-shell.is-opening .hh-device,
+  .arcade-shell.is-closing .hh-device,
+  .arcade-shell.is-switching[data-arcade-switch-phase="warm"] .arcade-pane.is-active {
     animation: none;
+  }
+
+  .arcade-stage::before {
+    display: none;
+  }
+
+  .arcade-shell.is-switching .arcade-pane.is-active {
+    transform: none;
+    filter: none;
   }
 
   .arcade-tab,

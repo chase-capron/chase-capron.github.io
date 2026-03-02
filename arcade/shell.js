@@ -25,9 +25,41 @@
     const closers = Array.from(root.querySelectorAll('[data-arcade-close]'));
     const closeButton = root.querySelector('.arcade-shell__close');
 
+    const PHASE = {
+      CLOSED: 'closed',
+      OPENING: 'opening',
+      OPEN: 'open',
+      SWITCHING: 'switching',
+      CLOSING: 'closing',
+    };
+
+    const MOTION = {
+      full: {
+        openMs: 220,
+        closeMs: 180,
+        powerDownMs: 90,
+        cartridgeMs: 120,
+        warmMs: 140,
+      },
+      reduced: {
+        openMs: 120,
+        closeMs: 100,
+        crossfadeMs: 110,
+      },
+    };
+
     let activeTab = String(initialTab || '').trim() || 'pong';
-    let open = false;
+    let phase = PHASE.CLOSED;
     let previousFocus = null;
+    let transitionToken = 0;
+    let queuedSwitch = null;
+
+    const pendingTimers = new Set();
+
+    const reduceMotionQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+    let prefersReducedMotion = Boolean(reduceMotionQuery?.matches);
 
     const focusableSelector = [
       'a[href]',
@@ -37,6 +69,48 @@
       'textarea:not([disabled])',
       '[tabindex]:not([tabindex="-1"])',
     ].join(',');
+
+    const nextToken = () => {
+      transitionToken += 1;
+      return transitionToken;
+    };
+
+    const withTimer = (callback, delayMs) => {
+      const id = window.setTimeout(() => {
+        pendingTimers.delete(id);
+        callback();
+      }, Math.max(0, Number(delayMs) || 0));
+
+      pendingTimers.add(id);
+      return id;
+    };
+
+    const clearTimers = () => {
+      pendingTimers.forEach((id) => window.clearTimeout(id));
+      pendingTimers.clear();
+    };
+
+    const setPhase = (nextPhase) => {
+      phase = nextPhase;
+
+      root.dataset.arcadePhase = nextPhase;
+      root.classList.toggle('is-opening', nextPhase === PHASE.OPENING);
+      root.classList.toggle('is-switching', nextPhase === PHASE.SWITCHING);
+      root.classList.toggle('is-closing', nextPhase === PHASE.CLOSING);
+    };
+
+    const getMotion = () => (prefersReducedMotion ? MOTION.reduced : MOTION.full);
+
+    const syncMotionAttrs = () => {
+      const motion = getMotion();
+
+      root.style.setProperty('--arcade-open-ms', `${motion.openMs}ms`);
+      root.style.setProperty('--arcade-close-ms', `${motion.closeMs}ms`);
+      root.style.setProperty('--arcade-switch-powerdown-ms', `${motion.powerDownMs || 0}ms`);
+      root.style.setProperty('--arcade-switch-cartridge-ms', `${motion.cartridgeMs || 0}ms`);
+      root.style.setProperty('--arcade-switch-warm-ms', `${motion.warmMs || 0}ms`);
+      root.style.setProperty('--arcade-switch-crossfade-ms', `${motion.crossfadeMs || 0}ms`);
+    };
 
     const safeTab = (id) => {
       const candidate = String(id || '').trim();
@@ -65,7 +139,20 @@
       closeButton?.focus();
     };
 
-    const setTab = (id, { notify = true, focusTab = false } = {}) => {
+    const setTabsBusy = (busy) => {
+      tabs.forEach((tab) => {
+        tab.toggleAttribute('disabled', Boolean(busy));
+        tab.setAttribute('aria-disabled', busy ? 'true' : 'false');
+      });
+    };
+
+    const clearSwitchClasses = () => {
+      root.removeAttribute('data-arcade-switch-phase');
+      root.removeAttribute('data-arcade-switch-to');
+      tabs.forEach((tab) => tab.classList.remove('is-target'));
+    };
+
+    const applyTabState = (id, { focusTab = false } = {}) => {
       const nextTab = safeTab(id);
       activeTab = nextTab;
 
@@ -87,15 +174,102 @@
         focusCurrentTab();
       }
 
-      if (notify && typeof onTabChange === 'function') {
-        onTabChange(nextTab);
+      return nextTab;
+    };
+
+    const notifyTabChange = (tabId, shouldNotify) => {
+      if (shouldNotify && typeof onTabChange === 'function') {
+        onTabChange(tabId);
+      }
+    };
+
+    const flushQueuedSwitch = () => {
+      if (!queuedSwitch || phase !== PHASE.OPEN) return;
+      const next = queuedSwitch;
+      queuedSwitch = null;
+      setTab(next.id, { notify: next.notify, focusTab: next.focusTab });
+    };
+
+    const runSwitch = (targetTab, { notify = true, focusTab = false } = {}) => {
+      const nextTab = safeTab(targetTab);
+      const motion = getMotion();
+      const token = nextToken();
+
+      setPhase(PHASE.SWITCHING);
+      setTabsBusy(true);
+
+      root.dataset.arcadeSwitchTo = nextTab;
+      tabs.forEach((tab) => tab.classList.toggle('is-target', tab.dataset.arcadeTab === nextTab));
+
+      const completeSwitch = () => {
+        if (token !== transitionToken) return;
+        clearSwitchClasses();
+        setTabsBusy(false);
+        setPhase(PHASE.OPEN);
+        if (focusTab) {
+          focusCurrentTab();
+        }
+        notifyTabChange(nextTab, notify);
+        flushQueuedSwitch();
+      };
+
+      if (prefersReducedMotion) {
+        root.dataset.arcadeSwitchPhase = 'crossfade';
+        withTimer(() => {
+          if (token !== transitionToken) return;
+          applyTabState(nextTab, { focusTab: false });
+          completeSwitch();
+        }, motion.crossfadeMs);
+        return;
       }
 
+      root.dataset.arcadeSwitchPhase = 'powerdown';
+
+      withTimer(() => {
+        if (token !== transitionToken) return;
+        root.dataset.arcadeSwitchPhase = 'cartridge';
+      }, motion.powerDownMs);
+
+      withTimer(() => {
+        if (token !== transitionToken) return;
+        applyTabState(nextTab, { focusTab: false });
+        root.dataset.arcadeSwitchPhase = 'warm';
+      }, motion.powerDownMs + motion.cartridgeMs);
+
+      withTimer(() => {
+        completeSwitch();
+      }, motion.powerDownMs + motion.cartridgeMs + motion.warmMs);
+    };
+
+    const setTab = (id, { notify = true, focusTab = false } = {}) => {
+      const nextTab = safeTab(id);
+
+      if (nextTab === activeTab && phase !== PHASE.SWITCHING) {
+        if (focusTab) {
+          focusCurrentTab();
+        }
+        return true;
+      }
+
+      if (phase === PHASE.SWITCHING) {
+        queuedSwitch = { id: nextTab, notify, focusTab };
+        root.dataset.arcadeSwitchTo = nextTab;
+        tabs.forEach((tab) => tab.classList.toggle('is-target', tab.dataset.arcadeTab === nextTab));
+        return true;
+      }
+
+      if (phase === PHASE.OPEN) {
+        runSwitch(nextTab, { notify, focusTab });
+        return true;
+      }
+
+      applyTabState(nextTab, { focusTab });
+      notifyTabChange(nextTab, notify);
       return true;
     };
 
     const handleDocumentKeydown = (event) => {
-      if (!open) return;
+      if (phase === PHASE.CLOSED) return;
 
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -126,31 +300,64 @@
     };
 
     const openShell = () => {
-      if (open) return;
-      open = true;
+      if (phase === PHASE.OPEN || phase === PHASE.OPENING || phase === PHASE.SWITCHING) return;
+
+      const motion = getMotion();
+      const token = nextToken();
+
+      clearTimers();
+      clearSwitchClasses();
+      setTabsBusy(false);
+      queuedSwitch = null;
+
       previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
       root.classList.add('is-open');
       root.setAttribute('aria-hidden', 'false');
       document.body.classList.add('arcade-open');
       document.addEventListener('keydown', handleDocumentKeydown);
-      window.requestAnimationFrame(() => {
+
+      setPhase(PHASE.OPENING);
+
+      withTimer(() => {
+        if (token !== transitionToken) return;
+        setPhase(PHASE.OPEN);
         focusCurrentTab();
-      });
-      if (typeof onOpen === 'function') onOpen();
+        if (typeof onOpen === 'function') onOpen();
+        flushQueuedSwitch();
+      }, motion.openMs);
     };
 
     const close = () => {
-      if (!open) return;
-      open = false;
-      root.classList.remove('is-open');
-      root.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('arcade-open');
-      document.removeEventListener('keydown', handleDocumentKeydown);
-      if (typeof onClose === 'function') onClose();
-      if (previousFocus && previousFocus.isConnected) {
-        previousFocus.focus();
-      }
-      previousFocus = null;
+      if (phase === PHASE.CLOSED || phase === PHASE.CLOSING) return;
+
+      const motion = getMotion();
+      const token = nextToken();
+
+      clearTimers();
+      clearSwitchClasses();
+      setTabsBusy(false);
+      queuedSwitch = null;
+
+      setPhase(PHASE.CLOSING);
+
+      withTimer(() => {
+        if (token !== transitionToken) return;
+
+        setPhase(PHASE.CLOSED);
+        root.classList.remove('is-open');
+        root.setAttribute('aria-hidden', 'true');
+
+        document.body.classList.remove('arcade-open');
+        document.removeEventListener('keydown', handleDocumentKeydown);
+
+        if (typeof onClose === 'function') onClose();
+
+        if (previousFocus && previousFocus.isConnected) {
+          previousFocus.focus();
+        }
+        previousFocus = null;
+      }, motion.closeMs);
     };
 
     const handleTabClick = (event) => {
@@ -196,12 +403,27 @@
       }
     };
 
+    const handleMotionPrefChange = (event) => {
+      prefersReducedMotion = Boolean(event?.matches);
+      syncMotionAttrs();
+    };
+
     tabs.forEach((tab) => {
       tab.addEventListener('click', handleTabClick);
       tab.addEventListener('keydown', handleTabKeydown);
     });
     closers.forEach((node) => node.addEventListener('click', close));
 
+    if (reduceMotionQuery) {
+      if (typeof reduceMotionQuery.addEventListener === 'function') {
+        reduceMotionQuery.addEventListener('change', handleMotionPrefChange);
+      } else if (typeof reduceMotionQuery.addListener === 'function') {
+        reduceMotionQuery.addListener(handleMotionPrefChange);
+      }
+    }
+
+    syncMotionAttrs();
+    setPhase(PHASE.CLOSED);
     setTab(initialTab, { notify: false });
 
     return {
@@ -209,14 +431,36 @@
       close,
       setTab: (id) => setTab(id, { notify: true }),
       currentTab: () => activeTab,
-      isOpen: () => open,
+      isOpen: () => phase === PHASE.OPEN || phase === PHASE.OPENING || phase === PHASE.SWITCHING,
       destroy: () => {
-        close();
+        clearTimers();
+        nextToken();
+
+        clearSwitchClasses();
+        setTabsBusy(false);
+        queuedSwitch = null;
+
+        setPhase(PHASE.CLOSED);
+        root.classList.remove('is-open');
+        root.setAttribute('aria-hidden', 'true');
+
         tabs.forEach((tab) => {
           tab.removeEventListener('click', handleTabClick);
           tab.removeEventListener('keydown', handleTabKeydown);
         });
         closers.forEach((node) => node.removeEventListener('click', close));
+
+        if (reduceMotionQuery) {
+          if (typeof reduceMotionQuery.removeEventListener === 'function') {
+            reduceMotionQuery.removeEventListener('change', handleMotionPrefChange);
+          } else if (typeof reduceMotionQuery.removeListener === 'function') {
+            reduceMotionQuery.removeListener(handleMotionPrefChange);
+          }
+        }
+
+        document.removeEventListener('keydown', handleDocumentKeydown);
+        document.body.classList.remove('arcade-open');
+        previousFocus = null;
       },
     };
   };

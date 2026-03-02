@@ -167,6 +167,21 @@ const checkShellBehaviorHints = () => {
   if (!/document\.body\.classList\.remove\('arcade-open'\)/.test(shell)) {
     fail('arcade/shell.js missing body lock cleanup on close');
   }
+
+  const requiredPhases = ['closed', 'opening', 'open', 'switching', 'closing'];
+  requiredPhases.forEach((phase) => {
+    if (!shell.includes(`'${phase}'`)) {
+      fail(`arcade/shell.js missing shell phase state: ${phase}`);
+    }
+  });
+
+  if (!/data-arcade-switch-phase/.test(shell)) {
+    fail('arcade/shell.js missing data-arcade-switch-phase state flagging for cartridge transitions');
+  }
+
+  if (!/setTabsBusy\(/.test(shell)) {
+    fail('arcade/shell.js missing tab gating during transition lifecycle');
+  }
 };
 
 const checkThemeAdapterCoverage = () => {
@@ -187,12 +202,31 @@ const checkThemeAdapterCoverage = () => {
   });
 };
 
+const checkSwitchStyles = () => {
+  const css = readUtf8('styles.css');
+
+  const requiredSelectors = [
+    '.arcade-shell.is-opening .hh-device',
+    '.arcade-shell.is-closing .hh-device',
+    '.arcade-shell.is-switching',
+    'data-arcade-switch-phase="powerdown"',
+    'data-arcade-switch-phase="warm"',
+  ];
+
+  requiredSelectors.forEach((selector) => {
+    if (!css.includes(selector)) {
+      fail(`styles.css missing phase-3 transition selector: ${selector}`);
+    }
+  });
+};
+
 try {
   checkIndexStructure();
   checkTriggerGuardrails();
   checkArcadeSecuritySurface();
   checkShellBehaviorHints();
   checkThemeAdapterCoverage();
+  checkSwitchStyles();
 
   if (issues.length) {
     console.error('❌ Arcade handheld validation failed:');
