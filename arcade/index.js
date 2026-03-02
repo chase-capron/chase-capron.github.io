@@ -48,14 +48,43 @@
     const initialState = state.snapshot();
 
     const games = new Map([
-      ['pong', ns.createPongGame?.(document.getElementById('arcadePong'))],
-      ['tetris', ns.createTetrisGame?.(document.getElementById('arcadeTetris'))],
+      [
+        'pong',
+        ns.createPongGame?.({
+          canvas: document.getElementById('arcadePong'),
+          controlsRoot: document.querySelector('[data-control-group="pong"]'),
+          scoreLeftNode: document.getElementById('pongScoreLeft'),
+          scoreRightNode: document.getElementById('pongScoreRight'),
+        }),
+      ],
+      [
+        'tetris',
+        ns.createTetrisGame?.({
+          canvas: document.getElementById('arcadeTetris'),
+          controlsRoot: document.querySelector('[data-control-group="tetris"]'),
+          scoreNode: document.getElementById('tetrisScore'),
+          linesNode: document.getElementById('tetrisLines'),
+          statusNode: document.getElementById('tetrisStatus'),
+        }),
+      ],
+      [
+        '2048',
+        ns.create2048Game?.({
+          boardRoot: document.getElementById('arcade2048'),
+          scoreNode: document.getElementById('game2048Score'),
+          bestNode: document.getElementById('game2048Best'),
+          statusNode: document.getElementById('game2048Status'),
+          controlsRoot: document.querySelector('[data-control-group="2048"]'),
+          resetButton: document.querySelector('[data-2048-reset]'),
+        }),
+      ],
       [
         'pokemon',
         ns.createBattleGame?.({
           enemyHp: document.getElementById('enemyHp'),
           playerHp: document.getElementById('playerHp'),
           battleLog: document.getElementById('battleLog'),
+          battleScene: document.getElementById('battleScene'),
           moveButtons: Array.from(document.querySelectorAll('[data-battle-move]')),
         }),
       ],

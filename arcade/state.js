@@ -3,7 +3,7 @@
 
   const STORAGE_KEY = 'cc_arcade_state_v1';
   const DEFAULT_TAB = 'pong';
-  const ALLOWED_TABS = new Set(['pong', 'tetris', 'pokemon']);
+  const ALLOWED_TABS = new Set(['pong', 'tetris', 'pokemon', '2048']);
 
   const normalizeTab = (value) => {
     const candidate = String(value || '').trim().toLowerCase();

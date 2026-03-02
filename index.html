@@ -26,6 +26,7 @@
   <script defer src="arcade/shell.js"></script>
   <script defer src="arcade/games/pong.js"></script>
   <script defer src="arcade/games/tetris.js"></script>
+  <script defer src="arcade/games/game2048.js"></script>
   <script defer src="arcade/games/battle.js"></script>
   <script defer src="arcade/index.js"></script>
   <script defer src="app.js"></script>
@@ -362,17 +363,59 @@
       <nav class="arcade-tabs" aria-label="Arcade games">
         <button type="button" class="arcade-tab is-active" data-arcade-tab="pong">Pong</button>
         <button type="button" class="arcade-tab" data-arcade-tab="tetris">Tetris</button>
+        <button type="button" class="arcade-tab" data-arcade-tab="2048">2048</button>
         <button type="button" class="arcade-tab" data-arcade-tab="pokemon">Battle</button>
       </nav>
       <div class="arcade-stage">
         <section class="arcade-pane is-active" data-arcade-pane="pong">
+          <div class="arcade-hud" aria-live="polite">
+            <p>P1 <span id="pongScoreLeft">0</span></p>
+            <p>CPU <span id="pongScoreRight">0</span></p>
+          </div>
           <canvas id="arcadePong" width="720" height="360" aria-label="Pong simulator"></canvas>
+          <div class="arcade-controls" data-control-group="pong" aria-label="Pong controls">
+            <button type="button" data-pong-control="up">↑ Up</button>
+            <button type="button" data-pong-control="down">↓ Down</button>
+          </div>
+          <p class="arcade-help">Keyboard: W/S or ↑/↓. On touch, hold controls or drag your paddle.</p>
         </section>
         <section class="arcade-pane" data-arcade-pane="tetris">
+          <div class="arcade-hud" aria-live="polite">
+            <p>Score <span id="tetrisScore">0</span></p>
+            <p>Lines <span id="tetrisLines">0</span></p>
+          </div>
           <canvas id="arcadeTetris" width="720" height="360" aria-label="Tetris simulator"></canvas>
+          <div class="arcade-controls arcade-controls--compact" data-control-group="tetris" aria-label="Tetris controls">
+            <button type="button" data-tetris-control="left">←</button>
+            <button type="button" data-tetris-control="rotate">⟳</button>
+            <button type="button" data-tetris-control="right">→</button>
+            <button type="button" data-tetris-control="down">↓</button>
+            <button type="button" data-tetris-control="drop">Drop</button>
+          </div>
+          <p class="arcade-help" id="tetrisStatus">Arrow keys or on-screen controls.</p>
+        </section>
+        <section class="arcade-pane" data-arcade-pane="2048">
+          <div class="game2048-wrap">
+            <div class="arcade-hud" aria-live="polite">
+              <p>Score <span id="game2048Score">0</span></p>
+              <p>Best <span id="game2048Best">0</span></p>
+            </div>
+            <div class="game2048-grid" id="arcade2048" aria-label="2048 board"></div>
+            <div class="arcade-controls arcade-controls--dpad" data-control-group="2048" aria-label="2048 controls">
+              <button type="button" class="arcade-controls__up" data-2048-control="up">↑</button>
+              <button type="button" data-2048-control="left">←</button>
+              <button type="button" data-2048-control="down">↓</button>
+              <button type="button" data-2048-control="right">→</button>
+            </div>
+            <div class="arcade-row">
+              <button type="button" data-2048-reset>New Game</button>
+              <p class="arcade-help" id="game2048Status">Combine tiles to 2048.</p>
+            </div>
+          </div>
         </section>
         <section class="arcade-pane" data-arcade-pane="pokemon">
           <div class="battle-board" id="battleBoard">
+            <canvas id="battleScene" width="720" height="240" aria-label="Retro battle scene"></canvas>
             <div class="battle-card battle-card--enemy">
               <h4>Wild Debugmon</h4>
               <p class="battle-hp"><span id="enemyHp">100</span>/100 HP</p>
@@ -382,12 +425,12 @@
               <p class="battle-hp"><span id="playerHp">100</span>/100 HP</p>
             </div>
             <div class="battle-actions">
-              <button type="button" data-battle-move="ship">Ship Patch</button>
-              <button type="button" data-battle-move="lint">Lint Beam</button>
-              <button type="button" data-battle-move="rollback">Rollback</button>
-              <button type="button" data-battle-move="reboot">Reboot</button>
+              <button type="button" data-battle-move="ship">1 · Ship Patch</button>
+              <button type="button" data-battle-move="lint">2 · Lint Beam</button>
+              <button type="button" data-battle-move="rollback">3 · Rollback</button>
+              <button type="button" data-battle-move="reboot">4 · Reboot</button>
             </div>
-            <p class="battle-log" id="battleLog">Battle ready.</p>
+            <p class="battle-log" id="battleLog">Battle ready. Press 1-4 or tap a move.</p>
           </div>
         </section>
       </div>
