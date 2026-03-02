@@ -201,8 +201,8 @@
       vy: 0,
       width: 1.7,
       height: 3.4,
-      jumpVelocity: 17.2,
-      gravity: 31,
+      jumpVelocity: 18.1,
+      gravity: 30.5,
     };
 
     const groundY = 0;
@@ -231,6 +231,7 @@
     let lastTs = 0;
     let elapsed = 0;
     let jumpBuffer = 0;
+    let runPhase = 0;
 
     const JUMP_BUFFER_SEC = 0.14;
 
@@ -345,6 +346,7 @@
 
       speed += dt * 0.58;
       score += dt * speed * 8.5;
+      runPhase += dt * (5.2 + speed * 0.11);
 
       if (score > best) {
         best = score;
@@ -393,6 +395,8 @@
       sx = 1,
       sy = 1,
       sz = 1,
+      gaitPhase = 0,
+      animateRun = false,
     }) => {
       const sinY = Math.sin(ry);
       const cosY = Math.cos(ry);
@@ -404,6 +408,20 @@
         let lx = mesh.vertices[src] * sx;
         let ly = mesh.vertices[src + 1] * sy;
         let lz = mesh.vertices[src + 2] * sz;
+
+        if (animateRun) {
+          const legMask = ly < 2.7 ? 1 : 0;
+          const armMask = ly >= 2.7 && ly < 6.8 ? 1 : 0;
+          const side = lx >= 0 ? 1 : -1;
+          const legSwing = Math.sin(gaitPhase + (side * 0.9)) * 0.34;
+          const armSwing = Math.sin(gaitPhase + Math.PI + (side * 0.7)) * 0.18;
+          const bodyBob = Math.sin(gaitPhase * 2) * 0.08;
+          lz += legMask * legSwing + armMask * armSwing;
+          ly += bodyBob;
+          if (ly > 7.0) {
+            lz += Math.sin(gaitPhase * 0.6) * 0.06;
+          }
+        }
 
         const xzX = lx * cosY + lz * sinY;
         const xzZ = -lx * sinY + lz * cosY;
@@ -581,11 +599,66 @@
       ctx.fillRect(sunX - 90, sunY - 90, 180, 180);
 
       const horizonY = H * 0.63;
+
+      // distant Arizona-style mesas / canyons
+      const mesaGrad = ctx.createLinearGradient(0, horizonY - 120, 0, horizonY + 10);
+      mesaGrad.addColorStop(0, 'rgba(111, 72, 56, 0.75)');
+      mesaGrad.addColorStop(1, 'rgba(83, 50, 38, 0.55)');
+      ctx.fillStyle = mesaGrad;
+      const ridgeShift = prefersReducedMotion ? 0 : Math.sin(elapsed * 0.11) * 5;
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY - 14);
+      ctx.lineTo(W * 0.12, horizonY - 34 + ridgeShift * 0.1);
+      ctx.lineTo(W * 0.2, horizonY - 58);
+      ctx.lineTo(W * 0.32, horizonY - 40);
+      ctx.lineTo(W * 0.44, horizonY - 78 + ridgeShift * 0.05);
+      ctx.lineTo(W * 0.57, horizonY - 45);
+      ctx.lineTo(W * 0.68, horizonY - 70);
+      ctx.lineTo(W * 0.82, horizonY - 42);
+      ctx.lineTo(W, horizonY - 26);
+      ctx.lineTo(W, horizonY + 8);
+      ctx.lineTo(0, horizonY + 8);
+      ctx.closePath();
+      ctx.fill();
+
       const sandGrad = ctx.createLinearGradient(0, horizonY, 0, H);
       sandGrad.addColorStop(0, '#d69f65');
       sandGrad.addColorStop(1, '#8a5c31');
       ctx.fillStyle = sandGrad;
       ctx.fillRect(0, horizonY, W, H - horizonY);
+
+      // canyon depth strips
+      ctx.fillStyle = 'rgba(88, 45, 23, 0.18)';
+      for (let i = 0; i < 4; i += 1) {
+        const x = (i + 1) * (W / 5);
+        const w = 18 + i * 6;
+        ctx.fillRect(x - w * 0.5, horizonY + 20 + i * 8, w, H - (horizonY + 20 + i * 8));
+      }
+
+      // funny background cowboy silhouette
+      const cowboyX = W * 0.15;
+      const cowboyY = horizonY - 10;
+      ctx.fillStyle = 'rgba(33, 18, 12, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(cowboyX, cowboyY - 30, 14, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(cowboyX - 3, cowboyY - 28, 6, 22);
+      ctx.fillRect(cowboyX - 8, cowboyY - 10, 5, 12);
+      ctx.fillRect(cowboyX + 3, cowboyY - 10, 5, 12);
+
+      // foreground bones easter egg
+      ctx.strokeStyle = 'rgba(245, 234, 210, 0.45)';
+      ctx.lineWidth = 2;
+      const bx = W * 0.82;
+      const by = H * 0.78;
+      ctx.beginPath();
+      ctx.moveTo(bx - 20, by);
+      ctx.lineTo(bx + 20, by - 4);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(bx - 22, by, 4, 0, Math.PI * 2);
+      ctx.arc(bx + 22, by - 4, 4, 0, Math.PI * 2);
+      ctx.stroke();
 
       ctx.strokeStyle = 'rgba(72, 40, 21, 0.2)';
       ctx.lineWidth = 1;
@@ -613,11 +686,13 @@
         x: player.x,
         y: player.y + bob,
         z: -0.5,
-        ry: -Math.PI * 0.5,
+        ry: Math.PI * 0.5,
         rx: dinoPitch,
         sx: 1,
         sy: 1 + Math.abs(stride) * 0.015,
         sz: 1,
+        gaitPhase: runPhase,
+        animateRun: alive && !prefersReducedMotion,
       });
 
       activeObstacles.length = 0;
