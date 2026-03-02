@@ -70,6 +70,17 @@ const checkIndexStructure = () => {
   if (!/data-arcade-close/.test(html)) {
     fail('Arcade close controls missing data-arcade-close hook');
   }
+
+  const handheldScaffold = ['hh-device', 'hh-cartridge-strip', 'hh-screen-bay', 'hh-screen-bezel', 'hh-screen-depth', 'hh-controls'];
+  handheldScaffold.forEach((className) => {
+    if (!new RegExp(`class="[^"]*${className}[^"]*"`).test(html)) {
+      fail(`index.html missing retro handheld scaffold class: ${className}`);
+    }
+  });
+
+  if (!/class="arcade-tabs[^"]*"[^>]*role="tablist"/.test(html)) {
+    fail('Arcade tablist role missing on cartridge strip nav');
+  }
 };
 
 const checkTriggerGuardrails = () => {
@@ -158,20 +169,39 @@ const checkShellBehaviorHints = () => {
   }
 };
 
+const checkThemeAdapterCoverage = () => {
+  const adapter = readUtf8('arcade/theme-adapter.js');
+
+  const requiredHandheldTokens = [
+    '--hh-accent',
+    '--hh-shell-hi',
+    '--hh-shell-lo',
+    '--hh-glow',
+    '--hh-screen-tint',
+  ];
+
+  requiredHandheldTokens.forEach((token) => {
+    if (!adapter.includes(token)) {
+      fail(`arcade/theme-adapter.js missing handheld token mapping: ${token}`);
+    }
+  });
+};
+
 try {
   checkIndexStructure();
   checkTriggerGuardrails();
   checkArcadeSecuritySurface();
   checkShellBehaviorHints();
+  checkThemeAdapterCoverage();
 
   if (issues.length) {
-    console.error('❌ Arcade phase-5 validation failed:');
+    console.error('❌ Arcade handheld validation failed:');
     issues.forEach((issue) => console.error(`- ${issue}`));
     process.exitCode = 1;
   } else {
-    console.log('✅ Arcade phase-5 validation passed.');
+    console.log('✅ Arcade handheld validation passed.');
   }
 } catch (error) {
-  console.error('❌ Arcade phase-5 validation crashed:', error?.message || error);
+  console.error('❌ Arcade handheld validation crashed:', error?.message || error);
   process.exitCode = 1;
 }

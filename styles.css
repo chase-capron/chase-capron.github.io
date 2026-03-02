@@ -794,6 +794,22 @@ body.arcade-open {
   --arcade-text: var(--text);
   --arcade-text-soft: var(--text-soft);
 
+  --hh-accent: var(--arcade-accent);
+  --hh-shell-hi: color-mix(in oklab, var(--arcade-surface) 88%, white 12%);
+  --hh-shell-lo: color-mix(in oklab, var(--arcade-surface) 78%, black 22%);
+  --hh-glow: color-mix(in oklab, var(--arcade-accent) 40%, transparent);
+  --hh-screen-tint: color-mix(in oklab, var(--arcade-accent) 18%, #050814 82%);
+
+  --hh-shell-radius: 28px;
+  --hh-shell-depth: 18px;
+  --hh-bezel-radius: 14px;
+  --hh-screen-inset: 14px;
+  --hh-screen-depth: 6px;
+  --hh-control-size: clamp(42px, 5.2vw, 56px);
+  --hh-shadow-elev-1: 0 10px 24px rgba(2, 5, 14, 0.42);
+  --hh-shadow-elev-2: 0 16px 38px rgba(2, 5, 14, 0.44);
+  --hh-shadow-elev-3: 0 26px 68px rgba(2, 5, 14, 0.56);
+
   position: fixed;
   inset: 0;
   z-index: 80;
@@ -807,23 +823,76 @@ body.arcade-open {
 .arcade-shell__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(5, 8, 20, 0.72);
+  background: rgba(5, 8, 20, 0.74);
   backdrop-filter: blur(8px);
 }
 
 .arcade-shell__panel {
   position: relative;
-  width: min(980px, calc(100% - 24px));
-  margin: min(8vh, 52px) auto;
-  border: 1px solid var(--arcade-line);
-  border-radius: 18px;
-  background: color-mix(in oklab, var(--arcade-surface) 88%, black 12%);
+  width: min(980px, calc(100vw - 16px));
+  margin: min(4vh, 26px) auto;
+  border: 0;
+  background: transparent;
   color: var(--arcade-text);
-  box-shadow: var(--shadow-strong);
-  padding: 14px;
-  max-height: min(86vh, 860px);
+  box-shadow: none;
+  padding: 0 0 calc(12px + env(safe-area-inset-bottom));
+  max-height: calc(100vh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: auto;
   overscroll-behavior: contain;
+  perspective: 1800px;
+}
+
+.hh-device {
+  position: relative;
+  width: min(920px, calc(100vw - 26px));
+  margin: 0 auto;
+  border-radius: var(--hh-shell-radius);
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 66%, white 14%);
+  padding: 18px;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.16), transparent 38%),
+    linear-gradient(158deg, var(--hh-shell-hi), var(--hh-shell-lo));
+  box-shadow:
+    var(--hh-shadow-elev-3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 calc(var(--hh-shell-depth) * -1) 18px rgba(0, 0, 0, 0.18);
+  transform: rotateX(3.8deg);
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.hh-device::before,
+.hh-device::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hh-device::before {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), transparent 38%);
+  opacity: 0.7;
+}
+
+.hh-device::after {
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.24), inset 1px 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.arcade-shell.is-open .hh-device {
+  animation: hh-lift 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes hh-lift {
+  from {
+    transform: translateY(10px) scale(0.985) rotateX(2.1deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1) rotateX(3.8deg);
+    opacity: 1;
+  }
 }
 
 .arcade-shell__head {
@@ -832,9 +901,64 @@ body.arcade-open {
   gap: 10px;
   flex-wrap: wrap;
 }
-.arcade-shell__head h3 { margin: 0; }
-.arcade-shell__head p { margin: 0; color: var(--arcade-text-soft); font-size: 13px; }
-.arcade-shell__close { margin-left: auto; }
+
+.hh-device__head {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 10px;
+}
+
+.hh-device__title {
+  display: grid;
+  gap: 2px;
+}
+
+.hh-device__title h3 {
+  margin: 0;
+}
+
+.hh-device__title p {
+  margin: 0;
+  color: var(--arcade-text-soft);
+  font-size: 13px;
+}
+
+.hh-device__status {
+  margin: 0;
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 70%, white 14%);
+  background: rgba(0, 0, 0, 0.2);
+  color: color-mix(in oklab, var(--arcade-text-soft) 84%, white 16%);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hh-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--hh-accent);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 12px var(--hh-glow);
+}
+
+.arcade-shell__close {
+  margin-left: 0;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 72%, white 16%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.16));
+  color: var(--arcade-text);
+  padding: 7px 13px;
+  min-height: 40px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(2, 8, 20, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
 
 .arcade-announcer {
   position: absolute;
@@ -849,23 +973,119 @@ body.arcade-open {
   white-space: nowrap;
 }
 
-.arcade-tabs { display: flex; gap: 8px; margin: 10px 0 12px; flex-wrap: wrap; }
-.arcade-tab {
-  border: 1px solid var(--arcade-line);
-  background: rgba(255,255,255,0.04);
-  color: var(--arcade-text);
-  border-radius: 999px;
-  padding: 6px 12px;
-  cursor: pointer;
+.hh-cartridge-strip {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 76%, black 24%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -6px 12px rgba(0, 0, 0, 0.24);
+  padding: 10px;
 }
-.arcade-tab.is-active { border-color: color-mix(in oklab, var(--arcade-accent) 60%, white 20%); }
+
+.hh-cartridge-strip__label {
+  margin: 0 0 8px;
+  color: var(--arcade-text-soft);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.arcade-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.arcade-tab {
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 84%, white 12%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(0, 0, 0, 0.14));
+  color: var(--arcade-text);
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 5px 10px rgba(2, 8, 20, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.arcade-tab.is-active {
+  border-color: color-mix(in oklab, var(--hh-accent) 60%, white 20%);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hh-accent) 45%, transparent), 0 8px 16px rgba(2, 8, 20, 0.25);
+}
+
+.arcade-tab:not(.is-active):hover {
+  transform: translateY(-1px);
+}
+
+.hh-screen-bay {
+  position: relative;
+  z-index: 2;
+  border-radius: calc(var(--hh-bezel-radius) + var(--hh-screen-inset));
+  padding: var(--hh-screen-inset);
+  background: linear-gradient(150deg, rgba(0, 0, 0, 0.28), rgba(255, 255, 255, 0.08));
+  box-shadow:
+    inset 0 3px 7px rgba(0, 0, 0, 0.36),
+    inset 0 -2px 6px rgba(255, 255, 255, 0.06),
+    var(--hh-shadow-elev-1);
+}
+
+.hh-screen-bezel {
+  border-radius: var(--hh-bezel-radius);
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 84%, black 16%);
+  background: linear-gradient(160deg, rgba(0, 0, 0, 0.44), rgba(255, 255, 255, 0.06));
+  padding: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.hh-screen-depth {
+  position: relative;
+  border-radius: calc(var(--hh-bezel-radius) - 3px);
+  background: color-mix(in oklab, var(--hh-screen-tint) 88%, #03060f 12%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  transform: translateZ(calc(var(--hh-screen-depth) * -1));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.34), inset 0 12px 20px rgba(0, 0, 0, 0.24);
+}
+
+.hh-screen-depth::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: calc(var(--hh-bezel-radius) - 8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.hh-glass {
+  position: absolute;
+  inset: 8px;
+  border-radius: calc(var(--hh-bezel-radius) - 9px);
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.02) 32%, transparent 56%),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(255, 255, 255, 0.02) 1px 2px);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
 
 .arcade-stage {
   contain: layout paint;
+  position: relative;
+  z-index: 2;
 }
 
-.arcade-pane { display: none; }
-.arcade-pane.is-active { display: block; }
+.arcade-pane {
+  display: none;
+}
+
+.arcade-pane.is-active {
+  display: block;
+}
 
 .arcade-hud {
   display: flex;
@@ -890,10 +1110,11 @@ body.arcade-open {
 #arcadeTetris,
 #battleScene {
   width: 100%;
-  max-height: 55vh;
-  border: 1px solid var(--arcade-line);
+  max-height: min(55vh, 430px);
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 78%, white 10%);
   border-radius: 12px;
   background: #050814;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 10px 20px rgba(0, 0, 0, 0.22);
 }
 
 #battleScene {
@@ -907,20 +1128,31 @@ body.arcade-open {
   gap: 8px;
 }
 
-.arcade-controls button {
+.arcade-controls button,
+.battle-actions button,
+.arcade-row button {
   min-height: 44px;
-  border-radius: 10px;
-  border: 1px solid var(--arcade-line);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 11px;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 78%, white 12%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
   color: var(--arcade-text);
   cursor: pointer;
   font-weight: 700;
   touch-action: manipulation;
+  box-shadow: 0 5px 10px rgba(1, 7, 18, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
-.arcade-controls button.is-active {
-  border-color: color-mix(in oklab, var(--arcade-accent) 66%, white 14%);
-  background: color-mix(in oklab, var(--arcade-accent) 22%, transparent);
+.arcade-controls button.is-active,
+.arcade-controls button:active,
+.battle-actions button:active,
+.arcade-row button:active {
+  border-color: color-mix(in oklab, var(--hh-accent) 64%, white 16%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--hh-accent) 28%, rgba(255, 255, 255, 0.14)),
+    color-mix(in oklab, var(--hh-accent) 16%, rgba(0, 0, 0, 0.18))
+  );
+  transform: translateY(1px);
 }
 
 .arcade-tab:focus-visible,
@@ -928,7 +1160,7 @@ body.arcade-open {
 .arcade-controls button:focus-visible,
 .battle-actions button:focus-visible,
 .arcade-row button:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--arcade-accent) 72%, white 22%);
+  outline: 2px solid color-mix(in oklab, var(--hh-accent) 72%, white 22%);
   outline-offset: 2px;
 }
 
@@ -961,10 +1193,10 @@ body.arcade-open {
 }
 
 .game2048-wrap {
-  border: 1px solid var(--arcade-line);
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 78%, white 12%);
   border-radius: 12px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .game2048-grid {
@@ -1002,7 +1234,7 @@ body.arcade-open {
 .game2048-cell[class*="v-"] { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
 
 .battle-board {
-  border: 1px solid var(--arcade-line);
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 78%, white 12%);
   border-radius: 12px;
   padding: 12px;
   background: rgba(255,255,255,0.03);
@@ -1021,11 +1253,181 @@ body.arcade-open {
 .battle-actions button { min-height: 44px; }
 .battle-log { margin: 0; color: var(--arcade-text-soft); }
 
+.hh-controls {
+  position: relative;
+  z-index: 2;
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) auto minmax(110px, 1fr) auto;
+  align-items: end;
+  gap: clamp(10px, 2.5vw, 22px);
+  min-height: 100px;
+}
+
+.hh-dpad {
+  justify-self: start;
+  width: clamp(78px, 9vw, 98px);
+  aspect-ratio: 1;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.34), rgba(255, 255, 255, 0.06));
+  display: grid;
+  place-items: center;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.26);
+}
+
+.hh-dpad__arm {
+  position: absolute;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(0, 0, 0, 0.3));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.34);
+}
+
+.hh-dpad__arm--vertical {
+  width: 32%;
+  height: 72%;
+}
+
+.hh-dpad__arm--horizontal {
+  width: 72%;
+  height: 32%;
+}
+
+.hh-dpad__core {
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.hh-utility {
+  display: flex;
+  gap: 10px;
+  align-self: center;
+}
+
+.hh-utility__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 72%, white 8%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.2));
+  color: var(--arcade-text-soft);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.hh-action-buttons {
+  justify-self: end;
+  display: grid;
+  grid-template-columns: repeat(2, var(--hh-control-size));
+  align-items: center;
+  gap: 14px;
+  transform: rotate(-15deg);
+}
+
+.hh-action-button {
+  width: var(--hh-control-size);
+  height: var(--hh-control-size);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--arcade-line) 70%, white 12%);
+  background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.45), rgba(0, 0, 0, 0.22) 66%);
+  color: color-mix(in oklab, var(--arcade-text) 92%, white 8%);
+  font-weight: 800;
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(0, 0, 0, 0.32);
+}
+
+.hh-action-button--a {
+  background: radial-gradient(circle at 28% 24%, color-mix(in oklab, var(--hh-accent) 45%, white 55%), color-mix(in oklab, var(--hh-accent) 30%, black 70%) 68%);
+}
+
+.hh-action-button--b {
+  background: radial-gradient(circle at 28% 24%, color-mix(in oklab, var(--hh-accent) 30%, white 70%), color-mix(in oklab, var(--hh-accent) 20%, black 80%) 68%);
+}
+
+.hh-speaker {
+  justify-self: end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  width: 54px;
+  opacity: 0.62;
+}
+
+.hh-speaker span {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 960px) {
+  .arcade-shell__panel {
+    width: min(760px, calc(100vw - 18px));
+  }
+
+  .hh-device {
+    width: min(760px, calc(100vw - 18px));
+    transform: rotateX(2.8deg);
+  }
+
+  .arcade-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hh-controls {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "dpad util util"
+      "dpad action speaker";
+    gap: 10px 14px;
+  }
+
+  .hh-dpad { grid-area: dpad; }
+  .hh-utility { grid-area: util; justify-self: start; }
+  .hh-action-buttons { grid-area: action; }
+  .hh-speaker { grid-area: speaker; align-self: end; }
+}
+
 @media (max-width: 760px) {
   .arcade-shell__panel {
-    margin: 18px auto;
-    max-height: calc(100vh - 36px);
-    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    margin: 10px auto;
+    max-height: calc(100vh - 12px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .hh-device {
+    width: min(100vw - 10px, 680px);
+    border-radius: 22px;
+    padding: 14px;
+    transform: none;
+  }
+
+  .hh-device__status {
+    margin-left: 0;
+  }
+
+  .arcade-shell__close {
+    margin-left: auto;
+  }
+
+  .hh-screen-bay {
+    padding: 10px;
+  }
+
+  .hh-screen-bezel {
+    padding: 8px;
+  }
+
+  .hh-screen-depth {
+    padding: 10px;
   }
 
   .arcade-controls--compact {
@@ -1040,13 +1442,63 @@ body.arcade-open {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .hh-controls {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "dpad action"
+      "util speaker";
+    align-items: center;
+  }
+
+  .hh-action-buttons {
+    justify-self: center;
+    transform: rotate(-10deg);
+  }
+
+  .hh-speaker {
+    justify-self: center;
+  }
 }
 
-.arcade-shell[data-arcade-theme="matrix"] .arcade-shell__panel {
-  box-shadow: 0 14px 44px rgba(9, 60, 27, 0.45);
+@media (max-width: 520px) {
+  .hh-device {
+    width: min(100vw - 8px, 560px);
+    padding: 12px;
+  }
+
+  .arcade-tab {
+    font-size: 13px;
+  }
+
+  .hh-utility {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hh-utility__button {
+    min-width: 56px;
+  }
 }
 
-.arcade-shell[data-arcade-theme="classic-mac"] .arcade-shell__panel {
+@media (prefers-reduced-motion: reduce) {
+  .arcade-shell.is-open .hh-device {
+    animation: none;
+  }
+
+  .arcade-tab,
+  .arcade-controls button,
+  .battle-actions button,
+  .arcade-row button {
+    transition: none;
+  }
+}
+
+.arcade-shell[data-arcade-theme="matrix"] .hh-device {
+  box-shadow: 0 24px 62px rgba(6, 58, 25, 0.45), inset 0 1px 0 rgba(169, 255, 205, 0.2), inset 0 -18px 24px rgba(0, 0, 0, 0.26);
+}
+
+.arcade-shell[data-arcade-theme="classic-mac"] .hh-device {
   border-style: inset;
 }
 
