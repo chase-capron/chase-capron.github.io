@@ -135,8 +135,8 @@
       vy: 0,
       width: 1.7,
       height: 3.4,
-      jumpVelocity: 11.8,
-      gravity: 33,
+      jumpVelocity: 17.2,
+      gravity: 31,
     };
 
     const groundY = 0;
@@ -247,7 +247,7 @@
       obstacle.z = prefersReducedMotion ? 0 : -1.15 + Math.random() * 2.3;
       obstacle.scale = 0.8 + Math.random() * 0.55;
       obstacle.width = 1.2 * obstacle.scale;
-      obstacle.height = 3.6 * obstacle.scale;
+      obstacle.height = 2.75 * obstacle.scale;
       obstacle.spin = Math.random() * Math.PI * 2;
     };
 
@@ -371,6 +371,8 @@
       wireColor,
       alpha = 1,
       triStride = 1,
+      cullBackfaces = true,
+      strokeWidth = 0,
     }) => {
       const tri = mesh.triangles;
       for (let i = 0; i < mesh.triCount; i += 1) {
@@ -440,7 +442,7 @@
         const viewY = camera.y - awy;
         const viewZ = camera.z - awz;
         const facing = nx * viewX + ny * viewY + nz * viewZ;
-        if (facing <= 0) continue;
+        if (cullBackfaces && facing <= 0) continue;
 
         const diffuse = nx * lightDir.x + ny * lightDir.y + nz * lightDir.z;
         const shade = clamp(0.26 + Math.max(0, diffuse) * 0.78, 0.22, 1);
@@ -454,9 +456,11 @@
         ctx.closePath();
         ctx.fill();
 
-        ctx.strokeStyle = wireColor;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
+        if (strokeWidth > 0) {
+          ctx.strokeStyle = wireColor;
+          ctx.lineWidth = strokeWidth;
+          ctx.stroke();
+        }
       }
     };
 
@@ -509,7 +513,7 @@
         x: player.x,
         y: player.y + bob,
         z: -0.5,
-        ry: 0.13,
+        ry: -Math.PI * 0.5,
         rx: dinoPitch,
         sx: 1,
         sy: 1 + Math.abs(stride) * 0.015,
@@ -534,16 +538,21 @@
         });
         renderMesh(cactusMesh, {
           baseColor: [62, 181, 101],
-          wireColor: 'rgba(13, 52, 22, 0.35)',
+          wireColor: 'rgba(13, 52, 22, 0.15)',
           alpha: 0.98,
-          triStride: cactusTriStride(),
+          triStride: 1,
+          cullBackfaces: false,
+          strokeWidth: 0,
         });
       });
 
       renderMesh(trexMesh, {
         baseColor: alive ? [118, 220, 178] : [204, 140, 126],
-        wireColor: 'rgba(6, 30, 26, 0.28)',
+        wireColor: 'rgba(6, 30, 26, 0.12)',
         alpha: 1,
+        triStride: 1,
+        cullBackfaces: false,
+        strokeWidth: 0,
       });
 
       if (!alive) {
