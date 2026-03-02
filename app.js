@@ -705,14 +705,15 @@
     const COLLISION_TRANSFER = 0.5;
     const COLLISION_NUDGE = 0.15;
     const GRAVITY = 1560;
-    const DROP_START_Y = -220;
+    const DROP_START_Y = -58;
     const LANDING_BOUNCE = 0.16;
     const RECYCLE_MARGIN = 120;
-    const CHUTE_VISIBLE_HEIGHT = 210;
     const MAX_ROTATION = 2.2;
     const MAX_PROPAGATION_IMPULSE = 36;
     const PROPAGATION_DECAY = 0.52;
     const RANDOM_BUMP_MIN_SECONDS = 1.05;
+    const CASE_INJECT_MIN_SECONDS = 2.1;
+    const CASE_INJECT_MAX_SECONDS = 4.0;
     const RANDOM_BUMP_MAX_SECONDS = 2.6;
     const JAM_IDLE_MIN_SECONDS = 6.4;
     const JAM_IDLE_MAX_SECONDS = 11.8;
@@ -774,6 +775,7 @@
     let lastTimestamp = 0;
     let rafId = 0;
     let randomBumpTimer = randomRange(RANDOM_BUMP_MIN_SECONDS, RANDOM_BUMP_MAX_SECONDS);
+    let caseInjectTimer = randomRange(CASE_INJECT_MIN_SECONDS, CASE_INJECT_MAX_SECONDS);
 
     const jamState = {
       phase: 'idle',
@@ -789,7 +791,7 @@
 
     const applyTrackHeight = () => {
       const tallest = bags.reduce((maxHeight, bag) => Math.max(maxHeight, bag.height), 0);
-      track.style.height = `${Math.ceil(tallest + CHUTE_VISIBLE_HEIGHT + 6)}px`;
+      track.style.height = `${Math.ceil(tallest + 2)}px`;
     };
 
     const computeSpawnX = () => {
@@ -949,6 +951,20 @@
       }
     };
 
+
+    const forceInjectCase = (sortedBags) => {
+      if (!sortedBags.length) return;
+      const candidatePool = sortedBags
+        .filter((bag) => bag.phase === 'belt' && canRecycle(bag))
+        .sort((a, b) => a.x - b.x);
+      const candidate = candidatePool[0];
+      if (!candidate) return;
+
+      let rightmostEdge = -Infinity;
+      for (const bag of bags) rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
+      resetBagForSpawn(candidate, rightmostEdge, sortedBags);
+    };
+
     const updateJamState = (sortedBags, dt) => {
       jamState.timer -= dt;
 
@@ -1093,6 +1109,12 @@
 
       updateJamState(sortedBags, dt);
 
+      caseInjectTimer -= dt;
+      if (caseInjectTimer <= 0) {
+        forceInjectCase(sortedBags);
+        caseInjectTimer = randomRange(CASE_INJECT_MIN_SECONDS, CASE_INJECT_MAX_SECONDS);
+      }
+
       for (const bag of bags) {
         if (bag.phase === 'drop') {
           bag.x += (bag.targetX - bag.x) * Math.min(1, 4.8 * dt);
@@ -1150,9 +1172,8 @@
       for (const bag of bags) {
         const x = bag.prevX + (bag.x - bag.prevX) * blend;
         const y = bag.prevY + (bag.y - bag.prevY) * blend;
-        const displayY = y + CHUTE_VISIBLE_HEIGHT;
         const rot = bag.prevRot + (bag.rot - bag.prevRot) * blend;
-        bag.el.style.transform = `translate3d(${x.toFixed(2)}px, ${displayY.toFixed(2)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+        bag.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${rot.toFixed(2)}deg)`;
       }
     };
 
