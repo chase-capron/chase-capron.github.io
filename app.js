@@ -669,16 +669,41 @@
     const SPEED_CONVERGENCE = 8.2;
     const BASE_GAP = 86;
     const GAP_JITTER = 24;
+    const MIN_CONTACT_GAP = 10;
+    const CONTACT_SOLVER_PASSES = 2;
+    const COLLISION_TRANSFER = 0.62;
+    const COLLISION_NUDGE = 0.22;
     const GRAVITY = 1800;
     const DROP_START_Y = -34;
     const LANDING_BOUNCE = 0.2;
     const RECYCLE_MARGIN = 120;
     const MAX_ROTATION = 2.8;
+    const MAX_PROPAGATION_IMPULSE = 42;
+    const PROPAGATION_DECAY = 0.58;
+    const RANDOM_BUMP_MIN_SECONDS = 0.85;
+    const RANDOM_BUMP_MAX_SECONDS = 2.4;
+    const JAM_IDLE_MIN_SECONDS = 6;
+    const JAM_IDLE_MAX_SECONDS = 12.5;
+    const JAM_HOLD_MIN_SECONDS = 0.85;
+    const JAM_HOLD_MAX_SECONDS = 1.7;
+    const JAM_RELEASE_MIN_SECONDS = 0.4;
+    const JAM_RELEASE_MAX_SECONDS = 0.85;
     const SEED = 24117;
 
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const fractional = (value) => value - Math.floor(value);
     const noise = (key) => fractional(Math.sin((key + SEED) * 12.9898) * 43758.5453123);
     const signedNoise = (key) => noise(key) * 2 - 1;
+
+    let rngState = (SEED * 2654435761) >>> 0;
+    const random = () => {
+      rngState = (rngState * 1664525 + 1013904223) >>> 0;
+      return rngState / 4294967296;
+    };
+    const randomRange = (min, max) => min + random() * (max - min);
+
+    const BELT_SPEED_MIN = BELT_SPEED * 0.22;
+    const BELT_SPEED_MAX = BELT_SPEED * 1.92;
 
     track.dataset.baggageSim = 'true';
 
@@ -695,6 +720,8 @@
         rot: 0,
         vrot: 0,
         baseSpeed: BELT_SPEED,
+        mass: 1,
+        bumpGain: 1,
         sequence: index,
         phase: 'belt',
       };
@@ -709,6 +736,19 @@
     let accumulator = 0;
     let lastTimestamp = 0;
     let rafId = 0;
+    let randomBumpTimer = randomRange(RANDOM_BUMP_MIN_SECONDS, RANDOM_BUMP_MAX_SECONDS);
+
+    const jamState = {
+      phase: 'idle',
+      timer: randomRange(JAM_IDLE_MIN_SECONDS, JAM_IDLE_MAX_SECONDS),
+      centerX: 0,
+      radius: 0,
+      strength: 0,
+      releaseImpulse: 0,
+    };
+
+    const listSortedBags = () => [...bags].sort((a, b) => a.x - b.x);
+    const bagCenterX = (bag) => bag.x + bag.width * 0.5;
 
     const applyTrackHeight = () => {
       const tallest = bags.reduce((maxHeight, bag) => Math.max(maxHeight, bag.height), 0);
@@ -721,16 +761,175 @@
       spawnX = width + RECYCLE_MARGIN;
     };
 
+    const applyBagProfile = (bag, sequence) => {
+      const speedVariance = 1 + signedNoise(sequence + 97) * 0.03;
+      bag.sequence = sequence;
+      bag.baseSpeed = BELT_SPEED * speedVariance;
+      bag.mass = 0.92 + noise(sequence + 401) * 0.62;
+      bag.bumpGain = 0.86 + noise(sequence + 577) * 0.34;
+    };
+
+    const applyImpulseToBag = (bag, impulse) => {
+      const scaled = clamp(impulse * bag.bumpGain, -MAX_PROPAGATION_IMPULSE, MAX_PROPAGATION_IMPULSE);
+      if (Math.abs(scaled) < 0.2) return;
+
+      const phaseScale = bag.phase === 'drop' ? 0.55 : 1;
+      bag.vx = clamp(bag.vx + scaled * phaseScale, BELT_SPEED_MIN, BELT_SPEED_MAX);
+      bag.vy -= Math.abs(scaled) * 2.8 * phaseScale;
+      bag.vrot += signedNoise(bag.sequence + random() * 400) * (0.08 + Math.abs(scaled) * 0.01) * phaseScale;
+    };
+
+    const propagateImpulse = (sortedBags, startIndex, impulse, radius = 2) => {
+      if (!Number.isFinite(startIndex) || startIndex < 0 || startIndex >= sortedBags.length) return;
+      const baseImpulse = clamp(impulse, -MAX_PROPAGATION_IMPULSE, MAX_PROPAGATION_IMPULSE);
+      if (Math.abs(baseImpulse) < 0.3) return;
+
+      applyImpulseToBag(sortedBags[startIndex], baseImpulse);
+
+      for (let offset = 1; offset <= radius; offset += 1) {
+        const attenuation = Math.pow(PROPAGATION_DECAY, offset);
+        const leadIndex = startIndex - offset;
+        const trailIndex = startIndex + offset;
+
+        if (leadIndex >= 0) {
+          applyImpulseToBag(sortedBags[leadIndex], baseImpulse * attenuation * 0.92);
+        }
+
+        if (trailIndex < sortedBags.length) {
+          applyImpulseToBag(sortedBags[trailIndex], baseImpulse * attenuation * 0.66);
+        }
+      }
+    };
+
+    const visibleBeltIndices = (sortedBags) => {
+      const indices = [];
+      sortedBags.forEach((bag, index) => {
+        if (bag.phase !== 'belt') return;
+        if (bag.x + bag.width < -30) return;
+        if (bag.x > spawnX + 30) return;
+        indices.push(index);
+      });
+      return indices;
+    };
+
+    const triggerRandomBump = (sortedBags) => {
+      const candidates = visibleBeltIndices(sortedBags);
+      if (!candidates.length) return;
+
+      const targetIndex = candidates[Math.floor(randomRange(0, candidates.length))];
+      const impulse = random() < 0.72 ? randomRange(8, 24) : randomRange(-14, -6);
+      propagateImpulse(sortedBags, targetIndex, impulse, 2);
+    };
+
+    const closestIndexToX = (sortedBags, x) => {
+      if (!sortedBags.length) return -1;
+
+      let bestIndex = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      sortedBags.forEach((bag, index) => {
+        const distance = Math.abs(bagCenterX(bag) - x);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      return bestIndex;
+    };
+
+    const startJam = (sortedBags) => {
+      const candidates = visibleBeltIndices(sortedBags);
+      if (candidates.length < 3) {
+        jamState.timer = randomRange(2.5, 5);
+        return;
+      }
+
+      const centerPool = candidates.slice(1, -1);
+      const pickFrom = centerPool.length ? centerPool : candidates;
+      const centerIndex = pickFrom[Math.floor(randomRange(0, pickFrom.length))];
+      const centerBag = sortedBags[centerIndex];
+      if (!centerBag) {
+        jamState.timer = randomRange(2.5, 5);
+        return;
+      }
+
+      jamState.phase = 'hold';
+      jamState.timer = randomRange(JAM_HOLD_MIN_SECONDS, JAM_HOLD_MAX_SECONDS);
+      jamState.centerX = clamp(bagCenterX(centerBag), 120, Math.max(240, spawnX - 140));
+      jamState.radius = randomRange(170, 280);
+      jamState.strength = randomRange(0.38, 0.58);
+      jamState.releaseImpulse = randomRange(16, 30);
+      track.dataset.baggageJam = 'true';
+    };
+
+    const startJamRelease = (sortedBags) => {
+      jamState.phase = 'release';
+      jamState.timer = randomRange(JAM_RELEASE_MIN_SECONDS, JAM_RELEASE_MAX_SECONDS);
+
+      const centerIndex = closestIndexToX(sortedBags, jamState.centerX);
+      if (centerIndex >= 0) {
+        propagateImpulse(sortedBags, centerIndex, jamState.releaseImpulse, 3);
+      }
+    };
+
+    const applyJamForces = (sortedBags, dt, releasing) => {
+      for (const bag of sortedBags) {
+        const distance = Math.abs(bagCenterX(bag) - jamState.centerX);
+        if (distance > jamState.radius) continue;
+
+        const influence = 1 - distance / jamState.radius;
+        if (influence <= 0) continue;
+
+        if (releasing) {
+          const releaseTarget = bag.baseSpeed * (1 + influence * 0.24);
+          bag.vx += (releaseTarget - bag.vx) * (5.2 + influence * 8.4) * dt;
+          bag.vrot += signedNoise(bag.sequence + influence * 41) * 0.12 * influence;
+        } else {
+          const jamTarget = bag.baseSpeed * (1 - jamState.strength * influence);
+          bag.vx += (jamTarget - bag.vx) * (8 + influence * 10) * dt;
+          bag.vrot += signedNoise(bag.sequence + influence * 29) * 0.08 * influence;
+        }
+
+        bag.vx = clamp(bag.vx, BELT_SPEED_MIN, BELT_SPEED_MAX);
+      }
+    };
+
+    const updateJamState = (sortedBags, dt) => {
+      jamState.timer -= dt;
+
+      if (jamState.phase === 'idle') {
+        if (jamState.timer <= 0) {
+          startJam(sortedBags);
+        }
+        return;
+      }
+
+      if (jamState.phase === 'hold') {
+        applyJamForces(sortedBags, dt, false);
+        if (jamState.timer <= 0) {
+          startJamRelease(sortedBags);
+        }
+        return;
+      }
+
+      if (jamState.phase === 'release') {
+        applyJamForces(sortedBags, dt, true);
+        if (jamState.timer <= 0) {
+          jamState.phase = 'idle';
+          jamState.timer = randomRange(JAM_IDLE_MIN_SECONDS, JAM_IDLE_MAX_SECONDS);
+          delete track.dataset.baggageJam;
+        }
+      }
+    };
+
     const resetBagForSpawn = (bag, rightmostEdge) => {
       const sequence = recycleSequence;
       recycleSequence += 1;
 
-      const gap = BASE_GAP + signedNoise(sequence + 31) * GAP_JITTER;
-      const speedVariance = 1 + signedNoise(sequence + 97) * 0.03;
+      applyBagProfile(bag, sequence);
 
-      bag.sequence = sequence;
-      bag.baseSpeed = BELT_SPEED * speedVariance;
-      bag.vx = bag.baseSpeed * 0.58;
+      const gap = BASE_GAP + signedNoise(sequence + 31) * GAP_JITTER;
+      bag.vx = bag.baseSpeed * randomRange(0.52, 0.66);
       bag.vy = 0;
       bag.y = DROP_START_Y;
       bag.rot = signedNoise(sequence + 151) * 2.1;
@@ -748,10 +947,8 @@
       let cursor = -Math.min(80, bags[0].width * 0.25);
       bags.forEach((bag, index) => {
         const gap = BASE_GAP + signedNoise(index + 19) * GAP_JITTER;
-        const speedVariance = 1 + signedNoise(index + 53) * 0.03;
 
-        bag.sequence = index;
-        bag.baseSpeed = BELT_SPEED * speedVariance;
+        applyBagProfile(bag, index);
         bag.vx = bag.baseSpeed;
         bag.vy = 0;
         bag.y = 0;
@@ -772,16 +969,61 @@
       return active !== bag.el && !bag.el.contains(active);
     };
 
-    const step = (dt) => {
-      let rightmostEdge = -Infinity;
-      for (const bag of bags) {
-        if (bag !== null) {
-          rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
+    const solveNeighborContacts = (sortedBags) => {
+      for (let pass = 0; pass < CONTACT_SOLVER_PASSES; pass += 1) {
+        for (let i = 0; i < sortedBags.length - 1; i += 1) {
+          const frontBag = sortedBags[i];
+          const rearBag = sortedBags[i + 1];
+
+          if (frontBag.phase === 'drop' && frontBag.y < -6) continue;
+          if (rearBag.phase === 'drop' && rearBag.y < -6) continue;
+
+          const overlap = frontBag.x + frontBag.width + MIN_CONTACT_GAP - rearBag.x;
+          if (overlap <= 0) continue;
+
+          const totalMass = frontBag.mass + rearBag.mass;
+          const frontShare = rearBag.mass / totalMass;
+          const rearShare = frontBag.mass / totalMass;
+          const correctionScale = pass === 0 ? 0.96 : 0.64;
+
+          frontBag.x -= overlap * frontShare * correctionScale;
+          rearBag.x += overlap * rearShare * correctionScale;
+
+          const closingVelocity = rearBag.vx - frontBag.vx;
+          if (closingVelocity > 0.2) {
+            const transfer = closingVelocity * COLLISION_TRANSFER;
+            frontBag.vx = clamp(frontBag.vx + transfer * frontShare, BELT_SPEED_MIN, BELT_SPEED_MAX);
+            rearBag.vx = clamp(rearBag.vx - transfer * rearShare, BELT_SPEED_MIN, BELT_SPEED_MAX);
+          }
+
+          const bump = Math.min(3.2, overlap * COLLISION_NUDGE);
+          if (bump > 0.05) {
+            frontBag.vy -= bump * 2.4;
+            rearBag.vy -= bump * 1.5;
+            frontBag.vrot -= bump * 0.06;
+            rearBag.vrot += bump * 0.05;
+          }
         }
       }
+    };
 
+    const step = (dt) => {
       for (const bag of bags) {
         bag.vx += (bag.baseSpeed - bag.vx) * SPEED_CONVERGENCE * dt;
+        bag.vx = clamp(bag.vx, BELT_SPEED_MIN, BELT_SPEED_MAX);
+      }
+
+      const sortedBags = listSortedBags();
+
+      randomBumpTimer -= dt;
+      if (randomBumpTimer <= 0) {
+        triggerRandomBump(sortedBags);
+        randomBumpTimer = randomRange(RANDOM_BUMP_MIN_SECONDS, RANDOM_BUMP_MAX_SECONDS);
+      }
+
+      updateJamState(sortedBags, dt);
+
+      for (const bag of bags) {
         bag.x -= bag.vx * dt;
 
         if (bag.phase === 'drop') {
@@ -802,12 +1044,29 @@
             }
           }
         } else {
+          bag.vy += GRAVITY * 0.23 * dt;
+          bag.y += bag.vy * dt;
           bag.y += (0 - bag.y) * Math.min(1, 14 * dt);
+          bag.vy *= Math.max(0, 1 - 8.4 * dt);
+
+          bag.rot += bag.vrot * dt;
+          bag.vrot *= Math.max(0, 1 - 8.8 * dt);
           bag.rot += (0 - bag.rot) * Math.min(1, 9 * dt);
         }
 
-        bag.rot = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, bag.rot));
+        bag.y = clamp(bag.y, -18, 12);
+        bag.rot = clamp(bag.rot, -MAX_ROTATION, MAX_ROTATION);
+      }
 
+      const postMoveSorted = listSortedBags();
+      solveNeighborContacts(postMoveSorted);
+
+      let rightmostEdge = -Infinity;
+      for (const bag of bags) {
+        rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
+      }
+
+      for (const bag of bags) {
         if (bag.x + bag.width < recycleX && canRecycle(bag)) {
           resetBagForSpawn(bag, rightmostEdge);
           rightmostEdge = Math.max(rightmostEdge, bag.x + bag.width);
@@ -863,6 +1122,12 @@
       if (resizeTimer) window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
         computeSpawnX();
+        bags.forEach((bag) => {
+          const rect = bag.el.getBoundingClientRect();
+          bag.width = Math.max(220, rect.width || bag.el.offsetWidth || 292);
+          bag.height = Math.max(140, rect.height || bag.el.offsetHeight || 168);
+        });
+        applyTrackHeight();
       }, 120);
     };
 
@@ -884,7 +1149,6 @@
 
     updateRunningState();
   };
-
   initHeroBaggageLoop();
 
   // Subtle standard-theme background drift on scroll
