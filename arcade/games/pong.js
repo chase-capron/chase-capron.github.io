@@ -68,9 +68,13 @@
       ball.vy = (Math.random() * 2 - 1) * 180;
     };
 
+    const controlButtons = controlsRoot
+      ? Array.from(controlsRoot.querySelectorAll('[data-pong-control]'))
+      : [];
+
     const updateInputFromButtons = () => {
-      if (!controlsRoot) return;
-      controlsRoot.querySelectorAll('[data-pong-control]').forEach((btn) => {
+      if (!controlButtons.length) return;
+      controlButtons.forEach((btn) => {
         const dir = btn.getAttribute('data-pong-control');
         const active = dir === 'up' ? inputState.up : inputState.down;
         btn.classList.toggle('is-active', Boolean(active));
@@ -111,6 +115,12 @@
       left.y = clamp(targetY, 0, h - paddleHeight);
     };
 
+    const releaseInputs = () => {
+      inputState.up = false;
+      inputState.down = false;
+      updateInputFromButtons();
+    };
+
     const onControlPress = (event) => {
       if (!running) return;
       const button = event.currentTarget;
@@ -118,20 +128,30 @@
       const direction = button.dataset.pongControl;
       if (!direction) return;
       event.preventDefault();
+      if (typeof button.setPointerCapture === 'function' && Number.isInteger(event.pointerId)) {
+        try {
+          button.setPointerCapture(event.pointerId);
+        } catch (e) {
+          // noop
+        }
+      }
       setButtonDirection(direction, true);
     };
 
     const onControlRelease = (event) => {
       const button = event.currentTarget;
       if (!(button instanceof HTMLElement)) return;
+      if (typeof button.releasePointerCapture === 'function' && Number.isInteger(event.pointerId)) {
+        try {
+          button.releasePointerCapture(event.pointerId);
+        } catch (e) {
+          // noop
+        }
+      }
       const direction = button.dataset.pongControl;
       if (!direction) return;
       setButtonDirection(direction, false);
     };
-
-    const controlButtons = controlsRoot
-      ? Array.from(controlsRoot.querySelectorAll('[data-pong-control]'))
-      : [];
 
     controlButtons.forEach((button) => {
       button.addEventListener('pointerdown', onControlPress);
@@ -233,9 +253,7 @@
 
     const stop = () => {
       running = false;
-      inputState.up = false;
-      inputState.down = false;
-      updateInputFromButtons();
+      releaseInputs();
       lastTs = 0;
       if (rafId) {
         window.cancelAnimationFrame(rafId);
@@ -245,9 +263,13 @@
 
     const onKeyDown = (event) => handleKeyboard(event, true);
     const onKeyUp = (event) => handleKeyboard(event, false);
+    const onWindowBlur = () => {
+      releaseInputs();
+    };
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onWindowBlur);
     canvas.addEventListener('pointermove', handlePointerMove);
 
     updateScoreUi();
@@ -265,6 +287,7 @@
         stop();
         window.removeEventListener('keydown', onKeyDown);
         window.removeEventListener('keyup', onKeyUp);
+        window.removeEventListener('blur', onWindowBlur);
         canvas.removeEventListener('pointermove', handlePointerMove);
         controlButtons.forEach((button) => {
           button.removeEventListener('pointerdown', onControlPress);

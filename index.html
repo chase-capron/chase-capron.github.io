@@ -354,58 +354,133 @@
 
   <section class="arcade-shell" id="retroArcade" aria-hidden="true">
     <div class="arcade-shell__backdrop" data-arcade-close></div>
-    <div class="arcade-shell__panel" role="dialog" aria-modal="true" aria-label="Hidden Retro Arcade">
+    <div
+      class="arcade-shell__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Hidden Retro Arcade"
+      aria-describedby="arcadeAnnouncer"
+      tabindex="-1"
+    >
       <header class="arcade-shell__head">
         <h3>Retro Arcade.</h3>
         <p>Unlocked. Keep this between friends.</p>
-        <button class="arcade-shell__close" type="button" data-arcade-close>Close</button>
+        <button class="arcade-shell__close" type="button" data-arcade-close aria-label="Close arcade">Close</button>
       </header>
-      <nav class="arcade-tabs" aria-label="Arcade games">
-        <button type="button" class="arcade-tab is-active" data-arcade-tab="pong">Pong</button>
-        <button type="button" class="arcade-tab" data-arcade-tab="tetris">Tetris</button>
-        <button type="button" class="arcade-tab" data-arcade-tab="2048">2048</button>
-        <button type="button" class="arcade-tab" data-arcade-tab="pokemon">Battle</button>
+      <p class="arcade-announcer" id="arcadeAnnouncer" aria-live="polite" aria-atomic="true"></p>
+      <nav class="arcade-tabs" aria-label="Arcade games" role="tablist">
+        <button
+          type="button"
+          class="arcade-tab is-active"
+          data-arcade-tab="pong"
+          role="tab"
+          id="arcade-tab-pong"
+          aria-controls="arcade-pane-pong"
+          aria-selected="true"
+          tabindex="0"
+        >
+          Pong
+        </button>
+        <button
+          type="button"
+          class="arcade-tab"
+          data-arcade-tab="tetris"
+          role="tab"
+          id="arcade-tab-tetris"
+          aria-controls="arcade-pane-tetris"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Tetris
+        </button>
+        <button
+          type="button"
+          class="arcade-tab"
+          data-arcade-tab="2048"
+          role="tab"
+          id="arcade-tab-2048"
+          aria-controls="arcade-pane-2048"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          2048
+        </button>
+        <button
+          type="button"
+          class="arcade-tab"
+          data-arcade-tab="pokemon"
+          role="tab"
+          id="arcade-tab-pokemon"
+          aria-controls="arcade-pane-pokemon"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Battle
+        </button>
       </nav>
       <div class="arcade-stage">
-        <section class="arcade-pane is-active" data-arcade-pane="pong">
+        <section
+          class="arcade-pane is-active"
+          data-arcade-pane="pong"
+          role="tabpanel"
+          id="arcade-pane-pong"
+          aria-labelledby="arcade-tab-pong"
+          aria-hidden="false"
+        >
           <div class="arcade-hud" aria-live="polite">
             <p>P1 <span id="pongScoreLeft">0</span></p>
             <p>CPU <span id="pongScoreRight">0</span></p>
           </div>
           <canvas id="arcadePong" width="720" height="360" aria-label="Pong simulator"></canvas>
-          <div class="arcade-controls" data-control-group="pong" aria-label="Pong controls">
-            <button type="button" data-pong-control="up">↑ Up</button>
-            <button type="button" data-pong-control="down">↓ Down</button>
+          <div class="arcade-controls" data-control-group="pong" aria-label="Pong controls" role="group">
+            <button type="button" data-pong-control="up" aria-label="Move paddle up">↑ Up</button>
+            <button type="button" data-pong-control="down" aria-label="Move paddle down">↓ Down</button>
           </div>
           <p class="arcade-help">Keyboard: W/S or ↑/↓. On touch, hold controls or drag your paddle.</p>
         </section>
-        <section class="arcade-pane" data-arcade-pane="tetris">
+        <section
+          class="arcade-pane"
+          data-arcade-pane="tetris"
+          role="tabpanel"
+          id="arcade-pane-tetris"
+          aria-labelledby="arcade-tab-tetris"
+          aria-hidden="true"
+          hidden
+        >
           <div class="arcade-hud" aria-live="polite">
             <p>Score <span id="tetrisScore">0</span></p>
             <p>Lines <span id="tetrisLines">0</span></p>
           </div>
           <canvas id="arcadeTetris" width="720" height="360" aria-label="Tetris simulator"></canvas>
-          <div class="arcade-controls arcade-controls--compact" data-control-group="tetris" aria-label="Tetris controls">
-            <button type="button" data-tetris-control="left">←</button>
-            <button type="button" data-tetris-control="rotate">⟳</button>
-            <button type="button" data-tetris-control="right">→</button>
-            <button type="button" data-tetris-control="down">↓</button>
-            <button type="button" data-tetris-control="drop">Drop</button>
+          <div class="arcade-controls arcade-controls--compact" data-control-group="tetris" aria-label="Tetris controls" role="group">
+            <button type="button" data-tetris-control="left" aria-label="Move piece left">←</button>
+            <button type="button" data-tetris-control="rotate" aria-label="Rotate piece">⟳</button>
+            <button type="button" data-tetris-control="right" aria-label="Move piece right">→</button>
+            <button type="button" data-tetris-control="down" aria-label="Soft drop">↓</button>
+            <button type="button" data-tetris-control="drop" aria-label="Hard drop">Drop</button>
           </div>
           <p class="arcade-help" id="tetrisStatus">Arrow keys or on-screen controls.</p>
         </section>
-        <section class="arcade-pane" data-arcade-pane="2048">
+        <section
+          class="arcade-pane"
+          data-arcade-pane="2048"
+          role="tabpanel"
+          id="arcade-pane-2048"
+          aria-labelledby="arcade-tab-2048"
+          aria-hidden="true"
+          hidden
+        >
           <div class="game2048-wrap">
             <div class="arcade-hud" aria-live="polite">
               <p>Score <span id="game2048Score">0</span></p>
               <p>Best <span id="game2048Best">0</span></p>
             </div>
-            <div class="game2048-grid" id="arcade2048" aria-label="2048 board"></div>
-            <div class="arcade-controls arcade-controls--dpad" data-control-group="2048" aria-label="2048 controls">
-              <button type="button" class="arcade-controls__up" data-2048-control="up">↑</button>
-              <button type="button" data-2048-control="left">←</button>
-              <button type="button" data-2048-control="down">↓</button>
-              <button type="button" data-2048-control="right">→</button>
+            <div class="game2048-grid" id="arcade2048" aria-label="2048 board" aria-describedby="game2048Status"></div>
+            <div class="arcade-controls arcade-controls--dpad" data-control-group="2048" aria-label="2048 controls" role="group">
+              <button type="button" class="arcade-controls__up" data-2048-control="up" aria-label="Move tiles up">↑</button>
+              <button type="button" data-2048-control="left" aria-label="Move tiles left">←</button>
+              <button type="button" data-2048-control="down" aria-label="Move tiles down">↓</button>
+              <button type="button" data-2048-control="right" aria-label="Move tiles right">→</button>
             </div>
             <div class="arcade-row">
               <button type="button" data-2048-reset>New Game</button>
@@ -413,7 +488,15 @@
             </div>
           </div>
         </section>
-        <section class="arcade-pane" data-arcade-pane="pokemon">
+        <section
+          class="arcade-pane"
+          data-arcade-pane="pokemon"
+          role="tabpanel"
+          id="arcade-pane-pokemon"
+          aria-labelledby="arcade-tab-pokemon"
+          aria-hidden="true"
+          hidden
+        >
           <div class="battle-board" id="battleBoard">
             <canvas id="battleScene" width="720" height="240" aria-label="Retro battle scene"></canvas>
             <div class="battle-card battle-card--enemy">

@@ -817,6 +817,9 @@ body.arcade-open {
   color: var(--arcade-text);
   box-shadow: var(--shadow-strong);
   padding: 14px;
+  max-height: min(86vh, 860px);
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .arcade-shell__head {
@@ -829,6 +832,19 @@ body.arcade-open {
 .arcade-shell__head p { margin: 0; color: var(--arcade-text-soft); font-size: 13px; }
 .arcade-shell__close { margin-left: auto; }
 
+.arcade-announcer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
 .arcade-tabs { display: flex; gap: 8px; margin: 10px 0 12px; flex-wrap: wrap; }
 .arcade-tab {
   border: 1px solid var(--arcade-line);
@@ -839,6 +855,10 @@ body.arcade-open {
   cursor: pointer;
 }
 .arcade-tab.is-active { border-color: color-mix(in oklab, var(--arcade-accent) 60%, white 20%); }
+
+.arcade-stage {
+  contain: layout paint;
+}
 
 .arcade-pane { display: none; }
 .arcade-pane.is-active { display: block; }
@@ -884,18 +904,28 @@ body.arcade-open {
 }
 
 .arcade-controls button {
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 10px;
   border: 1px solid var(--arcade-line);
   background: rgba(255, 255, 255, 0.05);
   color: var(--arcade-text);
   cursor: pointer;
   font-weight: 700;
+  touch-action: manipulation;
 }
 
 .arcade-controls button.is-active {
   border-color: color-mix(in oklab, var(--arcade-accent) 66%, white 14%);
   background: color-mix(in oklab, var(--arcade-accent) 22%, transparent);
+}
+
+.arcade-tab:focus-visible,
+.arcade-shell__close:focus-visible,
+.arcade-controls button:focus-visible,
+.battle-actions button:focus-visible,
+.arcade-row button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--arcade-accent) 72%, white 22%);
+  outline-offset: 2px;
 }
 
 .arcade-controls--compact {
@@ -984,14 +1014,14 @@ body.arcade-open {
 .battle-card h4 { margin: 0; }
 .battle-hp { margin: 0; color: var(--arcade-text-soft); }
 .battle-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 10px 0; }
-.battle-actions button { min-height: 40px; }
+.battle-actions button { min-height: 44px; }
 .battle-log { margin: 0; color: var(--arcade-text-soft); }
 
 @media (max-width: 760px) {
   .arcade-shell__panel {
     margin: 18px auto;
     max-height: calc(100vh - 36px);
-    overflow: auto;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
   }
 
   .arcade-controls--compact {

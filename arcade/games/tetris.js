@@ -92,6 +92,7 @@
     let score = 0;
     let lines = 0;
     let dropIntervalMs = 460;
+    let dirty = true;
 
     const makePiece = () => {
       const shapeIndex = Math.floor(Math.random() * SHAPES.length);
@@ -156,6 +157,7 @@
       dropIntervalMs = Math.max(150, 460 - Math.min(260, lines * 8));
       updateHud();
       setStatus(cleared > 1 ? `Nice! Cleared ${cleared} lines.` : 'Line cleared.');
+      dirty = true;
     };
 
     const spawnPiece = () => {
@@ -168,6 +170,7 @@
         updateHud();
         setStatus('Game over. Board reset.');
       }
+      dirty = true;
     };
 
     const drawBlock = (x, y, color) => {
@@ -257,7 +260,7 @@
         default:
           break;
       }
-      draw();
+      dirty = true;
     };
 
     const onKeyDown = (event) => {
@@ -313,9 +316,14 @@
       if (fallAccumulator >= dropIntervalMs) {
         softDrop();
         fallAccumulator = 0;
+        dirty = true;
       }
 
-      draw();
+      if (dirty) {
+        draw();
+        dirty = false;
+      }
+
       rafId = window.requestAnimationFrame(frame);
     };
 
@@ -323,6 +331,7 @@
       running = false;
       lastTs = 0;
       fallAccumulator = 0;
+      dirty = true;
       if (rafId) {
         window.cancelAnimationFrame(rafId);
         rafId = null;
@@ -340,6 +349,7 @@
       start: () => {
         if (running) return;
         running = true;
+        dirty = true;
         setStatus('Stack clean. Keep dropping.');
         rafId = window.requestAnimationFrame(frame);
       },

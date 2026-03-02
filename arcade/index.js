@@ -90,25 +90,60 @@
       ],
     ]);
 
+    const announceNode = document.getElementById('arcadeAnnouncer');
+    let announceTimer = null;
+
+    const announce = (text) => {
+      if (!(announceNode instanceof HTMLElement)) return;
+      const message = String(text || '').trim();
+      if (!message) return;
+
+      announceNode.textContent = '';
+      if (announceTimer) {
+        window.clearTimeout(announceTimer);
+      }
+      announceTimer = window.setTimeout(() => {
+        announceNode.textContent = message;
+      }, 40);
+    };
+
+    const startGame = (tabId) => {
+      if (document.hidden) return;
+      stopGames(games);
+      games.get(tabId)?.start?.();
+    };
+
     const shell = createShellController({
       root: shellNode,
       initialTab: initialState.activeTab,
       onOpen: () => {
         state.setOpen(true);
-        const activeGame = games.get(shell.currentTab());
-        activeGame?.start?.();
+        startGame(shell.currentTab());
+        announce(`Arcade open. ${shell.currentTab()} active.`);
       },
       onClose: () => {
         state.setOpen(false);
         stopGames(games);
+        announce('Arcade closed.');
       },
       onTabChange: (tabId) => {
         state.setActiveTab(tabId);
         if (!shell.isOpen()) return;
-        stopGames(games);
-        games.get(tabId)?.start?.();
+        startGame(tabId);
+        announce(`${tabId} selected.`);
       },
     });
+
+    const handleVisibilityChange = () => {
+      if (!shell.isOpen()) return;
+      if (document.hidden) {
+        stopGames(games);
+      } else {
+        startGame(shell.currentTab());
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const unlockTrigger = createTapUnlockTrigger({
       element: trigger,
@@ -121,6 +156,7 @@
       onUnlock: () => {
         state.markDiscovered();
         trigger.setAttribute('data-arcade-discovered', 'true');
+        announce('Retro arcade unlocked.');
         shell.open();
       },
     });
@@ -141,6 +177,11 @@
       open: () => shell.open(),
       close: () => shell.close(),
       destroy: () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (announceTimer) {
+          window.clearTimeout(announceTimer);
+          announceTimer = null;
+        }
         unlockTrigger.destroy();
         shell.destroy();
         stopGames(games);

@@ -32,10 +32,13 @@
   const compressLine = (line) => {
     const filled = line.filter(Boolean);
     const merged = [];
+    let score = 0;
 
     for (let i = 0; i < filled.length; i += 1) {
       if (filled[i] && filled[i] === filled[i + 1]) {
-        merged.push(filled[i] * 2);
+        const nextValue = filled[i] * 2;
+        merged.push(nextValue);
+        score += nextValue;
         i += 1;
       } else {
         merged.push(filled[i]);
@@ -43,7 +46,7 @@
     }
 
     while (merged.length < 4) merged.push(0);
-    return merged;
+    return { line: merged, score };
   };
 
   const boardToRows = (board) => [
@@ -102,6 +105,8 @@
     let touchStartX = 0;
     let touchStartY = 0;
 
+    const cellNodes = [];
+
     try {
       const persistedBest = Number(localStorage.getItem(STORAGE_KEY) || '0');
       if (Number.isFinite(persistedBest) && persistedBest > 0) best = persistedBest;
@@ -121,17 +126,39 @@
       }
     };
 
-    const render = () => {
-      boardRoot.innerHTML = '';
+    const ensureBoardUi = () => {
+      if (cellNodes.length) return;
+
       boardRoot.setAttribute('role', 'grid');
       boardRoot.setAttribute('aria-label', '2048 board');
+      boardRoot.setAttribute('aria-rowcount', '4');
+      boardRoot.setAttribute('aria-colcount', '4');
+      boardRoot.setAttribute('tabindex', '0');
 
-      board.forEach((value) => {
+      for (let index = 0; index < 16; index += 1) {
         const cell = document.createElement('div');
-        cell.className = `game2048-cell${value ? ` v-${value}` : ''}`;
+        cell.className = 'game2048-cell';
         cell.setAttribute('role', 'gridcell');
-        cell.textContent = value ? String(value) : '';
+        cell.dataset.index = String(index);
+        cellNodes.push(cell);
         boardRoot.appendChild(cell);
+      }
+    };
+
+    const render = () => {
+      ensureBoardUi();
+
+      board.forEach((value, index) => {
+        const row = Math.floor(index / 4) + 1;
+        const col = (index % 4) + 1;
+        const cell = cellNodes[index];
+        if (!(cell instanceof HTMLElement)) return;
+
+        cell.className = `game2048-cell${value ? ` v-${value}` : ''}`;
+        cell.textContent = value ? String(value) : '';
+        cell.setAttribute('aria-rowindex', String(row));
+        cell.setAttribute('aria-colindex', String(col));
+        cell.setAttribute('aria-label', value ? `${value}` : 'empty');
       });
 
       if (scoreNode) scoreNode.textContent = String(score);
@@ -153,43 +180,36 @@
 
       const before = cloneBoard(board);
       let rows = boardToRows(before);
-
-      const scoreLine = (lineBefore, lineAfter) =>
-        lineAfter.reduce((sum, value, index) => {
-          if (!value) return sum;
-          return sum + (value !== lineBefore[index] ? value : 0);
-        }, 0);
-
       let deltaScore = 0;
 
       if (direction === 'left') {
         rows = rows.map((line) => {
-          const lineAfter = compressLine(line);
-          deltaScore += scoreLine(line, lineAfter);
-          return lineAfter;
+          const compressed = compressLine(line);
+          deltaScore += compressed.score;
+          return compressed.line;
         });
       } else if (direction === 'right') {
         rows = rows.map((line) => {
           const reversed = line.slice().reverse();
-          const compressed = compressLine(reversed).reverse();
-          deltaScore += scoreLine(line, compressed);
-          return compressed;
+          const compressed = compressLine(reversed);
+          deltaScore += compressed.score;
+          return compressed.line.reverse();
         });
       } else if (direction === 'up') {
         rows = transpose(rows)
           .map((line) => {
-            const lineAfter = compressLine(line);
-            deltaScore += scoreLine(line, lineAfter);
-            return lineAfter;
+            const compressed = compressLine(line);
+            deltaScore += compressed.score;
+            return compressed.line;
           });
         rows = transpose(rows);
       } else if (direction === 'down') {
         rows = transpose(rows)
           .map((line) => {
             const reversed = line.slice().reverse();
-            const compressed = compressLine(reversed).reverse();
-            deltaScore += scoreLine(line, compressed);
-            return compressed;
+            const compressed = compressLine(reversed);
+            deltaScore += compressed.score;
+            return compressed.line.reverse();
           });
         rows = transpose(rows);
       } else {
@@ -288,7 +308,6 @@
     window.addEventListener('keydown', onKeyDown);
     boardRoot.addEventListener('touchstart', onTouchStart, { passive: true });
     boardRoot.addEventListener('touchend', onTouchEnd, { passive: true });
-    boardRoot.setAttribute('tabindex', '0');
 
     controlButtons.forEach((button) => button.addEventListener('click', onControl));
     resetButton?.addEventListener('click', onReset);
