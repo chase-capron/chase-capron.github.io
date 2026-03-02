@@ -954,8 +954,9 @@
 
     const forceInjectCase = (sortedBags) => {
       if (!sortedBags.length) return;
+      // Only recycle bags that are already off-screen left so visible cases never vanish.
       const candidatePool = sortedBags
-        .filter((bag) => bag.phase === 'belt' && canRecycle(bag))
+        .filter((bag) => bag.phase === 'belt' && canRecycle(bag) && bag.x + bag.width < recycleX + 24)
         .sort((a, b) => a.x - b.x);
       const candidate = candidatePool[0];
       if (!candidate) return;
