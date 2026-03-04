@@ -1329,14 +1329,10 @@
     };
 
     const runIntro = () => {
-      if (prefersReduced) {
-        introDone = true;
-        applyHeroProgress(1);
-        return;
-      }
-
-      const duration = 980;
-      const started = performance.now();
+      // Even with reduced motion, keep a very light reveal so this doesn't look broken.
+      const duration = prefersReduced ? 260 : 1700;
+      const delay = prefersReduced ? 0 : 260;
+      const started = performance.now() + delay;
 
       const tick = (now) => {
         const t = clamp01((now - started) / duration);
@@ -1348,13 +1344,24 @@
         introDone = true;
       };
 
+      introDone = false;
       applyHeroProgress(0);
       window.requestAnimationFrame(tick);
     };
 
     window.addEventListener('scroll', onHeroScroll, { passive: true });
     window.addEventListener('resize', onHeroScroll, { passive: true });
-    runIntro();
+
+    // iOS Safari can paint before JS timings settle; trigger intro after page show/load.
+    const bootIntro = () => window.setTimeout(runIntro, 80);
+    if (document.readyState === 'complete') {
+      bootIntro();
+    } else {
+      window.addEventListener('load', bootIntro, { once: true });
+    }
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) bootIntro();
+    });
   }
 
   // Hero title shine (flashlight-like hover)
