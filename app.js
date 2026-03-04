@@ -1282,7 +1282,7 @@
     applyBackgroundDrift();
   }
 
-  // Hero hand push reveal (splash text opens as hand rises)
+  // Hero hand pull-down reveal (page-load intro + scroll sync)
   const heroSection = document.querySelector('.hero');
   if (heroSection) {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1290,39 +1290,71 @@
     const clamp01 = (v) => Math.max(0, Math.min(1, v));
     const easeOutCubic = (v) => 1 - Math.pow(1 - v, 3);
 
-    const updateHeroHandReveal = () => {
-      const rect = heroSection.getBoundingClientRect();
-      const viewport = window.innerHeight || 1;
-      const start = viewport * 0.96;
-      const end = Math.max(viewport * 0.16, rect.height * 0.62);
-      const raw = (start - rect.top) / Math.max(1, start - end);
-      const progress = prefersReduced ? 1 : easeOutCubic(clamp01(raw));
+    const applyHeroProgress = (progressRaw) => {
+      const progress = prefersReduced ? 1 : clamp01(progressRaw);
+      const eased = prefersReduced ? 1 : easeOutCubic(progress);
 
-      const copyRise = (1 - progress) * 22;
-      const copyShift = window.innerWidth > 900 ? (1 - progress) * 18 : 0;
-      const handLift = (1 - progress) * 180;
-      const handTilt = (1 - progress) * 8;
+      const copyRise = (1 - eased) * 22;
+      const copyShift = window.innerWidth > 900 ? (1 - eased) * 18 : 0;
+      const handLift = (1 - eased) * 190;
+      const handTilt = (1 - eased) * 10;
 
-      heroSection.style.setProperty('--hero-open-progress', progress.toFixed(4));
+      heroSection.style.setProperty('--hero-open-progress', eased.toFixed(4));
       heroSection.style.setProperty('--hero-copy-rise', `${copyRise.toFixed(2)}px`);
       heroSection.style.setProperty('--hero-copy-shift', `${copyShift.toFixed(2)}px`);
       heroSection.style.setProperty('--hero-hand-lift', `${handLift.toFixed(2)}px`);
       heroSection.style.setProperty('--hero-hand-tilt', `${handTilt.toFixed(2)}deg`);
     };
 
+    const computeScrollProgress = () => {
+      const rect = heroSection.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const start = viewport * 0.92;
+      const end = Math.max(viewport * 0.18, rect.height * 0.64);
+      const raw = (start - rect.top) / Math.max(1, start - end);
+      return clamp01(raw);
+    };
+
+    let introDone = false;
     let handTicking = false;
+
     const onHeroScroll = () => {
+      if (!introDone) return;
       if (handTicking) return;
       handTicking = true;
       window.requestAnimationFrame(() => {
-        updateHeroHandReveal();
+        applyHeroProgress(computeScrollProgress());
         handTicking = false;
       });
     };
 
+    const runIntro = () => {
+      if (prefersReduced) {
+        introDone = true;
+        applyHeroProgress(1);
+        return;
+      }
+
+      const duration = 980;
+      const started = performance.now();
+
+      const tick = (now) => {
+        const t = clamp01((now - started) / duration);
+        applyHeroProgress(t);
+        if (t < 1) {
+          window.requestAnimationFrame(tick);
+          return;
+        }
+        introDone = true;
+      };
+
+      applyHeroProgress(0);
+      window.requestAnimationFrame(tick);
+    };
+
     window.addEventListener('scroll', onHeroScroll, { passive: true });
     window.addEventListener('resize', onHeroScroll, { passive: true });
-    updateHeroHandReveal();
+    runIntro();
   }
 
   // Hero title shine (flashlight-like hover)
