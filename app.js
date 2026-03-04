@@ -1282,56 +1282,34 @@
     applyBackgroundDrift();
   }
 
-  // Hero hand pull-down reveal (page-load intro + scroll sync)
+  // Hero curtain pull-down reveal on page load
   const heroSection = document.querySelector('.hero');
   if (heroSection) {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     const clamp01 = (v) => Math.max(0, Math.min(1, v));
     const easeOutCubic = (v) => 1 - Math.pow(1 - v, 3);
 
-    const applyHeroProgress = (progressRaw) => {
-      const progress = prefersReduced ? 1 : clamp01(progressRaw);
-      const eased = prefersReduced ? 1 : easeOutCubic(progress);
+    const applyHeroProgress = (tRaw) => {
+      const t = prefersReduced ? 1 : clamp01(tRaw);
+      const p = prefersReduced ? 1 : easeOutCubic(t);
 
-      const copyRise = (1 - eased) * 22;
-      const copyShift = window.innerWidth > 900 ? (1 - eased) * 18 : 0;
-      const handLift = (1 - eased) * 190;
-      const handTilt = (1 - eased) * 10;
+      const copyRise = (1 - p) * 18;
+      const copyShift = window.innerWidth > 900 ? (1 - p) * 14 : 0;
+      const curtainDrop = -102 + (p * 218); // from above to below text
+      const handLift = (1 - p) * 8;
+      const handTilt = (1 - p) * 10;
 
-      heroSection.style.setProperty('--hero-open-progress', eased.toFixed(4));
+      heroSection.style.setProperty('--hero-open-progress', p.toFixed(4));
       heroSection.style.setProperty('--hero-copy-rise', `${copyRise.toFixed(2)}px`);
       heroSection.style.setProperty('--hero-copy-shift', `${copyShift.toFixed(2)}px`);
+      heroSection.style.setProperty('--hero-curtain-drop', `${curtainDrop.toFixed(2)}%`);
       heroSection.style.setProperty('--hero-hand-lift', `${handLift.toFixed(2)}px`);
       heroSection.style.setProperty('--hero-hand-tilt', `${handTilt.toFixed(2)}deg`);
     };
 
-    const computeScrollProgress = () => {
-      const rect = heroSection.getBoundingClientRect();
-      const viewport = window.innerHeight || 1;
-      const start = viewport * 0.92;
-      const end = Math.max(viewport * 0.18, rect.height * 0.64);
-      const raw = (start - rect.top) / Math.max(1, start - end);
-      return clamp01(raw);
-    };
-
-    let introDone = false;
-    let handTicking = false;
-
-    const onHeroScroll = () => {
-      if (!introDone) return;
-      if (handTicking) return;
-      handTicking = true;
-      window.requestAnimationFrame(() => {
-        applyHeroProgress(computeScrollProgress());
-        handTicking = false;
-      });
-    };
-
     const runIntro = () => {
-      // Even with reduced motion, keep a very light reveal so this doesn't look broken.
-      const duration = prefersReduced ? 260 : 1700;
-      const delay = prefersReduced ? 0 : 260;
+      const duration = prefersReduced ? 280 : 1650;
+      const delay = prefersReduced ? 0 : 180;
       const started = performance.now() + delay;
 
       const tick = (now) => {
@@ -1339,29 +1317,17 @@
         applyHeroProgress(t);
         if (t < 1) {
           window.requestAnimationFrame(tick);
-          return;
         }
-        introDone = true;
       };
 
-      introDone = false;
       applyHeroProgress(0);
       window.requestAnimationFrame(tick);
     };
 
-    window.addEventListener('scroll', onHeroScroll, { passive: true });
-    window.addEventListener('resize', onHeroScroll, { passive: true });
-
-    // iOS Safari can paint before JS timings settle; trigger intro after page show/load.
     const bootIntro = () => window.setTimeout(runIntro, 80);
-    if (document.readyState === 'complete') {
-      bootIntro();
-    } else {
-      window.addEventListener('load', bootIntro, { once: true });
-    }
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) bootIntro();
-    });
+    if (document.readyState === 'complete') bootIntro();
+    else window.addEventListener('load', bootIntro, { once: true });
+    window.addEventListener('pageshow', (event) => { if (event.persisted) bootIntro(); });
   }
 
   // Hero title shine (flashlight-like hover)
