@@ -1282,6 +1282,49 @@
     applyBackgroundDrift();
   }
 
+  // Hero hand push reveal (splash text opens as hand rises)
+  const heroSection = document.querySelector('.hero');
+  if (heroSection) {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const clamp01 = (v) => Math.max(0, Math.min(1, v));
+    const easeOutCubic = (v) => 1 - Math.pow(1 - v, 3);
+
+    const updateHeroHandReveal = () => {
+      const rect = heroSection.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const start = viewport * 0.96;
+      const end = Math.max(viewport * 0.16, rect.height * 0.62);
+      const raw = (start - rect.top) / Math.max(1, start - end);
+      const progress = prefersReduced ? 1 : easeOutCubic(clamp01(raw));
+
+      const copyRise = (1 - progress) * 22;
+      const copyShift = window.innerWidth > 900 ? (1 - progress) * 18 : 0;
+      const handLift = (1 - progress) * 180;
+      const handTilt = (1 - progress) * 8;
+
+      heroSection.style.setProperty('--hero-open-progress', progress.toFixed(4));
+      heroSection.style.setProperty('--hero-copy-rise', `${copyRise.toFixed(2)}px`);
+      heroSection.style.setProperty('--hero-copy-shift', `${copyShift.toFixed(2)}px`);
+      heroSection.style.setProperty('--hero-hand-lift', `${handLift.toFixed(2)}px`);
+      heroSection.style.setProperty('--hero-hand-tilt', `${handTilt.toFixed(2)}deg`);
+    };
+
+    let handTicking = false;
+    const onHeroScroll = () => {
+      if (handTicking) return;
+      handTicking = true;
+      window.requestAnimationFrame(() => {
+        updateHeroHandReveal();
+        handTicking = false;
+      });
+    };
+
+    window.addEventListener('scroll', onHeroScroll, { passive: true });
+    window.addEventListener('resize', onHeroScroll, { passive: true });
+    updateHeroHandReveal();
+  }
+
   // Hero title shine (flashlight-like hover)
   const heroShineTitle = document.querySelector('.hero-title-shine');
   if (heroShineTitle && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
