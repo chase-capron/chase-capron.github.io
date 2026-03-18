@@ -682,8 +682,7 @@
     if (!marquee || !track) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const mobileSafeFallback = window.matchMedia('(max-width: 760px) and (pointer: coarse)').matches;
-    if (prefersReducedMotion || mobileSafeFallback) {
+    if (prefersReducedMotion) {
       marquee.dataset.baggageFallback = 'scroll';
       return;
     }
