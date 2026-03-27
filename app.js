@@ -1281,54 +1281,6 @@
     applyBackgroundDrift();
   }
 
-  // Hero curtain pull-down reveal on page load
-  const heroSection = document.querySelector('.hero');
-  if (heroSection) {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const clamp01 = (v) => Math.max(0, Math.min(1, v));
-    const easeOutCubic = (v) => 1 - Math.pow(1 - v, 3);
-
-    const applyHeroProgress = (tRaw) => {
-      const t = prefersReduced ? 1 : clamp01(tRaw);
-      const p = prefersReduced ? 1 : easeOutCubic(t);
-
-      const copyRise = (1 - p) * 18;
-      const copyShift = window.innerWidth > 900 ? (1 - p) * 14 : 0;
-      const curtainDrop = -102 + (p * 218); // from above to below text
-      const handLift = (1 - p) * 8;
-      const handTilt = (1 - p) * 10;
-
-      heroSection.style.setProperty('--hero-open-progress', p.toFixed(4));
-      heroSection.style.setProperty('--hero-copy-rise', `${copyRise.toFixed(2)}px`);
-      heroSection.style.setProperty('--hero-copy-shift', `${copyShift.toFixed(2)}px`);
-      heroSection.style.setProperty('--hero-curtain-drop', `${curtainDrop.toFixed(2)}%`);
-      heroSection.style.setProperty('--hero-hand-lift', `${handLift.toFixed(2)}px`);
-      heroSection.style.setProperty('--hero-hand-tilt', `${handTilt.toFixed(2)}deg`);
-    };
-
-    const runIntro = () => {
-      const duration = prefersReduced ? 280 : 1650;
-      const delay = prefersReduced ? 0 : 180;
-      const started = performance.now() + delay;
-
-      const tick = (now) => {
-        const t = clamp01((now - started) / duration);
-        applyHeroProgress(t);
-        if (t < 1) {
-          window.requestAnimationFrame(tick);
-        }
-      };
-
-      applyHeroProgress(0);
-      window.requestAnimationFrame(tick);
-    };
-
-    const bootIntro = () => window.setTimeout(runIntro, 80);
-    if (document.readyState === 'complete') bootIntro();
-    else window.addEventListener('load', bootIntro, { once: true });
-    window.addEventListener('pageshow', (event) => { if (event.persisted) bootIntro(); });
-  }
-
   // Hero title shine (flashlight-like hover)
   const heroShineTitle = document.querySelector('.hero-title-shine');
   if (heroShineTitle && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
