@@ -1491,6 +1491,45 @@
     });
   }
 
+  // Footer GIF cheat code: 10 taps/clicks summons the chocolate bunny easter egg.
+  const footerGifEgg = document.querySelector('#footer-gif-easter-egg img');
+  const bunnyCheatcode = document.querySelector('#bunnyCheatcode');
+  if (footerGifEgg && bunnyCheatcode) {
+    let tapCount = 0;
+    let tapTimer = null;
+    let isPlaying = false;
+
+    const resetFooterTaps = () => {
+      tapCount = 0;
+      if (tapTimer) {
+        window.clearTimeout(tapTimer);
+        tapTimer = null;
+      }
+    };
+
+    const playBunnyCheatcode = () => {
+      if (isPlaying) return;
+      isPlaying = true;
+      bunnyCheatcode.classList.remove('is-active');
+      void bunnyCheatcode.offsetWidth;
+      bunnyCheatcode.classList.add('is-active');
+      window.setTimeout(() => {
+        bunnyCheatcode.classList.remove('is-active');
+        isPlaying = false;
+      }, 3700);
+    };
+
+    footerGifEgg.addEventListener('click', () => {
+      tapCount += 1;
+      if (tapTimer) window.clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(resetFooterTaps, 7000);
+      if (tapCount >= 10) {
+        resetFooterTaps();
+        playBunnyCheatcode();
+      }
+    });
+  }
+
   // Current stack: Tetris-like row-fill simulation with natural chip widths
   const stackRoot = document.querySelector('.chips--stack');
   if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
