@@ -819,9 +819,13 @@ h1 {
 .bunny-cheatcode__stage {
   position: absolute;
   left: 50%;
-  bottom: 10vh;
-  width: min(42vw, 340px);
-  aspect-ratio: 1 / 1.18;
+  bottom: 8vh;
+  width: min(46vw, 360px);
+  height: min(62vh, 460px);
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  gap: 10px;
   transform: translate3d(-50%, 34vh, 0) scale(0.18) rotate(-18deg);
   filter: drop-shadow(0 28px 56px rgba(0, 0, 0, 0.45));
   opacity: 0;
@@ -833,72 +837,41 @@ h1 {
 
 .bunny-cheatcode__glow {
   position: absolute;
-  inset: 14% 12% 4%;
+  inset: auto 10% 9% 10%;
+  height: 28%;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 58%, rgba(255, 194, 120, 0.88) 0%, rgba(255, 145, 74, 0.58) 30%, rgba(110, 46, 19, 0.18) 58%, rgba(0, 0, 0, 0) 72%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 194, 120, 0.88) 0%, rgba(255, 145, 74, 0.58) 30%, rgba(110, 46, 19, 0.18) 58%, rgba(0, 0, 0, 0) 72%);
   transform: scale(0.88);
   opacity: 0.88;
   filter: blur(18px);
 }
 
-.bunny-cheatcode__card {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 8px;
-  border-radius: 42% 42% 38% 38% / 52% 52% 26% 26%;
-  background:
-    radial-gradient(circle at 50% 28%, rgba(255, 223, 172, 0.24), rgba(255,255,255,0) 24%),
-    linear-gradient(180deg, #9a5a2d 0%, #6a3d1e 45%, #4e2d17 74%, #2d160d 100%);
-  border: 1px solid rgba(255, 223, 169, 0.16);
-  box-shadow:
-    inset 0 24px 32px rgba(255, 222, 182, 0.12),
-    inset 0 -18px 24px rgba(20, 8, 2, 0.28),
-    0 26px 70px rgba(0, 0, 0, 0.36);
-  color: #fff4ea;
-  overflow: hidden;
-}
-
-.bunny-cheatcode__card::before,
-.bunny-cheatcode__card::after {
-  content: "";
-  position: absolute;
-  top: -24%;
-  width: 24%;
-  height: 38%;
-  border-radius: 48% 48% 42% 42% / 72% 72% 28% 28%;
-  background: linear-gradient(180deg, #b97545 0%, #7e4a26 72%, #5c3317 100%);
-  border: 1px solid rgba(255, 226, 196, 0.12);
-  box-shadow: inset 0 10px 14px rgba(255, 228, 200, 0.1);
-}
-
-.bunny-cheatcode__card::before { left: 18%; transform: rotate(-10deg); }
-.bunny-cheatcode__card::after { right: 18%; transform: rotate(10deg); }
-
 .bunny-cheatcode__badge {
   position: absolute;
-  top: 12%;
+  top: 2%;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(17, 12, 8, 0.42);
+  background: rgba(17, 12, 8, 0.52);
   border: 1px solid rgba(255, 226, 196, 0.18);
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.16em;
+  color: #fff4ea;
 }
 
-.bunny-cheatcode__emoji {
-  font-size: clamp(50px, 8vw, 76px);
-  line-height: 1;
-  transform: translateY(8px);
+.bunny-cheatcode__model {
+  width: 100%;
+  height: min(52vh, 360px);
+  background: transparent;
+  --poster-color: transparent;
 }
 
 .bunny-cheatcode__title {
   font-size: clamp(24px, 4vw, 34px);
   font-weight: 900;
   letter-spacing: -0.04em;
+  color: #fff4ea;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.42);
 }
 
 .bunny-cheatcode__subtitle {
@@ -906,6 +879,7 @@ h1 {
   color: rgba(255, 233, 215, 0.82);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.42);
 }
 
 @keyframes bunny-backdrop {

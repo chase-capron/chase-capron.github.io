@@ -9,7 +9,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#070b17" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), browsing-topics=()" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
 
   <meta property="og:title" content="Chase Capron · Computer Engineer" />
   <meta property="og:description" content="Home automation, AI planning tools, plant systems, and maker projects." />
@@ -30,6 +30,7 @@
   <script defer src="arcade/games/battle.js"></script>
   <script defer src="arcade/games/dino3d-assets.js"></script>
   <script defer src="arcade/games/dino3d.js"></script>
+  <script type="module" src="vendor/model-viewer.min.js"></script>
   <script defer src="arcade/index.js"></script>
   <script defer src="app.js"></script>
 </head>
@@ -618,12 +619,24 @@
         <div class="bunny-cheatcode__backdrop"></div>
         <div class="bunny-cheatcode__stage">
           <div class="bunny-cheatcode__glow"></div>
-          <div class="bunny-cheatcode__card">
-            <div class="bunny-cheatcode__badge">CHEAT CODE UNLOCKED</div>
-            <div class="bunny-cheatcode__emoji">🐇🍫</div>
-            <div class="bunny-cheatcode__title">Chocolate Bunny</div>
-            <div class="bunny-cheatcode__subtitle">Hidden model activated</div>
-          </div>
+          <div class="bunny-cheatcode__badge">CHEAT CODE UNLOCKED</div>
+          <model-viewer
+            class="bunny-cheatcode__model"
+            src="assets/easter-egg/chocolate-bunny.glb"
+            alt="Chocolate bunny 3D model"
+            camera-controls="false"
+            touch-action="none"
+            interaction-prompt="none"
+            disable-zoom
+            auto-rotate
+            rotation-per-second="38deg"
+            shadow-intensity="1.1"
+            exposure="1.08"
+            environment-image="neutral"
+            ar="false">
+          </model-viewer>
+          <div class="bunny-cheatcode__title">Chocolate Bunny</div>
+          <div class="bunny-cheatcode__subtitle">Hidden model activated</div>
         </div>
       </div>
     </div>
