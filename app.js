@@ -1530,6 +1530,41 @@
     });
   }
 
+  // RAPID 2026 framed photo easter egg: 10 taps/clicks pops the title.
+  const rapidPhotoEgg = document.querySelector('#rapidPhotoEgg img');
+  const rapidCheatcode = document.querySelector('#rapidCheatcode');
+  if (rapidPhotoEgg && rapidCheatcode) {
+    let rapidTapCount = 0;
+    let rapidTapTimer = null;
+
+    const resetRapidTaps = () => {
+      rapidTapCount = 0;
+      if (rapidTapTimer) {
+        window.clearTimeout(rapidTapTimer);
+        rapidTapTimer = null;
+      }
+    };
+
+    const playRapidCheatcode = () => {
+      rapidCheatcode.classList.remove('is-active');
+      void rapidCheatcode.offsetWidth;
+      rapidCheatcode.classList.add('is-active');
+      window.setTimeout(() => {
+        rapidCheatcode.classList.remove('is-active');
+      }, 1600);
+    };
+
+    rapidPhotoEgg.addEventListener('click', () => {
+      rapidTapCount += 1;
+      if (rapidTapTimer) window.clearTimeout(rapidTapTimer);
+      rapidTapTimer = window.setTimeout(resetRapidTaps, 7000);
+      if (rapidTapCount >= 10) {
+        resetRapidTaps();
+        playRapidCheatcode();
+      }
+    });
+  }
+
   // Current stack: Tetris-like row-fill simulation with natural chip widths
   const stackRoot = document.querySelector('.chips--stack');
   if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

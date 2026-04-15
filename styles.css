@@ -793,6 +793,73 @@ h1 {
   font-size: 0.95rem;
 }
 
+.rapid-photo-frame {
+  margin: 18px auto 0;
+  max-width: 460px;
+  padding: 14px;
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, #5c4310 0%, #c89b2f 18%, #f8e08b 36%, #ae7d18 54%, #f4d05b 72%, #76510d 100%);
+  box-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.28),
+    inset 0 2px 0 rgba(255, 247, 205, 0.65),
+    inset 0 -2px 0 rgba(78, 52, 4, 0.32);
+  border: 1px solid rgba(255, 231, 160, 0.45);
+}
+
+.rapid-photo-frame img {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  border: 6px solid rgba(54, 33, 6, 0.85);
+  box-shadow: inset 0 0 0 2px rgba(255, 231, 160, 0.28);
+}
+
+.rapid-photo-frame figcaption {
+  margin-top: 10px;
+  text-align: center;
+  color: #f7e8b5;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rapid-cheatcode {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 121;
+}
+
+.rapid-cheatcode.is-active {
+  animation: rapid-cheatcode-pop 1.6s ease forwards;
+}
+
+.rapid-cheatcode__text {
+  padding: 18px 28px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(25, 20, 10, 0.94), rgba(92, 67, 16, 0.96));
+  border: 2px solid rgba(248, 224, 139, 0.75);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.42);
+  color: #ffe89d;
+  font-size: clamp(28px, 6vw, 58px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(255, 220, 100, 0.42);
+}
+
+@keyframes rapid-cheatcode-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  18% { opacity: 1; transform: scale(1.08); }
+  70% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.94); }
+}
+
 .bunny-cheatcode {
   position: fixed;
   inset: 0;
