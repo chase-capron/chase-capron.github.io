@@ -4,8 +4,9 @@
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
   const appScript =
-    document.querySelector('script[src$="/app.js"]') ||
-    document.querySelector('script[src$="app.js"]');
+    document.currentScript ||
+    document.querySelector('script[src*="/app.js"]') ||
+    document.querySelector('script[src*="app.js"]');
   const appBaseUrl = appScript?.src ? new URL('.', appScript.src).toString() : window.location.href;
   const resolveAssetUrl = (assetPath) => {
     const candidate = String(assetPath || '').trim();
@@ -19,6 +20,31 @@
   };
   const THEME_MANIFEST_URL = resolveAssetUrl('themes/themes.json');
   const PROJECT_MANIFEST_URL = resolveAssetUrl('projects/projects.json');
+  const loadedScriptPromises = new Map();
+  const loadScript = (assetPath, { module = false } = {}) => {
+    const url = resolveAssetUrl(assetPath);
+    if (!url) return Promise.reject(new Error(`Missing script path: ${assetPath}`));
+    if (loadedScriptPromises.has(url)) return loadedScriptPromises.get(url);
+
+    const promise = new Promise((resolve, reject) => {
+      const existing = Array.from(document.scripts).find((script) => script.src === url);
+      if (existing) {
+        resolve(existing);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = false;
+      if (module) script.type = 'module';
+      script.addEventListener('load', () => resolve(script), { once: true });
+      script.addEventListener('error', () => reject(new Error(`Unable to load ${assetPath}`)), { once: true });
+      document.head.appendChild(script);
+    });
+
+    loadedScriptPromises.set(url, promise);
+    return promise;
+  };
   const themeSelect = document.getElementById('themeSelect');
   const themeHint = document.getElementById('themeHint');
   const themePanelHint = document.getElementById('themePanelHint');
@@ -26,6 +52,14 @@
   const themeManifestStamp = document.getElementById('themeManifestStamp');
 
   const defaultThemeCatalog = [
+    {
+      id: 'apple',
+      label: 'Apple',
+      css: 'themes/presets/apple.css',
+      description: 'Clean light portfolio style with restrained glass and blue accents',
+      accent: '#0071e3',
+      tags: ['Professional', 'Light', 'Polished'],
+    },
     {
       id: 'default',
       label: 'Default',
@@ -63,7 +97,7 @@
   let themeCatalog = [...defaultThemeCatalog];
   let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
   let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
-  let fallbackThemeId = 'matrix';
+  let fallbackThemeId = 'apple';
 
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();
@@ -682,7 +716,129 @@
     await Promise.all(localCards.map(fetchCardLastUpdated));
   };
 
-  void hydrateProjectFreshness();
+  const initProjectArchiveControls = () => {
+    const controls = document.querySelector('[data-project-controls]');
+    const catalog = document.querySelector('[data-project-catalog]');
+    if (!(controls instanceof HTMLElement) || !(catalog instanceof HTMLElement)) return null;
+
+    const cards = Array.from(catalog.querySelectorAll('.project-card[href]')).filter(
+      (card) => card instanceof HTMLElement
+    );
+    if (!cards.length) return null;
+
+    const searchInput = controls.querySelector('[data-project-search]');
+    const laneSelect = controls.querySelector('[data-project-lane]');
+    const statusSelect = controls.querySelector('[data-project-status]');
+    const sortSelect = controls.querySelector('[data-project-sort]');
+    const resetButton = controls.querySelector('[data-project-reset]');
+    const summary = controls.querySelector('[data-project-summary]');
+    const empty = document.querySelector('[data-project-empty]');
+    const metricActive = controls.querySelector('[data-project-metric="active"]');
+    const metricComplete = controls.querySelector('[data-project-metric="complete"]');
+    const metricMaker = controls.querySelector('[data-project-metric="maker"]');
+    const metricScope = controls.querySelector('[data-project-metric="scope"]');
+
+    const readCard = (card, index) => {
+      const status = card.querySelector('[data-status-key]')?.getAttribute('data-status-key') || '';
+      const title = card.querySelector('h3')?.textContent?.trim() || '';
+      return {
+        card,
+        index,
+        title,
+        status,
+        lane: card.getAttribute('data-project-lane') || '',
+        haystack: card.textContent.toLowerCase(),
+      };
+    };
+
+    const rows = cards.map(readCard);
+    const statusRank = new Map([
+      ['dev', 0],
+      ['planned', 1],
+      ['maker', 2],
+      ['complete', 3],
+    ]);
+
+    const getValue = (node, fallback = 'all') =>
+      node instanceof HTMLInputElement || node instanceof HTMLSelectElement ? node.value : fallback;
+
+    const setText = (node, text) => {
+      if (node instanceof HTMLElement) node.textContent = text;
+    };
+
+    const updateMetrics = (visibleRows) => {
+      setText(metricActive, String(visibleRows.filter((row) => row.status === 'dev').length));
+      setText(metricComplete, String(visibleRows.filter((row) => row.status === 'complete').length));
+      setText(metricMaker, String(visibleRows.filter((row) => row.status === 'maker').length));
+      setText(metricScope, visibleRows.length === rows.length ? 'All projects' : `${visibleRows.length} shown`);
+    };
+
+    const apply = () => {
+      const query = getValue(searchInput, '').trim().toLowerCase();
+      const lane = getValue(laneSelect);
+      const status = getValue(statusSelect);
+      const sort = getValue(sortSelect, 'featured');
+
+      const visibleRows = rows.filter((row) => {
+        const matchesQuery = !query || row.haystack.includes(query);
+        const matchesLane = lane === 'all' || row.lane === lane;
+        const matchesStatus = status === 'all' || row.status === status;
+        return matchesQuery && matchesLane && matchesStatus;
+      });
+
+      const sortedRows = [...visibleRows].sort((a, b) => {
+        if (sort === 'title-asc') return a.title.localeCompare(b.title);
+        if (sort === 'status') {
+          return (statusRank.get(a.status) ?? 99) - (statusRank.get(b.status) ?? 99) || a.index - b.index;
+        }
+        if (sort === 'updated-desc') {
+          const aMeta = Date.parse(a.card.querySelector('.project-card__meta')?.title || '');
+          const bMeta = Date.parse(b.card.querySelector('.project-card__meta')?.title || '');
+          const aTime = Number.isFinite(aMeta) ? aMeta : 0;
+          const bTime = Number.isFinite(bMeta) ? bMeta : 0;
+          return bTime - aTime || a.index - b.index;
+        }
+        return a.index - b.index;
+      });
+
+      rows.forEach((row) => {
+        row.card.hidden = !visibleRows.includes(row);
+      });
+      sortedRows.forEach((row) => catalog.appendChild(row.card));
+
+      updateMetrics(visibleRows);
+      if (empty instanceof HTMLElement) empty.hidden = visibleRows.length > 0;
+
+      const parts = [];
+      if (query) parts.push(`matching "${query}"`);
+      if (lane !== 'all') parts.push(lane.replace(/-/g, ' '));
+      if (status !== 'all') parts.push(status.replace(/-/g, ' '));
+      const scope = parts.length ? parts.join(', ') : 'all projects';
+      setText(summary, `Showing ${visibleRows.length} of ${rows.length} projects: ${scope}`);
+    };
+
+    [searchInput, laneSelect, statusSelect, sortSelect].forEach((node) => {
+      node?.addEventListener('input', apply);
+      node?.addEventListener('change', apply);
+    });
+
+    resetButton?.addEventListener('click', () => {
+      if (searchInput instanceof HTMLInputElement) searchInput.value = '';
+      if (laneSelect instanceof HTMLSelectElement) laneSelect.value = 'all';
+      if (statusSelect instanceof HTMLSelectElement) statusSelect.value = 'all';
+      if (sortSelect instanceof HTMLSelectElement) sortSelect.value = 'featured';
+      apply();
+      searchInput?.focus?.();
+    });
+
+    apply();
+    return apply;
+  };
+
+  const refreshProjectArchiveControls = initProjectArchiveControls();
+  void hydrateProjectFreshness().then(() => {
+    if (typeof refreshProjectArchiveControls === 'function') refreshProjectArchiveControls();
+  });
 
   const initHeroBaggageLoop = () => {
     const marquee = document.querySelector('.hero-marquee');
@@ -690,7 +846,7 @@
     if (!marquee || !track) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || root.dataset.theme === 'apple') {
       marquee.dataset.baggageFallback = 'scroll';
       return;
     }
@@ -1508,6 +1664,7 @@
     let tapCount = 0;
     let tapTimer = null;
     let isPlaying = false;
+    let modelViewerReady = null;
 
     const resetFooterTaps = () => {
       tapCount = 0;
@@ -1517,9 +1674,17 @@
       }
     };
 
-    const playBunnyCheatcode = () => {
+    const ensureModelViewer = () => {
+      if (!modelViewerReady) {
+        modelViewerReady = loadScript('vendor/model-viewer.min.js', { module: true }).catch(() => null);
+      }
+      return modelViewerReady;
+    };
+
+    const playBunnyCheatcode = async () => {
       if (isPlaying) return;
       isPlaying = true;
+      await ensureModelViewer();
       bunnyCheatcode.classList.remove('is-active');
       void bunnyCheatcode.offsetWidth;
       bunnyCheatcode.classList.add('is-active');
@@ -1535,7 +1700,7 @@
       tapTimer = window.setTimeout(resetFooterTaps, 7000);
       if (tapCount >= 10) {
         resetFooterTaps();
-        playBunnyCheatcode();
+        void playBunnyCheatcode();
       }
     });
   }
@@ -1766,6 +1931,15 @@
     node.style.setProperty('--reveal-delay', `${delay}ms`);
   });
 
+  allRevealNodes.forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    const rect = node.getBoundingClientRect();
+    if (rect.top >= 0 && rect.top < window.innerHeight * 0.88) {
+      node.classList.add('is-in');
+      node.style.setProperty('--reveal-delay', '0ms');
+    }
+  });
+
   // Mobile-only override: keep the View Projects CTA visible on first load
   // while preserving existing reveal behavior for the rest of the page.
   if (window.matchMedia('(max-width: 760px)').matches) {
@@ -1776,12 +1950,98 @@
     }
   }
 
-  // Hidden Retro Arcade architecture now lives in dedicated modules.
-  // app.js only boots the controller and forwards theme changes.
-  if (window.ChaseArcade && typeof window.ChaseArcade.init === 'function') {
-    arcadeController = window.ChaseArcade.init({ siteRoot: root });
-    scheduleArcadeThemeSync(root.dataset.theme || 'default', document.getElementById('themeStylesheet'));
-  }
+  const initLazyArcadeUnlock = () => {
+    const shellRoot = document.getElementById('retroArcade');
+    const triggerCard = Array.from(document.querySelectorAll('a.hardware-card')).find(
+      (node) => node.querySelector('.hardware-card__name')?.textContent?.trim() === 'Legacy Device Builds'
+    );
+    const trigger = triggerCard?.querySelector('.hardware-card__icon') || triggerCard;
+    if (!(shellRoot instanceof HTMLElement) || !(trigger instanceof HTMLElement)) return;
+
+    const arcadeScripts = [
+      'arcade/state.js',
+      'arcade/theme-adapter.js',
+      'arcade/trigger.js',
+      'arcade/shell.js',
+      'arcade/games/pong.js',
+      'arcade/games/tetris.js',
+      'arcade/games/game2048.js',
+      'arcade/games/battle.js',
+      'arcade/games/dino3d-assets.js',
+      'arcade/games/dino3d.js',
+      'arcade/index.js',
+    ];
+
+    let taps = 0;
+    let idleTimer = null;
+    let windowTimer = null;
+    let loading = false;
+
+    const reset = () => {
+      taps = 0;
+      shellRoot.style.setProperty('--arcade-unlock-progress', '0');
+      if (idleTimer) {
+        window.clearTimeout(idleTimer);
+        idleTimer = null;
+      }
+      if (windowTimer) {
+        window.clearTimeout(windowTimer);
+        windowTimer = null;
+      }
+    };
+
+    const fallbackNavigate = () => {
+      if (!(triggerCard instanceof HTMLAnchorElement)) return;
+      window.location.assign(triggerCard.href);
+    };
+
+    const loadArcade = async () => {
+      if (arcadeController) return arcadeController;
+      if (loading) return null;
+      loading = true;
+      trigger.setAttribute('aria-busy', 'true');
+
+      for (const scriptPath of arcadeScripts) {
+        await loadScript(scriptPath);
+      }
+
+      if (window.ChaseArcade && typeof window.ChaseArcade.init === 'function') {
+        arcadeController = window.ChaseArcade.init({ siteRoot: root, triggerElement: trigger, shellRoot });
+        scheduleArcadeThemeSync(root.dataset.theme || 'default', document.getElementById('themeStylesheet'));
+      }
+
+      trigger.removeAttribute('aria-busy');
+      loading = false;
+      return arcadeController;
+    };
+
+    const handleTriggerClick = (event) => {
+      if (arcadeController) return;
+      event.preventDefault();
+      taps += 1;
+      shellRoot.style.setProperty('--arcade-unlock-progress', (taps / 10).toFixed(3));
+
+      if (!windowTimer) {
+        windowTimer = window.setTimeout(reset, 6000);
+      }
+
+      if (idleTimer) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        const shouldNavigate = taps === 1;
+        reset();
+        if (shouldNavigate) fallbackNavigate();
+      }, 650);
+
+      if (taps < 10) return;
+
+      reset();
+      void loadArcade().then((controller) => controller?.open?.());
+    };
+
+    trigger.addEventListener('click', handleTriggerClick);
+  };
+
+  initLazyArcadeUnlock();
 
   const revealNodes = allRevealNodes.filter((node) => !node.classList.contains('is-in'));
 

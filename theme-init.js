@@ -3,6 +3,7 @@
   const LEGACY_ARC_KEY = 'cc_style_arc';
 
   const themeStylesById = {
+    apple: 'themes/presets/apple.css',
     default: 'themes/presets/default.css',
     matrix: 'themes/presets/matrix.css',
     'classic-mac': 'themes/presets/classic-mac.css',
@@ -19,8 +20,9 @@
     if (!candidate) return '';
 
     const script =
-      document.querySelector('script[src$="/theme-init.js"]') ||
-      document.querySelector('script[src$="theme-init.js"]');
+      document.currentScript ||
+      document.querySelector('script[src*="/theme-init.js"]') ||
+      document.querySelector('script[src*="theme-init.js"]');
     const base = script?.src ? new URL('.', script.src).toString() : `${window.location.origin}/`;
 
     try {
@@ -42,10 +44,11 @@
   };
 
   try {
-    const stored = sanitizeThemeId(localStorage.getItem(THEME_KEY));
+    const rawStored = localStorage.getItem(THEME_KEY);
+    const stored = rawStored === null ? null : sanitizeThemeId(rawStored);
     const legacyArc = localStorage.getItem(LEGACY_ARC_KEY) === 'true';
-    const preferred = stored !== 'default' ? stored : legacyArc ? 'matrix' : 'matrix';
-    const initialTheme = Object.prototype.hasOwnProperty.call(themeStylesById, preferred) ? preferred : 'matrix';
+    const preferred = stored || (legacyArc ? 'matrix' : 'apple');
+    const initialTheme = Object.prototype.hasOwnProperty.call(themeStylesById, preferred) ? preferred : 'apple';
 
     if (initialTheme !== 'default') {
       document.documentElement.dataset.theme = initialTheme;

@@ -1,8 +1,16 @@
 {
   "version": 1,
   "generatedAt": "2026-02-16T20:56:00Z",
-  "defaultTheme": "matrix",
+  "defaultTheme": "apple",
   "themes": [
+    {
+      "id": "apple",
+      "label": "Apple",
+      "css": "themes/presets/apple.css",
+      "description": "Clean light portfolio style with restrained glass and blue accents",
+      "accent": "#0071e3",
+      "tags": ["Professional", "Light", "Polished"]
+    },
     {
       "id": "default",
       "label": "Default",

@@ -24,6 +24,7 @@ const walkFiles = (startDir, output = []) => {
 
 const checkIndexStructure = () => {
   const html = readUtf8('index.html');
+  const app = readUtf8('app.js');
 
   const requiredScripts = [
     'arcade/state.js',
@@ -41,16 +42,21 @@ const checkIndexStructure = () => {
 
   let previousIndex = -1;
   requiredScripts.forEach((scriptPath) => {
-    const marker = `src="${scriptPath}"`;
-    const nextIndex = html.indexOf(marker);
+    const nextIndex = app.indexOf(`'${scriptPath}'`);
     if (nextIndex < 0) {
-      fail(`index.html missing arcade script include: ${scriptPath}`);
+      fail(`app.js missing lazy arcade script path: ${scriptPath}`);
       return;
     }
     if (nextIndex <= previousIndex) {
-      fail(`index.html arcade script order regression around: ${scriptPath}`);
+      fail(`app.js lazy arcade script order regression around: ${scriptPath}`);
     }
     previousIndex = nextIndex;
+  });
+
+  requiredScripts.forEach((scriptPath) => {
+    if (html.includes(`src="${scriptPath}"`)) {
+      fail(`index.html should lazy-load arcade script instead of eager include: ${scriptPath}`);
+    }
   });
 
   if (!/Legacy Device Builds/.test(html)) {

@@ -1789,6 +1789,19 @@ body.arcade-open {
 }
 
 @media (max-width: 520px) {
+  .project-controls__top,
+  .project-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .project-controls {
+    padding: 14px;
+  }
+
+  .project-controls__reset {
+    width: 100%;
+  }
+
   .hh-device {
     width: min(100vw - 8px, 560px);
     padding: 12px;

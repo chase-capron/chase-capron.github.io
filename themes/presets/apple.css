@@ -1,0 +1,133 @@
+/* Apple-inspired portfolio preset: quiet, light, crisp, and content-first. */
+:root[data-theme="apple"] {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --bg-soft: #ffffff;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
+  --text: #1d1d1f;
+  --text-soft: #6e6e73;
+  --line: rgba(0, 0, 0, 0.12);
+  --accent: #0071e3;
+  --accent-2: #34c759;
+  --shadow: 0 18px 42px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 34px 88px rgba(0, 0, 0, 0.12);
+  --radius: 18px;
+
+  --beam-1: #0071e3;
+  --beam-2: #34c759;
+  --beam-3: #ff9f0a;
+  --beam-4: #af52de;
+}
+
+:root[data-theme="apple"] body {
+  background:
+    radial-gradient(circle at 18% 6%, rgba(0, 113, 227, 0.12), transparent 28%),
+    radial-gradient(circle at 84% 18%, rgba(52, 199, 89, 0.10), transparent 32%),
+    linear-gradient(180deg, #ffffff 0%, #f5f5f7 42%, #ffffff 100%);
+}
+
+:root[data-theme="apple"] .site-header {
+  background: rgba(251, 251, 253, 0.82);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="apple"] .brand__logo {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 113, 227, 0.12);
+}
+
+:root[data-theme="apple"] .nav a,
+:root[data-theme="apple"] .btn--ghost,
+:root[data-theme="apple"] .project-field__input,
+:root[data-theme="apple"] .project-field__select,
+:root[data-theme="apple"] .theme-preset {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.10);
+}
+
+:root[data-theme="apple"] .nav a:hover,
+:root[data-theme="apple"] .nav a:focus,
+:root[data-theme="apple"] .nav a[aria-current="page"] {
+  color: #ffffff;
+  background: #0071e3;
+  border-color: #0071e3;
+}
+
+:root[data-theme="apple"] .btn {
+  background: #0071e3;
+  border-color: #0071e3;
+  color: #ffffff;
+  box-shadow: 0 14px 32px rgba(0, 113, 227, 0.20);
+}
+
+:root[data-theme="apple"] .btn--ghost {
+  color: var(--text);
+  box-shadow: none;
+}
+
+:root[data-theme="apple"] .eyebrow {
+  color: #0071e3;
+}
+
+:root[data-theme="apple"] .hero__logo,
+:root[data-theme="apple"] .hero__mark {
+  background:
+    radial-gradient(circle at 36% 26%, rgba(0, 113, 227, 0.14), transparent 56%),
+    radial-gradient(circle at 70% 76%, rgba(52, 199, 89, 0.10), transparent 58%),
+    rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="apple"] .card,
+:root[data-theme="apple"] .project-card,
+:root[data-theme="apple"] .project-tile,
+:root[data-theme="apple"] .hardware-card,
+:root[data-theme="apple"] .callout,
+:root[data-theme="apple"] .theme-panel,
+:root[data-theme="apple"] .project-controls,
+:root[data-theme="apple"] .app-card,
+:root[data-theme="apple"] .preview,
+:root[data-theme="apple"] .shot {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.10);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="apple"] .section--alt {
+  background: rgba(255, 255, 255, 0.54);
+}
+
+:root[data-theme="apple"] .chip,
+:root[data-theme="apple"] .status,
+:root[data-theme="apple"] .theme-tag,
+:root[data-theme="apple"] .project-metric {
+  border-color: rgba(0, 0, 0, 0.10);
+  background: rgba(255, 255, 255, 0.70);
+}
+
+:root[data-theme="apple"] .status--complete {
+  color: #0f7a38;
+  background: rgba(52, 199, 89, 0.14);
+}
+
+:root[data-theme="apple"] .status--dev,
+:root[data-theme="apple"] .status--planned {
+  color: #a35f00;
+  background: rgba(255, 159, 10, 0.14);
+}
+
+:root[data-theme="apple"] .status--maker {
+  color: #6d3bbd;
+  background: rgba(175, 82, 222, 0.14);
+}
+
+:root[data-theme="apple"] .footer {
+  background: #f5f5f7;
+}
+
+:root[data-theme="apple"] [data-reveal] {
+  opacity: 1;
+  transform: none;
+}

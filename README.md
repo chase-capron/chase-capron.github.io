@@ -5,15 +5,16 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 ## What this repository contains
 - `index.html` for site structure and content sections
 - `styles.css` for the full visual system, layout tokens, and animations
-- `themes/` for modular theme layers (`themes/presets/`) plus `themes.json` registry for future on-the-fly theme additions
+- `themes/` for modular theme layers (`themes/presets/`) plus `themes.json` registry, including the professional Apple preset and the playful alternate themes
 - `theme-init.js` for pre-CSS theme bootstrapping (no inline scripts required)
-- `app.js` for reveal-on-scroll, theme persistence, theme preset panel controls, and freshness dates (page-level + per-project cards + manifest refresh stamp)
+- `app.js` for reveal-on-scroll, theme persistence, project archive filtering, lazy arcade loading, theme preset panel controls, and freshness dates (page-level + per-project cards + manifest refresh stamp)
 - `projects/` for deeper project write-ups plus `projects/projects.json` freshness metadata used by homepage cards
 - `assets/` for site graphics
 
 ## Design direction
 - Clean, typographic-heavy interface with large section pacing
 - Soft layered gradients, glass cards, and motion reveal blocks
+- Apple preset for a calmer professional first impression
 - Reduced motion support with a local user toggle
 
 ## Project areas highlighted
