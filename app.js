@@ -503,6 +503,10 @@
   document.addEventListener('visibilitychange', () => {
     const activeTheme = normalizeTheme(root.dataset.theme || getStoredTheme());
     if (document.hidden) {
+      if (matrixState.startTimer) {
+        window.clearTimeout(matrixState.startTimer);
+        matrixState.startTimer = null;
+      }
       if (matrixState.animationId) {
         window.cancelAnimationFrame(matrixState.animationId);
         matrixState.animationId = null;
