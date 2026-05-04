@@ -1931,15 +1931,6 @@
     node.style.setProperty('--reveal-delay', `${delay}ms`);
   });
 
-  allRevealNodes.forEach((node) => {
-    if (!(node instanceof HTMLElement)) return;
-    const rect = node.getBoundingClientRect();
-    if (rect.top >= 0 && rect.top < window.innerHeight * 0.88) {
-      node.classList.add('is-in');
-      node.style.setProperty('--reveal-delay', '0ms');
-    }
-  });
-
   // Mobile-only override: keep the View Projects CTA visible on first load
   // while preserving existing reveal behavior for the rest of the page.
   if (window.matchMedia('(max-width: 760px)').matches) {

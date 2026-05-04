@@ -126,8 +126,3 @@
 :root[data-theme="apple"] .footer {
   background: #f5f5f7;
 }
-
-:root[data-theme="apple"] [data-reveal] {
-  opacity: 1;
-  transform: none;
-}
