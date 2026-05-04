@@ -226,13 +226,81 @@
         <div class="section__top" data-reveal>
           <p class="eyebrow">Selected Work</p>
           <h2>Project grid</h2>
-          <p class="section__hint">Each project card shows freshness using a local metadata manifest with same-origin Last-Modified fallback.</p>
-          <p class="section__micro" id="projectManifestStamp" hidden>Project metadata refreshed recently.</p>
-          <ul class="freshness-legend" aria-label="Freshness indicator legend">
-            <li><span class="freshness-dot freshness-dot--fresh" aria-hidden="true"></span>Fresh ≤ 30 days</li>
-            <li><span class="freshness-dot freshness-dot--steady" aria-hidden="true"></span>Steady 31–120 days</li>
-            <li><span class="freshness-dot freshness-dot--stale" aria-hidden="true"></span>Older than 120 days</li>
-          </ul>
+        </div>
+
+        <div class="project-showcase" data-reveal data-delay="50" aria-label="Project highlights carousel">
+          <div class="project-showcase__track">
+            <a class="project-showcase__slide" href="projects/midi-home-control/">
+              <span class="project-showcase__visual project-showcase__visual--logo"><img src="assets/midi-live.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>MIDI Home Control Rig</strong>
+                <span>Gesture-controlled automation routing, scene control, and live Home Assistant feedback.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/greenthumb/">
+              <span class="project-showcase__visual project-showcase__visual--plant"><img src="assets/hardware/plant.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>GreenThumb</strong>
+                <span>Soil sensing, plant context, and AI-assisted care recommendations for real-world growing conditions.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/smart-heating/">
+              <span class="project-showcase__visual project-showcase__visual--diagram"><img src="assets/hardware/homeassistant.svg" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Smart Heating Control</strong>
+                <span>Room sensors, occupancy, weather, and preference logic blended into a practical automation system.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/laser-3d-printing/">
+              <span class="project-showcase__visual project-showcase__visual--maker"><img src="assets/hardware/maker.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Laser Cutting + 3D Printing</strong>
+                <span>Build plans, functional parts, enclosures, and quick hardware utilities for automation projects.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/hot-wheels-tracker/">
+              <span class="project-showcase__visual project-showcase__visual--logo"><img src="assets/hardware/hotwheels.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Hot Wheels Tracker</strong>
+                <span>A catalogue-style tracker for collections, pricing notes, and clean inventory organization.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/midi-home-control/" aria-hidden="true" tabindex="-1">
+              <span class="project-showcase__visual project-showcase__visual--logo"><img src="assets/midi-live.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>MIDI Home Control Rig</strong>
+                <span>Gesture-controlled automation routing, scene control, and live Home Assistant feedback.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/greenthumb/" aria-hidden="true" tabindex="-1">
+              <span class="project-showcase__visual project-showcase__visual--plant"><img src="assets/hardware/plant.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>GreenThumb</strong>
+                <span>Soil sensing, plant context, and AI-assisted care recommendations for real-world growing conditions.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/smart-heating/" aria-hidden="true" tabindex="-1">
+              <span class="project-showcase__visual project-showcase__visual--diagram"><img src="assets/hardware/homeassistant.svg" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Smart Heating Control</strong>
+                <span>Room sensors, occupancy, weather, and preference logic blended into a practical automation system.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/laser-3d-printing/" aria-hidden="true" tabindex="-1">
+              <span class="project-showcase__visual project-showcase__visual--maker"><img src="assets/hardware/maker.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Laser Cutting + 3D Printing</strong>
+                <span>Build plans, functional parts, enclosures, and quick hardware utilities for automation projects.</span>
+              </span>
+            </a>
+            <a class="project-showcase__slide" href="projects/hot-wheels-tracker/" aria-hidden="true" tabindex="-1">
+              <span class="project-showcase__visual project-showcase__visual--logo"><img src="assets/hardware/hotwheels.png" alt="" /></span>
+              <span class="project-showcase__copy">
+                <strong>Hot Wheels Tracker</strong>
+                <span>A catalogue-style tracker for collections, pricing notes, and clean inventory organization.</span>
+              </span>
+            </a>
+          </div>
         </div>
 
         <div class="project-grid" data-reveal data-delay="80">
@@ -422,14 +490,14 @@
             <button
               type="button"
               class="arcade-tab hh-cartridge"
-              data-arcade-tab="pokemon"
+              data-arcade-tab="snake"
               role="tab"
-              id="arcade-tab-pokemon"
-              aria-controls="arcade-pane-pokemon"
+              id="arcade-tab-snake"
+              aria-controls="arcade-pane-snake"
               aria-selected="false"
               tabindex="-1"
             >
-              Battle
+              Caterpillar
             </button>
           </nav>
         </div>
@@ -529,30 +597,26 @@
                 </section>
                 <section
                   class="arcade-pane"
-                  data-arcade-pane="pokemon"
+                  data-arcade-pane="snake"
                   role="tabpanel"
-                  id="arcade-pane-pokemon"
-                  aria-labelledby="arcade-tab-pokemon"
+                  id="arcade-pane-snake"
+                  aria-labelledby="arcade-tab-snake"
                   aria-hidden="true"
                   hidden
                 >
-                  <div class="battle-board" id="battleBoard">
-                    <canvas id="battleScene" width="720" height="240" aria-label="Retro battle scene"></canvas>
-                    <div class="battle-card battle-card--enemy">
-                      <h4>Wild Debugmon</h4>
-                      <p class="battle-hp"><span id="enemyHp">100</span>/100 HP</p>
+                  <div class="snake-board">
+                    <div class="arcade-hud" aria-live="polite">
+                      <p>Score <span id="snakeScore">0</span></p>
+                      <p>Best <span id="snakeBest">0</span></p>
                     </div>
-                    <div class="battle-card battle-card--you">
-                      <h4>Promptmon</h4>
-                      <p class="battle-hp"><span id="playerHp">100</span>/100 HP</p>
+                    <canvas id="arcadeSnake" width="720" height="360" aria-label="Caterpillar snake game"></canvas>
+                    <div class="arcade-controls arcade-controls--dpad" data-control-group="snake" aria-label="Caterpillar controls" role="group">
+                      <button type="button" class="arcade-controls__up" data-snake-control="up" aria-label="Move caterpillar up">↑</button>
+                      <button type="button" data-snake-control="left" aria-label="Move caterpillar left">←</button>
+                      <button type="button" data-snake-control="down" aria-label="Move caterpillar down">↓</button>
+                      <button type="button" data-snake-control="right" aria-label="Move caterpillar right">→</button>
                     </div>
-                    <div class="battle-actions">
-                      <button type="button" data-battle-move="ship">1 · Ship Patch</button>
-                      <button type="button" data-battle-move="lint">2 · Lint Beam</button>
-                      <button type="button" data-battle-move="rollback">3 · Rollback</button>
-                      <button type="button" data-battle-move="reboot">4 · Reboot</button>
-                    </div>
-                    <p class="battle-log" id="battleLog">Battle ready. Press 1-4 or tap a move.</p>
+                    <p class="arcade-help" id="snakeStatus">Eat leaves and crumbs. Avoid rocks, spiders, and your own trail.</p>
                   </div>
                 </section>
               </div>
@@ -586,9 +650,8 @@
     <div class="container footer__theme" data-reveal>
       <div class="footer__theme-head">
         <p class="eyebrow">Display</p>
-        <h2>Theme presets</h2>
+        <h2>Themes</h2>
         <p class="section__hint">Pick a visual style. Current look stays as the default baseline.</p>
-        <p class="section__micro" id="themeManifestStamp" hidden>Theme metadata refreshed recently.</p>
       </div>
 
       <article class="theme-panel" data-reveal data-delay="60">
@@ -596,44 +659,8 @@
           <h3>Theme selection</h3>
           <p id="themePanelHint">Switch visual style instantly.</p>
         </div>
-        <div class="theme-preset-grid" id="themePresetList" role="group" aria-label="Theme presets"></div>
+        <div class="theme-dock" id="themePresetList" role="group" aria-label="Themes"></div>
       </article>
-
-      <figure class="theme-easter-egg" id="footer-gif-easter-egg" data-reveal data-delay="100">
-        <img src="assets/office-space.gif" alt="Office Space-style printer smash GIF" loading="lazy" decoding="async" />
-        <figcaption>When the 7th prompt attempt repeats itself.</figcaption>
-      </figure>
-      <figure class="rapid-photo-frame" id="rapidPhotoEgg" data-reveal data-delay="120">
-        <img src="assets/rapid-2026.jpg" alt="Chase with a friend at RAPID 2026" loading="lazy" decoding="async" />
-        <figcaption>RAPID 2026.</figcaption>
-      </figure>
-      <div class="rapid-cheatcode" id="rapidCheatcode" aria-hidden="true">
-        <div class="rapid-cheatcode__text">RAPID 2026!</div>
-      </div>
-      <div class="bunny-cheatcode" id="bunnyCheatcode" aria-hidden="true">
-        <div class="bunny-cheatcode__backdrop"></div>
-        <div class="bunny-cheatcode__stage">
-          <div class="bunny-cheatcode__glow"></div>
-          <div class="bunny-cheatcode__badge">CHEAT CODE UNLOCKED</div>
-          <model-viewer
-            class="bunny-cheatcode__model"
-            src="assets/easter-egg/chocolate-bunny.glb"
-            alt="Chocolate bunny 3D model"
-            camera-controls="false"
-            touch-action="none"
-            interaction-prompt="none"
-            disable-zoom
-            auto-rotate
-            rotation-per-second="38deg"
-            shadow-intensity="1.1"
-            exposure="1.08"
-            environment-image="neutral"
-            ar="false">
-          </model-viewer>
-          <div class="bunny-cheatcode__title">Chocolate Bunny</div>
-          <div class="bunny-cheatcode__subtitle">Hidden model activated</div>
-        </div>
-      </div>
     </div>
 
     <div class="container footer__inner">

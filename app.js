@@ -3,6 +3,7 @@
 
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
+  const THEME_REGISTRY_VERSION = '2';
   const appScript =
     document.currentScript ||
     document.querySelector('script[src*="/app.js"]') ||
@@ -19,7 +20,6 @@
     }
   };
   const THEME_MANIFEST_URL = resolveAssetUrl('themes/themes.json');
-  const PROJECT_MANIFEST_URL = resolveAssetUrl('projects/projects.json');
   const loadedScriptPromises = new Map();
   const loadScript = (assetPath, { module = false } = {}) => {
     const url = resolveAssetUrl(assetPath);
@@ -49,9 +49,16 @@
   const themeHint = document.getElementById('themeHint');
   const themePanelHint = document.getElementById('themePanelHint');
   const themePresetList = document.getElementById('themePresetList');
-  const themeManifestStamp = document.getElementById('themeManifestStamp');
 
   const defaultThemeCatalog = [
+    {
+      id: 'default',
+      label: 'Default',
+      css: 'themes/presets/default.css',
+      description: 'Current site look',
+      accent: '#2f83ff',
+      tags: ['Baseline', 'High readability'],
+    },
     {
       id: 'apple',
       label: 'Apple',
@@ -61,12 +68,12 @@
       tags: ['Professional', 'Light', 'Polished'],
     },
     {
-      id: 'default',
-      label: 'Default',
-      css: 'themes/presets/default.css',
-      description: 'Current site look',
-      accent: '#2f83ff',
-      tags: ['Baseline', 'High readability'],
+      id: 'classic-mac',
+      label: 'Classic Apple',
+      css: 'themes/presets/classic-mac.css',
+      description: 'Retro Apple-inspired UI with grayscale chrome and classic color',
+      accent: '#1d49c6',
+      tags: ['Retro', 'Classic UI', 'Apple'],
     },
     {
       id: 'matrix',
@@ -77,16 +84,8 @@
       tags: ['Cinematic', 'Animated', 'High contrast'],
     },
     {
-      id: 'classic-mac',
-      label: 'Classic Mac',
-      css: 'themes/presets/classic-mac.css',
-      description: 'Retro Mac OS style UI with grayscale chrome',
-      accent: '#1d49c6',
-      tags: ['Retro', 'Monochrome', 'Classic UI'],
-    },
-    {
       id: 'simpsons',
-      label: 'Springfield',
+      label: 'The Simpsons',
       css: 'themes/presets/simpsons.css',
       description: 'Cartoon sky theme with clouds-to-house scroll scene',
       accent: '#fed90f',
@@ -97,7 +96,7 @@
   let themeCatalog = [...defaultThemeCatalog];
   let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
   let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
-  let fallbackThemeId = 'apple';
+  let fallbackThemeId = 'default';
 
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();
@@ -127,13 +126,6 @@
       .slice(0, 3);
   };
 
-  const sanitizeGeneratedAt = (value) => {
-    const candidate = String(value || '').trim();
-    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(candidate)) return null;
-    const parsed = Date.parse(candidate);
-    return Number.isFinite(parsed) ? new Date(parsed) : null;
-  };
-
   const normalizeTheme = (value) => {
     const candidate = sanitizeThemeId(value);
     return allowedThemes.has(candidate) ? candidate : fallbackThemeId;
@@ -141,11 +133,20 @@
 
   const getStoredTheme = () => {
     try {
-      const explicit = localStorage.getItem(THEME_KEY);
-      if (explicit && allowedThemes.has(explicit)) return explicit;
+      const raw = localStorage.getItem(THEME_KEY);
+      if (!raw) return 'default';
 
-      // Migration path for existing users.
-      if (localStorage.getItem(LEGACY_ARC_KEY) === 'true' && allowedThemes.has('arc')) return 'arc';
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return 'default';
+      if (String(parsed.registryVersion || '') !== THEME_REGISTRY_VERSION) {
+        localStorage.removeItem(THEME_KEY);
+        localStorage.removeItem(LEGACY_ARC_KEY);
+        return 'default';
+      }
+
+      const explicit = sanitizeThemeId(parsed.themeId);
+      if (explicit && allowedThemes.has(explicit)) return explicit;
+      localStorage.removeItem(THEME_KEY);
     } catch (e) {}
 
     return 'default';
@@ -192,6 +193,44 @@
     themeSelect.value = normalizeTheme(activeTheme);
   };
 
+  const renderThemeIcon = (theme, icon) => {
+    icon.className = `theme-app__icon theme-app__icon--${theme.id}`;
+    icon.setAttribute('aria-hidden', 'true');
+
+    if (theme.id === 'default') {
+      const img = document.createElement('img');
+      img.src = resolveAssetUrl('assets/chase-logo.png');
+      img.alt = '';
+      icon.appendChild(img);
+      return;
+    }
+
+    if (theme.id === 'apple') {
+      const img = document.createElement('img');
+      img.src = resolveAssetUrl('assets/theme-icons/apple.png');
+      img.alt = '';
+      icon.appendChild(img);
+      return;
+    }
+
+    if (theme.id === 'matrix') {
+      icon.textContent = '0101';
+      return;
+    }
+
+    if (theme.id === 'classic-mac') {
+      const apple = document.createElement('span');
+      apple.className = 'theme-app__classic-mark';
+      icon.appendChild(apple);
+      return;
+    }
+
+    const face = document.createElement('span');
+    face.className = 'theme-app__simpsons-mark';
+    face.textContent = 'S';
+    icon.appendChild(face);
+  };
+
   const renderThemePresetButtons = (activeTheme) => {
     if (!themePresetList) return;
 
@@ -201,43 +240,19 @@
     themeCatalog.forEach((theme) => {
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'theme-preset';
+      button.className = 'theme-app';
       button.dataset.theme = theme.id;
       button.setAttribute('aria-pressed', theme.id === currentTheme ? 'true' : 'false');
+      button.setAttribute('aria-label', `${theme.label} theme`);
 
-      const title = document.createElement('span');
-      title.className = 'theme-preset__title';
-      title.textContent = theme.label;
+      const icon = document.createElement('span');
+      renderThemeIcon(theme, icon);
 
-      const header = document.createElement('span');
-      header.className = 'theme-preset__header';
-      header.appendChild(title);
+      const label = document.createElement('span');
+      label.className = 'theme-app__label';
+      label.textContent = theme.label;
 
-      const accent = sanitizeThemeAccent(theme.accent);
-      if (accent) {
-        const swatch = document.createElement('span');
-        swatch.className = 'theme-preset__swatch';
-        swatch.style.background = accent;
-        swatch.setAttribute('aria-hidden', 'true');
-        header.appendChild(swatch);
-      }
-
-      const description = document.createElement('span');
-      description.className = 'theme-preset__desc';
-      description.textContent = theme.description || 'Theme preset';
-
-      const tags = sanitizeThemeTags(theme.tags);
-      const tagsRow = document.createElement('span');
-      tagsRow.className = 'theme-preset__tags';
-      tags.forEach((tag) => {
-        const tagEl = document.createElement('span');
-        tagEl.className = 'theme-tag';
-        tagEl.textContent = tag;
-        tagsRow.appendChild(tagEl);
-      });
-
-      button.append(header, description);
-      if (tags.length) button.appendChild(tagsRow);
+      button.append(icon, label);
       button.addEventListener('click', () => applyTheme(theme.id));
       themePresetList.appendChild(button);
     });
@@ -248,25 +263,6 @@
     const hint = description || 'Switch visual style instantly.';
     if (themeHint) themeHint.textContent = hint;
     if (themePanelHint) themePanelHint.textContent = hint;
-  };
-
-  const renderThemeManifestStamp = (generatedAt) => {
-    if (!themeManifestStamp || !generatedAt) return;
-
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-    });
-
-    const relativeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-    const MS_PER_DAY = 24 * 60 * 60 * 1000;
-    const diffDays = Math.round((generatedAt.getTime() - Date.now()) / MS_PER_DAY);
-    const relative = relativeFormatter.format(diffDays, 'day');
-
-    themeManifestStamp.textContent = `Theme registry refreshed ${formatter.format(generatedAt)} (${relative}).`;
-    themeManifestStamp.hidden = false;
-    themeManifestStamp.title = generatedAt.toISOString();
   };
 
   const matrixState = {
@@ -468,8 +464,8 @@
     scheduleArcadeThemeSync(nextTheme, themeLink);
 
     try {
-      localStorage.setItem(THEME_KEY, nextTheme);
-      localStorage.setItem(LEGACY_ARC_KEY, nextTheme === 'arc' ? 'true' : 'false');
+      localStorage.setItem(THEME_KEY, JSON.stringify({ themeId: nextTheme, registryVersion: THEME_REGISTRY_VERSION }));
+      localStorage.removeItem(LEGACY_ARC_KEY);
     } catch (e) {}
   };
 
@@ -479,7 +475,6 @@
       if (!response.ok) return;
 
       const payload = await response.json();
-      renderThemeManifestStamp(sanitizeGeneratedAt(payload?.generatedAt));
       const themes = Array.isArray(payload?.themes) ? payload.themes : [];
 
       const validated = themes
@@ -503,6 +498,14 @@
       allowedThemes = new Set(validated.map((theme) => theme.id));
       themesById = new Map(validated.map((theme) => [theme.id, theme]));
       fallbackThemeId = manifestDefault || explicitDefault || validated[0].id;
+
+      const manifestVersion = String(payload?.version || '');
+      if (manifestVersion && manifestVersion !== THEME_REGISTRY_VERSION) {
+        try {
+          localStorage.removeItem(THEME_KEY);
+          localStorage.removeItem(LEGACY_ARC_KEY);
+        } catch (storageError) {}
+      }
     } catch (e) {
       // Fallback to baked-in catalog
     }
@@ -573,272 +576,25 @@
     updatedEl.title = modifiedDate.toISOString();
   }
 
-  const hydrateProjectFreshness = async () => {
-    const cards = Array.from(document.querySelectorAll('.project-card[href]'));
-    const localCards = cards.filter((card) => {
-      const href = card.getAttribute('href') || '';
-      if (!href || href.startsWith('#')) return false;
+  const initHomeTopScroll = () => {
+    const normalizedPath = window.location.pathname.replace(/\/index\.html$/, '/');
+    const appRootPath = new URL('.', appBaseUrl).pathname;
+    const isHomePage = normalizedPath === appRootPath;
+    if (!isHomePage) return;
 
-      try {
-        const url = new URL(href, window.location.href);
-        return url.origin === window.location.origin && url.pathname.startsWith('/projects/');
-      } catch (e) {
-        return false;
-      }
-    });
-
-    if (!localCards.length) return;
-
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-    });
-
-    const relativeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-    const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-    const sanitizePath = (value) => {
-      const candidate = String(value || '').trim();
-      if (!candidate.startsWith('/projects/')) return '';
-      return /^\/projects\/[a-z0-9-]+\/$/.test(candidate) ? candidate : '';
-    };
-
-    const sanitizeDate = (value) => {
-      const candidate = String(value || '').trim();
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return null;
-      const parsed = Date.parse(`${candidate}T00:00:00Z`);
-      return Number.isFinite(parsed) ? new Date(parsed) : null;
-    };
-
-    const sanitizeNote = (value) => String(value || '').trim().slice(0, 140);
-
-    const formatRelativeDays = (date) => {
-      const diffDays = Math.round((date.getTime() - Date.now()) / MS_PER_DAY);
-      return relativeFormatter.format(diffDays, 'day');
-    };
-
-    const freshnessClass = (date) => {
-      const ageDays = Math.floor((Date.now() - date.getTime()) / MS_PER_DAY);
-      if (ageDays <= 30) return 'project-card__meta--fresh';
-      if (ageDays <= 120) return 'project-card__meta--steady';
-      return 'project-card__meta--stale';
-    };
-
-    const renderManifestStamp = (generatedAt) => {
-      const stamp = document.getElementById('projectManifestStamp');
-      if (!stamp || !generatedAt) return;
-
-      stamp.textContent = `Metadata manifest refreshed ${formatter.format(generatedAt)} (${formatRelativeDays(generatedAt)}).`;
-      stamp.hidden = false;
-      stamp.title = generatedAt.toISOString();
-    };
-
-    const fetchManifest = async () => {
-      try {
-        const response = await fetch(PROJECT_MANIFEST_URL, { cache: 'no-store' });
-        if (!response.ok) return { byPath: new Map(), generatedAt: null };
-
-        const payload = await response.json();
-        const rows = Array.isArray(payload?.projects) ? payload.projects : [];
-
-        const entries = rows
-          .map((project) => {
-            const path = sanitizePath(project?.path);
-            const updated = sanitizeDate(project?.updated);
-            if (!path || !updated) return null;
-            return [path, { updated, note: sanitizeNote(project?.note) }];
-          })
-          .filter(Boolean);
-
-        return {
-          byPath: new Map(entries),
-          generatedAt: sanitizeGeneratedAt(payload?.generatedAt),
-        };
-      } catch (e) {
-        return { byPath: new Map(), generatedAt: null };
-      }
-    };
-
-    const manifest = await fetchManifest();
-    const manifestByPath = manifest.byPath;
-    renderManifestStamp(manifest.generatedAt);
-
-    const fetchCardLastUpdated = async (card) => {
-      const href = card.getAttribute('href') || '';
-      const url = new URL(href, window.location.href);
-
-      let modifiedDate = manifestByPath.get(url.pathname)?.updated || null;
-      let freshnessNote = manifestByPath.get(url.pathname)?.note || '';
-      let freshnessSource = modifiedDate ? 'manifest' : 'header';
-
-      if (!modifiedDate) {
-        try {
-          const response = await fetch(url.href, { method: 'HEAD', cache: 'no-store' });
-          if (response.ok) {
-            const headerValue = response.headers.get('last-modified');
-            const parsed = Date.parse(headerValue || '');
-            if (Number.isFinite(parsed)) modifiedDate = new Date(parsed);
-          }
-        } catch (e) {
-          // Graceful fallback below.
+    const targets = Array.from(document.querySelectorAll('.brand[href$="index.html"], .brand[href="#top"], .nav a[href="#top"]'));
+    targets.forEach((target) => {
+      target.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+        if (window.location.hash) {
+          history.replaceState(null, document.title, window.location.pathname + window.location.search);
         }
-      }
-
-      if (!modifiedDate) return;
-
-      let metaEl = card.querySelector('.project-card__meta');
-      if (!metaEl) {
-        metaEl = document.createElement('p');
-        metaEl.className = 'project-card__meta';
-        card.appendChild(metaEl);
-      }
-
-      const sourceLabel = freshnessSource === 'manifest' ? 'metadata manifest' : 'Last-Modified fallback';
-      metaEl.className = `project-card__meta ${freshnessClass(modifiedDate)}`;
-      metaEl.textContent = `Updated ${formatter.format(modifiedDate)} (${formatRelativeDays(modifiedDate)}) · ${sourceLabel}`;
-      metaEl.title = `${modifiedDate.toISOString()} · ${sourceLabel}`;
-
-      let noteEl = card.querySelector('.project-card__meta-note');
-      if (freshnessNote) {
-        if (!noteEl) {
-          noteEl = document.createElement('p');
-          noteEl.className = 'project-card__meta-note';
-          card.appendChild(noteEl);
-        }
-        noteEl.textContent = freshnessNote;
-        metaEl.setAttribute('aria-label', `${metaEl.textContent}. ${freshnessNote}`);
-      } else if (noteEl) {
-        noteEl.remove();
-      }
-    };
-
-    await Promise.all(localCards.map(fetchCardLastUpdated));
+      });
+    });
   };
 
-  const initProjectArchiveControls = () => {
-    const controls = document.querySelector('[data-project-controls]');
-    const catalog = document.querySelector('[data-project-catalog]');
-    if (!(controls instanceof HTMLElement) || !(catalog instanceof HTMLElement)) return null;
-
-    const cards = Array.from(catalog.querySelectorAll('.project-card[href]')).filter(
-      (card) => card instanceof HTMLElement
-    );
-    if (!cards.length) return null;
-
-    const searchInput = controls.querySelector('[data-project-search]');
-    const laneSelect = controls.querySelector('[data-project-lane]');
-    const statusSelect = controls.querySelector('[data-project-status]');
-    const sortSelect = controls.querySelector('[data-project-sort]');
-    const resetButton = controls.querySelector('[data-project-reset]');
-    const summary = controls.querySelector('[data-project-summary]');
-    const empty = document.querySelector('[data-project-empty]');
-    const metricActive = controls.querySelector('[data-project-metric="active"]');
-    const metricComplete = controls.querySelector('[data-project-metric="complete"]');
-    const metricMaker = controls.querySelector('[data-project-metric="maker"]');
-    const metricScope = controls.querySelector('[data-project-metric="scope"]');
-
-    const readCard = (card, index) => {
-      const status = card.querySelector('[data-status-key]')?.getAttribute('data-status-key') || '';
-      const title = card.querySelector('h3')?.textContent?.trim() || '';
-      return {
-        card,
-        index,
-        title,
-        status,
-        lane: card.getAttribute('data-project-lane') || '',
-        haystack: card.textContent.toLowerCase(),
-      };
-    };
-
-    const rows = cards.map(readCard);
-    const statusRank = new Map([
-      ['dev', 0],
-      ['planned', 1],
-      ['maker', 2],
-      ['complete', 3],
-    ]);
-
-    const getValue = (node, fallback = 'all') =>
-      node instanceof HTMLInputElement || node instanceof HTMLSelectElement ? node.value : fallback;
-
-    const setText = (node, text) => {
-      if (node instanceof HTMLElement) node.textContent = text;
-    };
-
-    const updateMetrics = (visibleRows) => {
-      setText(metricActive, String(visibleRows.filter((row) => row.status === 'dev').length));
-      setText(metricComplete, String(visibleRows.filter((row) => row.status === 'complete').length));
-      setText(metricMaker, String(visibleRows.filter((row) => row.status === 'maker').length));
-      setText(metricScope, visibleRows.length === rows.length ? 'All projects' : `${visibleRows.length} shown`);
-    };
-
-    const apply = () => {
-      const query = getValue(searchInput, '').trim().toLowerCase();
-      const lane = getValue(laneSelect);
-      const status = getValue(statusSelect);
-      const sort = getValue(sortSelect, 'featured');
-
-      const visibleRows = rows.filter((row) => {
-        const matchesQuery = !query || row.haystack.includes(query);
-        const matchesLane = lane === 'all' || row.lane === lane;
-        const matchesStatus = status === 'all' || row.status === status;
-        return matchesQuery && matchesLane && matchesStatus;
-      });
-
-      const sortedRows = [...visibleRows].sort((a, b) => {
-        if (sort === 'title-asc') return a.title.localeCompare(b.title);
-        if (sort === 'status') {
-          return (statusRank.get(a.status) ?? 99) - (statusRank.get(b.status) ?? 99) || a.index - b.index;
-        }
-        if (sort === 'updated-desc') {
-          const aMeta = Date.parse(a.card.querySelector('.project-card__meta')?.title || '');
-          const bMeta = Date.parse(b.card.querySelector('.project-card__meta')?.title || '');
-          const aTime = Number.isFinite(aMeta) ? aMeta : 0;
-          const bTime = Number.isFinite(bMeta) ? bMeta : 0;
-          return bTime - aTime || a.index - b.index;
-        }
-        return a.index - b.index;
-      });
-
-      rows.forEach((row) => {
-        row.card.hidden = !visibleRows.includes(row);
-      });
-      sortedRows.forEach((row) => catalog.appendChild(row.card));
-
-      updateMetrics(visibleRows);
-      if (empty instanceof HTMLElement) empty.hidden = visibleRows.length > 0;
-
-      const parts = [];
-      if (query) parts.push(`matching "${query}"`);
-      if (lane !== 'all') parts.push(lane.replace(/-/g, ' '));
-      if (status !== 'all') parts.push(status.replace(/-/g, ' '));
-      const scope = parts.length ? parts.join(', ') : 'all projects';
-      setText(summary, `Showing ${visibleRows.length} of ${rows.length} projects: ${scope}`);
-    };
-
-    [searchInput, laneSelect, statusSelect, sortSelect].forEach((node) => {
-      node?.addEventListener('input', apply);
-      node?.addEventListener('change', apply);
-    });
-
-    resetButton?.addEventListener('click', () => {
-      if (searchInput instanceof HTMLInputElement) searchInput.value = '';
-      if (laneSelect instanceof HTMLSelectElement) laneSelect.value = 'all';
-      if (statusSelect instanceof HTMLSelectElement) statusSelect.value = 'all';
-      if (sortSelect instanceof HTMLSelectElement) sortSelect.value = 'featured';
-      apply();
-      searchInput?.focus?.();
-    });
-
-    apply();
-    return apply;
-  };
-
-  const refreshProjectArchiveControls = initProjectArchiveControls();
-  void hydrateProjectFreshness().then(() => {
-    if (typeof refreshProjectArchiveControls === 'function') refreshProjectArchiveControls();
-  });
+  initHomeTopScroll();
 
   const initHeroBaggageLoop = () => {
     const marquee = document.querySelector('.hero-marquee');
@@ -1657,89 +1413,6 @@
     });
   }
 
-  // Footer GIF cheat code: 10 taps/clicks summons the chocolate bunny easter egg.
-  const footerGifEgg = document.querySelector('#footer-gif-easter-egg img');
-  const bunnyCheatcode = document.querySelector('#bunnyCheatcode');
-  if (footerGifEgg && bunnyCheatcode) {
-    let tapCount = 0;
-    let tapTimer = null;
-    let isPlaying = false;
-    let modelViewerReady = null;
-
-    const resetFooterTaps = () => {
-      tapCount = 0;
-      if (tapTimer) {
-        window.clearTimeout(tapTimer);
-        tapTimer = null;
-      }
-    };
-
-    const ensureModelViewer = () => {
-      if (!modelViewerReady) {
-        modelViewerReady = loadScript('vendor/model-viewer.min.js', { module: true }).catch(() => null);
-      }
-      return modelViewerReady;
-    };
-
-    const playBunnyCheatcode = async () => {
-      if (isPlaying) return;
-      isPlaying = true;
-      await ensureModelViewer();
-      bunnyCheatcode.classList.remove('is-active');
-      void bunnyCheatcode.offsetWidth;
-      bunnyCheatcode.classList.add('is-active');
-      window.setTimeout(() => {
-        bunnyCheatcode.classList.remove('is-active');
-        isPlaying = false;
-      }, 3700);
-    };
-
-    footerGifEgg.addEventListener('click', () => {
-      tapCount += 1;
-      if (tapTimer) window.clearTimeout(tapTimer);
-      tapTimer = window.setTimeout(resetFooterTaps, 7000);
-      if (tapCount >= 10) {
-        resetFooterTaps();
-        void playBunnyCheatcode();
-      }
-    });
-  }
-
-  // RAPID 2026 framed photo easter egg: 10 taps/clicks pops the title.
-  const rapidPhotoEgg = document.querySelector('#rapidPhotoEgg img');
-  const rapidCheatcode = document.querySelector('#rapidCheatcode');
-  if (rapidPhotoEgg && rapidCheatcode) {
-    let rapidTapCount = 0;
-    let rapidTapTimer = null;
-
-    const resetRapidTaps = () => {
-      rapidTapCount = 0;
-      if (rapidTapTimer) {
-        window.clearTimeout(rapidTapTimer);
-        rapidTapTimer = null;
-      }
-    };
-
-    const playRapidCheatcode = () => {
-      rapidCheatcode.classList.remove('is-active');
-      void rapidCheatcode.offsetWidth;
-      rapidCheatcode.classList.add('is-active');
-      window.setTimeout(() => {
-        rapidCheatcode.classList.remove('is-active');
-      }, 1600);
-    };
-
-    rapidPhotoEgg.addEventListener('click', () => {
-      rapidTapCount += 1;
-      if (rapidTapTimer) window.clearTimeout(rapidTapTimer);
-      rapidTapTimer = window.setTimeout(resetRapidTaps, 7000);
-      if (rapidTapCount >= 10) {
-        resetRapidTaps();
-        playRapidCheatcode();
-      }
-    });
-  }
-
   // Current stack: Tetris-like row-fill simulation with natural chip widths
   const stackRoot = document.querySelector('.chips--stack');
   if (stackRoot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -1796,7 +1469,7 @@
         const usableH = Math.max(120, stackRoot.clientHeight - PADDING_Y * 2);
         const maxRows = Math.max(2, Math.floor((usableH + GAP) / (rowH + GAP)));
 
-        return { chipWidths, rowH, usableW, maxRows };
+        return { chipWidths, rowH, usableW, maxRows, stackH: stackRoot.clientHeight };
       };
 
       const pickRow = (rows, chipW, usableW) => {
@@ -1814,7 +1487,7 @@
         return rows.length;
       };
 
-      const buildPlacement = (order, chipWidths, rowH, usableW, maxRows) => {
+      const buildPlacement = (order, chipWidths, rowH, usableW, maxRows, stackH) => {
         const rows = [];
         const placements = [];
 
@@ -1838,8 +1511,8 @@
           const x = row.used + (row.used > 0 ? GAP : 0);
           row.used = x + chipW;
 
-          const y = (maxRows - 1 - rowIndex) * (rowH + GAP);
-          placements.push({ chip, x: x + PADDING_X, y: y + PADDING_Y, rowIndex });
+          const y = stackH - PADDING_Y - rowH - rowIndex * (rowH + GAP);
+          placements.push({ chip, x: x + PADDING_X, y, rowIndex });
         });
 
         return { placements, rows };
@@ -1894,8 +1567,8 @@
         busy = true;
 
         const order = shuffle(chips);
-        const { chipWidths, rowH, usableW, maxRows } = measure();
-        const { placements } = buildPlacement(order, chipWidths, rowH, usableW, maxRows);
+        const { chipWidths, rowH, usableW, maxRows, stackH } = measure();
+        const { placements } = buildPlacement(order, chipWidths, rowH, usableW, maxRows, stackH);
 
         for (const item of placements) {
           await animateDrop(item);
@@ -1957,7 +1630,7 @@
       'arcade/games/pong.js',
       'arcade/games/tetris.js',
       'arcade/games/game2048.js',
-      'arcade/games/battle.js',
+      'arcade/games/snake.js',
       'arcade/games/dino3d-assets.js',
       'arcade/games/dino3d.js',
       'arcade/index.js',

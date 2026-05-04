@@ -40,9 +40,7 @@
 
 :root[data-theme="apple"] .nav a,
 :root[data-theme="apple"] .btn--ghost,
-:root[data-theme="apple"] .project-field__input,
-:root[data-theme="apple"] .project-field__select,
-:root[data-theme="apple"] .theme-preset {
+:root[data-theme="apple"] .theme-dock {
   background: rgba(255, 255, 255, 0.72);
   border-color: rgba(0, 0, 0, 0.10);
 }
@@ -86,7 +84,8 @@
 :root[data-theme="apple"] .hardware-card,
 :root[data-theme="apple"] .callout,
 :root[data-theme="apple"] .theme-panel,
-:root[data-theme="apple"] .project-controls,
+:root[data-theme="apple"] .project-showcase,
+:root[data-theme="apple"] .app-stub,
 :root[data-theme="apple"] .app-card,
 :root[data-theme="apple"] .preview,
 :root[data-theme="apple"] .shot {

@@ -7,14 +7,14 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - `styles.css` for the full visual system, layout tokens, and animations
 - `themes/` for modular theme layers (`themes/presets/`) plus `themes.json` registry, including the professional Apple preset and the playful alternate themes
 - `theme-init.js` for pre-CSS theme bootstrapping (no inline scripts required)
-- `app.js` for reveal-on-scroll, theme persistence, project archive filtering, lazy arcade loading, theme preset panel controls, and freshness dates (page-level + per-project cards + manifest refresh stamp)
-- `projects/` for deeper project write-ups plus `projects/projects.json` freshness metadata used by homepage cards
+- `app.js` for reveal-on-scroll, versioned theme persistence, lazy arcade loading, theme dock controls, and page-level footer dates
+- `projects/` for the project archive and in-development project page stubs
 - `assets/` for site graphics
 
 ## Design direction
 - Clean, typographic-heavy interface with large section pacing
 - Soft layered gradients, glass cards, and motion reveal blocks
-- Apple preset for a calmer professional first impression
+- Default theme for first load, plus an Apple preset for a calmer professional mode
 - Reduced motion support with a local user toggle
 
 ## Project areas highlighted
@@ -29,9 +29,8 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 - Site pages include strict `Content-Security-Policy` (including `script-src 'self'` with no inline scripts), `Permissions-Policy`, and referrer policy metadata.
 - External links are opened with `rel="noopener noreferrer"`.
 - Footer "Updated" dates are rendered from each page file's `document.lastModified` value for quick freshness checks.
-- Project cards hydrate freshness from local `projects/projects.json` (strict path/date validation) with safe fallback to same-origin `Last-Modified` headers, plus short manifest notes for context.
-- Theme manifest (`themes/themes.json`) includes `generatedAt` + `tags` metadata so theme controls can stay flexible without changing page structure.
-- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene (including disallowed `javascript:`/`data:` anchor protocols), manifest schema sanity, and homepage project-manifest coverage.
+- Theme manifest (`themes/themes.json`) includes a registry version so saved theme choices reset cleanly when the backend/static registry changes.
+- Run `node scripts/site-hygiene-check.mjs` before pushing to verify security meta tags, external link hygiene (including disallowed `javascript:`/`data:` anchor protocols), and theme manifest schema sanity.
 - Run `node scripts/arcade-validation-pack.mjs` before pushing arcade changes to validate stealth trigger guardrails, shell accessibility hooks, and static security constraints.
 - Security disclosure + hardening checklist: `SECURITY.md` and `.well-known/security.txt`.
 - Final phase-5 QA/security report: `docs/arcade-phase-5-qa-security.md`.

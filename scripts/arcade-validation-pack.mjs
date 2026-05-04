@@ -34,7 +34,7 @@ const checkIndexStructure = () => {
     'arcade/games/pong.js',
     'arcade/games/tetris.js',
     'arcade/games/game2048.js',
-    'arcade/games/battle.js',
+    'arcade/games/snake.js',
     'arcade/games/dino3d-assets.js',
     'arcade/games/dino3d.js',
     'arcade/index.js',
@@ -104,6 +104,14 @@ const checkIndexStructure = () => {
 
   if (!/data-dino3d-control="jump"/.test(html)) {
     fail('index.html missing Dino 3D jump control hook (data-dino3d-control="jump")');
+  }
+
+  if (!/data-arcade-tab="snake"/.test(html) || !/Caterpillar/.test(html)) {
+    fail('index.html missing Caterpillar Snake cartridge tab');
+  }
+
+  if (!/id="arcadeSnake"/.test(html) || !/data-snake-control="up"/.test(html)) {
+    fail('index.html missing Caterpillar Snake canvas or controls');
   }
 };
 
@@ -239,6 +247,29 @@ const checkStateCoverage = () => {
   if (!/dino3d/.test(state)) {
     fail('arcade/state.js missing dino3d in allowed tab persistence set');
   }
+  const legacyBattleId = 'poke' + 'mon';
+  if (!/snake/.test(state) || state.includes(legacyBattleId)) {
+    fail('arcade/state.js should include snake and remove the legacy battle tab from allowed tab persistence set');
+  }
+};
+
+const checkSnakeGameCoverage = () => {
+  const snake = readUtf8('arcade/games/snake.js');
+  const requiredMarkers = [
+    'createSnakeGame',
+    'cc_arcade_snake_best',
+    'data-snake-control',
+    'ArrowUp',
+    'leaf',
+    'spider',
+    'rock',
+  ];
+
+  requiredMarkers.forEach((marker) => {
+    if (!snake.includes(marker)) {
+      fail(`arcade/games/snake.js missing Caterpillar marker: ${marker}`);
+    }
+  });
 };
 
 const checkSwitchStyles = () => {
@@ -321,6 +352,7 @@ try {
   checkShellBehaviorHints();
   checkThemeAdapterCoverage();
   checkStateCoverage();
+  checkSnakeGameCoverage();
   checkSwitchStyles();
   checkDinoGameplayPolishHints();
   checkMobileReducedMotionStyles();

@@ -201,8 +201,8 @@
       vy: 0,
       width: 1.7,
       height: 3.4,
-      jumpVelocity: 18.1,
-      gravity: 30.5,
+      jumpVelocity: 19.4,
+      gravity: 33.5,
     };
 
     const groundY = 0;
@@ -293,7 +293,7 @@
       alive = true;
       score = 0;
       speed = 11;
-      spawnTimer = 0.65;
+      spawnTimer = 1.05;
       elapsed = 0;
       jumpBuffer = 0;
       player.y = 0;
@@ -326,6 +326,13 @@
       obstacle.spin = Math.random() * Math.PI * 2;
     };
 
+    const hasSpawnSafetyGap = () => {
+      const nearestSpawn = obstaclePool
+        .filter((obstacle) => obstacle.active)
+        .reduce((nearest, obstacle) => Math.max(nearest, obstacle.x), -Infinity);
+      return !Number.isFinite(nearestSpawn) || nearestSpawn < 12;
+    };
+
     const updatePhysics = (dt) => {
       elapsed += dt;
 
@@ -355,9 +362,13 @@
 
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
+        if (!hasSpawnSafetyGap()) {
+          spawnTimer = 0.18;
+          return;
+        }
         spawnObstacle();
-        const base = clamp(1.45 - speed * 0.055, 0.5, 1.45);
-        spawnTimer = base + Math.random() * 0.55;
+        const base = clamp(1.95 - speed * 0.045, 0.9, 1.95);
+        spawnTimer = base + Math.random() * 0.45;
       }
 
       obstaclePool.forEach((obstacle) => {

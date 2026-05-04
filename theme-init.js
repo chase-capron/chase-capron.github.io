@@ -1,6 +1,7 @@
 (() => {
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
+  const THEME_REGISTRY_VERSION = '2';
 
   const themeStylesById = {
     apple: 'themes/presets/apple.css',
@@ -13,6 +14,29 @@
   const sanitizeThemeId = (value) => {
     const candidate = String(value || '').toLowerCase();
     return /^[a-z0-9-]+$/.test(candidate) ? candidate : 'default';
+  };
+
+  const readStoredTheme = () => {
+    try {
+      const raw = localStorage.getItem(THEME_KEY);
+      if (!raw) return null;
+
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      if (String(parsed.registryVersion || '') !== THEME_REGISTRY_VERSION) {
+        localStorage.removeItem(THEME_KEY);
+        localStorage.removeItem(LEGACY_ARC_KEY);
+        return null;
+      }
+
+      const themeId = sanitizeThemeId(parsed.themeId);
+      return Object.prototype.hasOwnProperty.call(themeStylesById, themeId) ? themeId : null;
+    } catch (e) {
+      try {
+        localStorage.removeItem(THEME_KEY);
+      } catch (storageError) {}
+      return null;
+    }
   };
 
   const resolveAssetUrl = (assetPath) => {
@@ -44,11 +68,8 @@
   };
 
   try {
-    const rawStored = localStorage.getItem(THEME_KEY);
-    const stored = rawStored === null ? null : sanitizeThemeId(rawStored);
-    const legacyArc = localStorage.getItem(LEGACY_ARC_KEY) === 'true';
-    const preferred = stored || (legacyArc ? 'matrix' : 'apple');
-    const initialTheme = Object.prototype.hasOwnProperty.call(themeStylesById, preferred) ? preferred : 'apple';
+    const stored = readStoredTheme();
+    const initialTheme = stored || 'default';
 
     if (initialTheme !== 'default') {
       document.documentElement.dataset.theme = initialTheme;

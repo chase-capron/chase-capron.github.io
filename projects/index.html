@@ -65,61 +65,8 @@
 
     <section class="section">
       <div class="container">
-        <article class="project-controls" data-project-controls data-reveal>
-          <div class="project-controls__top">
-            <label class="project-field">
-              <span class="project-field__label">Search</span>
-              <input class="project-field__input" type="search" data-project-search placeholder="Search project, stack, or capability" autocomplete="off" />
-            </label>
-
-            <label class="project-field">
-              <span class="project-field__label">Lane</span>
-              <select class="project-field__select" data-project-lane>
-                <option value="all">All lanes</option>
-                <option value="automation">Automation Systems</option>
-                <option value="ai">AI Workflows</option>
-                <option value="maker">Maker Builds</option>
-                <option value="systems">Data + Utility Systems</option>
-              </select>
-            </label>
-
-            <label class="project-field">
-              <span class="project-field__label">Status</span>
-              <select class="project-field__select" data-project-status>
-                <option value="all">All statuses</option>
-                <option value="complete">Complete</option>
-                <option value="dev">In Development</option>
-                <option value="maker">Maker</option>
-                <option value="planned">Planned</option>
-              </select>
-            </label>
-
-            <label class="project-field">
-              <span class="project-field__label">Sort</span>
-              <select class="project-field__select" data-project-sort>
-                <option value="featured">Featured order</option>
-                <option value="updated-desc">Recently updated</option>
-                <option value="title-asc">Alphabetical</option>
-                <option value="status">Status progression</option>
-              </select>
-            </label>
-
-            <button type="button" class="btn btn--ghost project-controls__reset" data-project-reset>Reset</button>
-          </div>
-
-          <div class="project-metrics" data-project-metrics aria-label="Project summary metrics">
-            <p class="project-metric"><strong data-project-metric="active">0</strong><span>Active builds</span></p>
-            <p class="project-metric"><strong data-project-metric="complete">0</strong><span>Complete systems</span></p>
-            <p class="project-metric"><strong data-project-metric="maker">0</strong><span>Maker workflows</span></p>
-            <p class="project-metric"><strong data-project-metric="scope">All projects</strong><span>Current scope</span></p>
-          </div>
-
-          <p class="project-controls__summary" data-project-summary role="status" aria-live="polite">Showing all projects</p>
-          <p class="section__micro" id="projectManifestStamp" hidden>Project metadata refreshed recently.</p>
-        </article>
-
-        <div class="project-grid" data-project-catalog data-reveal data-delay="40">
-          <a class="project-card" data-project-lane="automation" href="midi-home-control/">
+        <div class="project-catalogue" data-reveal data-delay="40" aria-label="Project catalogue">
+          <a class="project-card project-card--catalogue" href="midi-home-control/">
             <div class="project-card__top">
               <span class="status status--complete" data-status-key="complete">Complete</span>
               <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="../assets/midi-live.png" alt="" loading="lazy" /></span>
@@ -134,7 +81,7 @@
             </div>
           </a>
 
-          <a class="project-card" data-project-lane="ai" href="ai-nutritionist/">
+          <a class="project-card project-card--catalogue" href="ai-nutritionist/">
             <div class="project-card__top">
               <span class="status status--dev" data-status-key="dev">In Development</span>
               <span class="project-card__icon" aria-hidden="true"><span>🍱</span></span>
@@ -148,10 +95,10 @@
             </div>
           </a>
 
-          <a class="project-card" data-project-lane="ai" href="greenthumb/">
+          <a class="project-card project-card--catalogue" href="greenthumb/">
             <div class="project-card__top">
               <span class="status status--dev" data-status-key="dev">In Development</span>
-              <span class="project-card__icon" aria-hidden="true"><span>🌿</span></span>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="../assets/hardware/plant.png" alt="" loading="lazy" /></span>
             </div>
             <h3>GreenThumb</h3>
             <p>Plant care system with soil probes, ambient sensing, and AI recommendations based on plant type and climate.</p>
@@ -162,10 +109,10 @@
             </div>
           </a>
 
-          <a class="project-card" data-project-lane="automation" href="smart-heating/">
+          <a class="project-card project-card--catalogue" href="smart-heating/">
             <div class="project-card__top">
               <span class="status status--complete" data-status-key="complete">Complete</span>
-              <span class="project-card__icon" aria-hidden="true"><span>♨️</span></span>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="smart-heating-logo" src="../assets/hardware/homeassistant.svg" alt="" loading="lazy" /></span>
             </div>
             <h3>Smart Heating Control</h3>
             <p>Room balancing automation that reads sensors, occupancy, weather, and schedule preferences.</p>
@@ -176,10 +123,10 @@
             </div>
           </a>
 
-          <a class="project-card" data-project-lane="maker" href="laser-3d-printing/">
+          <a class="project-card project-card--catalogue" href="laser-3d-printing/">
             <div class="project-card__top">
               <span class="status status--maker" data-status-key="maker">Maker</span>
-              <span class="project-card__icon" aria-hidden="true"><span>🛠️</span></span>
+              <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img src="../assets/hardware/maker.png" alt="" loading="lazy" /></span>
             </div>
             <h3>Laser Cutting + 3D Printing</h3>
             <p>Practical enclosures, mounts, and mechanical parts tied to automation workflows.</p>
@@ -190,7 +137,7 @@
             </div>
           </a>
 
-          <a class="project-card" data-project-lane="systems" href="hot-wheels-tracker/">
+          <a class="project-card project-card--catalogue" href="hot-wheels-tracker/">
             <div class="project-card__top">
               <span class="status status--planned" data-status-key="planned">Planned</span>
               <span class="project-card__icon project-card__icon--logo" aria-hidden="true"><img class="hotwheels-logo" src="../assets/hardware/hotwheels.png" alt="Hot Wheels logo" loading="lazy" /></span>
@@ -203,8 +150,6 @@
             </div>
           </a>
         </div>
-
-        <p class="project-empty" data-project-empty hidden>No projects match that filter combo yet. Try resetting the search or widening the lane filter.</p>
       </div>
     </section>
   </main>

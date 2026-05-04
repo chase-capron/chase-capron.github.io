@@ -102,13 +102,13 @@
         }),
       ],
       [
-        'pokemon',
-        ns.createBattleGame?.({
-          enemyHp: document.getElementById('enemyHp'),
-          playerHp: document.getElementById('playerHp'),
-          battleLog: document.getElementById('battleLog'),
-          battleScene: document.getElementById('battleScene'),
-          moveButtons: Array.from(document.querySelectorAll('[data-battle-move]')),
+        'snake',
+        ns.createSnakeGame?.({
+          canvas: document.getElementById('arcadeSnake'),
+          scoreNode: document.getElementById('snakeScore'),
+          bestNode: document.getElementById('snakeBest'),
+          statusNode: document.getElementById('snakeStatus'),
+          controlsRoot: document.querySelector('[data-control-group="snake"]'),
         }),
       ],
     ]);
