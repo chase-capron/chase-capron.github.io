@@ -277,6 +277,9 @@
   const MATRIX_CHARS = 'アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*+-<>[]{}';
 
   const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isLikelyMobile = () =>
+    window.matchMedia('(max-width: 900px)').matches &&
+    (window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0);
 
   const shouldRunMatrixRain = (themeId) => themeId === 'matrix' && !prefersReducedMotion();
 
@@ -328,7 +331,8 @@
   const drawMatrixFrame = (now) => {
     if (!matrixState.running || !matrixState.ctx) return;
 
-    if (now - matrixState.lastFrameAt < 66) {
+    const frameInterval = isLikelyMobile() ? 90 : 66;
+    if (now - matrixState.lastFrameAt < frameInterval) {
       matrixState.animationId = window.requestAnimationFrame(drawMatrixFrame);
       return;
     }
@@ -696,14 +700,16 @@
     const tiles = Array.from(track.querySelectorAll('.project-tile'));
     if (!tiles.length) return;
 
-    const STEP_SECONDS = 1 / 90;
-    const MAX_FRAME_SECONDS = 0.05;
-    const BELT_SPEED = 73;
-    const SPEED_CONVERGENCE = 6.6;
-    const BASE_GAP = 10;
-    const GAP_JITTER = 7;
+    const mobileMode = isLikelyMobile();
+
+    const STEP_SECONDS = mobileMode ? 1 / 72 : 1 / 90;
+    const MAX_FRAME_SECONDS = mobileMode ? 0.04 : 0.05;
+    const BELT_SPEED = mobileMode ? 62 : 73;
+    const SPEED_CONVERGENCE = mobileMode ? 5.2 : 6.6;
+    const BASE_GAP = mobileMode ? 14 : 10;
+    const GAP_JITTER = mobileMode ? 5 : 7;
     const MIN_CONTACT_GAP = 0;
-    const CONTACT_SOLVER_PASSES = 2;
+    const CONTACT_SOLVER_PASSES = mobileMode ? 1 : 2;
     const CONTACT_CORRECTION_MAX = 14;
     const COLLISION_TRANSFER = 0.5;
     const COLLISION_NUDGE = 0.15;
@@ -714,12 +720,12 @@
     const MAX_ROTATION = 2.2;
     const MAX_PROPAGATION_IMPULSE = 36;
     const PROPAGATION_DECAY = 0.52;
-    const RANDOM_BUMP_MIN_SECONDS = 1.05;
-    const CASE_INJECT_MIN_SECONDS = 2.1;
-    const CASE_INJECT_MAX_SECONDS = 4.0;
-    const RANDOM_BUMP_MAX_SECONDS = 2.6;
-    const JAM_IDLE_MIN_SECONDS = 6.4;
-    const JAM_IDLE_MAX_SECONDS = 11.8;
+    const RANDOM_BUMP_MIN_SECONDS = mobileMode ? 1.6 : 1.05;
+    const CASE_INJECT_MIN_SECONDS = mobileMode ? 2.8 : 2.1;
+    const CASE_INJECT_MAX_SECONDS = mobileMode ? 4.8 : 4.0;
+    const RANDOM_BUMP_MAX_SECONDS = mobileMode ? 3.4 : 2.6;
+    const JAM_IDLE_MIN_SECONDS = mobileMode ? 8.0 : 6.4;
+    const JAM_IDLE_MAX_SECONDS = mobileMode ? 13.4 : 11.8;
     const JAM_HOLD_MIN_SECONDS = 0.7;
     const JAM_HOLD_MAX_SECONDS = 1.35;
     const JAM_RELEASE_MIN_SECONDS = 0.5;
