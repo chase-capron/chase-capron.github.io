@@ -1,0 +1,10 @@
+:root[data-theme="synthwave"] {
+  --bg:#100722; --bg-soft:#21103b; --surface:rgba(35,16,63,.76); --surface-solid:#21103b;
+  --text:#fff5fd; --text-soft:#cab8db; --line:rgba(255,116,224,.27); --accent:#ff4fd8; --accent-2:#35d9ff;
+  --shadow:0 24px 70px rgba(4,0,17,.52); --beam-1:#ff4fd8; --beam-2:#ff9f43; --beam-3:#35d9ff; --beam-4:#8d5cff;
+}
+:root[data-theme="synthwave"] body { background:radial-gradient(circle at 50% 8%,rgba(255,79,216,.2),transparent 31%),linear-gradient(180deg,#100722 0%,#17082b 56%,#07152c 100%); }
+:root[data-theme="synthwave"] body::before { content:""; position:fixed; inset:52% 0 0; pointer-events:none; opacity:.18; background:linear-gradient(rgba(53,217,255,.65) 1px,transparent 1px),linear-gradient(90deg,rgba(53,217,255,.65) 1px,transparent 1px); background-size:44px 30px; transform:perspective(280px) rotateX(56deg) scale(1.5); transform-origin:top; }
+:root[data-theme="synthwave"] .site-header { background:rgba(16,7,34,.78); border-color:rgba(255,79,216,.25); }
+:root[data-theme="synthwave"] .btn { background:linear-gradient(135deg,#ff4fd8,#7657ff); box-shadow:0 0 28px rgba(255,79,216,.24); }
+:root[data-theme="synthwave"] h1,:root[data-theme="synthwave"] h2 { text-shadow:0 0 28px rgba(255,79,216,.2); }

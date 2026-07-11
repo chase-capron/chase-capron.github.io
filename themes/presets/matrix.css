@@ -24,6 +24,25 @@
     radial-gradient(circle at 85% 20%, rgba(34, 164, 92, 0.08), transparent 38%),
     radial-gradient(circle at 45% 85%, rgba(24, 110, 64, 0.08), transparent 36%),
     var(--bg);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  text-shadow: 0 0 12px rgba(54, 255, 119, .14);
+}
+
+:root[data-theme="matrix"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: .16;
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.55) 4px);
+  mix-blend-mode: multiply;
+}
+
+:root[data-theme="matrix"] h1,
+:root[data-theme="matrix"] h2,
+:root[data-theme="matrix"] .brand__name {
+  text-shadow: 0 0 9px rgba(54,255,119,.44), 0 0 28px rgba(15,191,87,.2);
 }
 
 :root[data-theme="matrix"] #matrixRainCanvas {
@@ -40,6 +59,7 @@
   pointer-events: none;
   z-index: -1;
   opacity: 0.48;
+  filter: contrast(1.25) brightness(1.15);
 }
 
 :root[data-theme="matrix"] body {
@@ -78,6 +98,15 @@
 :root[data-theme="matrix"] .theme-panel {
   border-color: rgba(80, 255, 148, 0.2);
   box-shadow: 0 14px 48px rgba(0, 0, 0, 0.44);
+  background-image: linear-gradient(135deg, rgba(54,255,119,.045), transparent 52%);
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+:root[data-theme="matrix"] .card:hover,
+:root[data-theme="matrix"] .hardware-card:hover,
+:root[data-theme="matrix"] .project-card:hover {
+  border-color: rgba(80,255,148,.48);
+  box-shadow: 0 0 0 1px rgba(54,255,119,.12), 0 18px 58px rgba(0,0,0,.52), 0 0 34px rgba(54,255,119,.1);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -91,6 +91,16 @@
       accent: '#fed90f',
       tags: ['Playful', 'Scrolling Scene', 'Sky'],
     },
+    {
+      id: 'synthwave', label: 'Synthwave', css: 'themes/presets/synthwave.css',
+      description: 'Neon sunset gradients with a crisp retro-futurist finish', accent: '#ff4fd8',
+      tags: ['Neon', 'Retro', 'Animated'],
+    },
+    {
+      id: 'nord', label: 'Nord', css: 'themes/presets/nord.css',
+      description: 'Calm arctic blues with clean, understated contrast', accent: '#88c0d0',
+      tags: ['Calm', 'Minimal', 'Accessible'],
+    },
   ];
 
   let themeCatalog = [...defaultThemeCatalog];
@@ -227,7 +237,7 @@
 
     const face = document.createElement('span');
     face.className = 'theme-app__simpsons-mark';
-    face.textContent = 'S';
+    face.textContent = theme.id === 'simpsons' ? 'S' : theme.label.slice(0, 1);
     icon.appendChild(face);
   };
 

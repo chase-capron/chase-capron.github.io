@@ -1,0 +1,9 @@
+:root[data-theme="nord"] {
+  --bg:#242933; --bg-soft:#2e3440; --surface:rgba(59,66,82,.76); --surface-solid:#343b49;
+  --text:#eceff4; --text-soft:#b9c2d0; --line:rgba(216,222,233,.18); --accent:#88c0d0; --accent-2:#81a1c1;
+  --shadow:0 24px 68px rgba(18,22,29,.38); --beam-1:#bf616a; --beam-2:#ebcb8b; --beam-3:#88c0d0; --beam-4:#b48ead;
+}
+:root[data-theme="nord"] body { background:radial-gradient(circle at 12% 8%,rgba(136,192,208,.13),transparent 34%),radial-gradient(circle at 88% 22%,rgba(180,142,173,.1),transparent 32%),#242933; }
+:root[data-theme="nord"] .site-header { background:rgba(36,41,51,.82); }
+:root[data-theme="nord"] .btn { background:linear-gradient(135deg,#5e81ac,#88c0d0); color:#202630; }
+:root[data-theme="nord"] .card,:root[data-theme="nord"] .hardware-card,:root[data-theme="nord"] .project-card { backdrop-filter:blur(20px); }
