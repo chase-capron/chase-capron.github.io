@@ -2,6 +2,8 @@
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
   const THEME_REGISTRY_VERSION = '2';
+  const ASSET_VERSION = '20261025';
+  const FALLBACK_THEME = 'matrix';
 
   const themeStylesById = {
     apple: 'themes/presets/apple.css',
@@ -9,11 +11,25 @@
     matrix: 'themes/presets/matrix.css',
     'classic-mac': 'themes/presets/classic-mac.css',
     simpsons: 'themes/presets/simpsons.css',
+    synthwave: 'themes/presets/synthwave.css',
+    nord: 'themes/presets/nord.css',
   };
+
+  const themeColorById = {
+    default: '#07111f',
+    apple: '#f5f5f7',
+    'classic-mac': '#bdbdbd',
+    matrix: '#04110a',
+    simpsons: '#70c6ff',
+    synthwave: '#14081f',
+    nord: '#2e3440',
+  };
+
+  const lightThemes = new Set(['apple', 'classic-mac', 'simpsons']);
 
   const sanitizeThemeId = (value) => {
     const candidate = String(value || '').toLowerCase();
-    return /^[a-z0-9-]+$/.test(candidate) ? candidate : 'default';
+    return /^[a-z0-9-]+$/.test(candidate) ? candidate : FALLBACK_THEME;
   };
 
   const readStoredTheme = () => {
@@ -56,6 +72,12 @@
     }
   };
 
+  const withVersion = (url) => {
+    if (!url) return url;
+    const joiner = url.includes('?') ? '&' : '?';
+    return `${url}${joiner}v=${ASSET_VERSION}`;
+  };
+
   const ensureThemeStylesheet = () => {
     let link = document.getElementById('themeStylesheet');
     if (link instanceof HTMLLinkElement) return link;
@@ -67,15 +89,22 @@
     return link;
   };
 
+  const paintThemeChrome = (themeId) => {
+    const color = themeColorById[themeId] || themeColorById[FALLBACK_THEME];
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta && color) themeMeta.setAttribute('content', color);
+    const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+    if (schemeMeta) schemeMeta.setAttribute('content', lightThemes.has(themeId) ? 'light' : 'dark');
+  };
+
   try {
     const stored = readStoredTheme();
-    const initialTheme = stored || 'default';
+    const initialTheme = stored || FALLBACK_THEME;
 
-    if (initialTheme !== 'default') {
-      document.documentElement.dataset.theme = initialTheme;
-    }
+    document.documentElement.dataset.theme = initialTheme;
+    paintThemeChrome(initialTheme);
 
-    const href = resolveAssetUrl(themeStylesById[initialTheme] || themeStylesById.default);
+    const href = withVersion(resolveAssetUrl(themeStylesById[initialTheme] || themeStylesById[FALLBACK_THEME]));
     if (href) {
       const link = ensureThemeStylesheet();
       if (link.getAttribute('href') !== href) {
@@ -83,6 +112,6 @@
       }
     }
   } catch (e) {
-    // Keep default theme when storage is unavailable.
+    // Keep the Matrix theme when storage is unavailable.
   }
 })();

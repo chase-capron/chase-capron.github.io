@@ -14,16 +14,14 @@ Developer-focused website for **Chase Capron** with an Apple-inspired scroll exp
 ## Design direction
 - Clean, typographic-heavy interface with large section pacing
 - Soft layered gradients, glass cards, and motion reveal blocks
-- Default theme for first load, plus an Apple preset for a calmer professional mode
+- Matrix theme for first load (a saved theme choice is still respected), plus Default, Apple, Classic Apple, The Simpsons, Synthwave, and Nord
 - Reduced motion support with a local user toggle
 
 ## Project areas highlighted
 - MIDI Home Control
-- Home Assistant
-- AI Nutritionist and Meal Planner
 - GreenThumb plant automation
-- Smart heating control logic
-- XR and hardware-adjacent experiments
+- Laser cutting and 3D printing
+- Home Assistant and Raspberry Pi builds
 
 ## Security and hygiene notes
 - Site pages include strict `Content-Security-Policy` (including `script-src 'self'` with no inline scripts), `Permissions-Policy`, and referrer policy metadata.

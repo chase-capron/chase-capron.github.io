@@ -4,6 +4,8 @@
   const THEME_KEY = 'cc_theme';
   const LEGACY_ARC_KEY = 'cc_style_arc';
   const THEME_REGISTRY_VERSION = '2';
+  const ASSET_VERSION = '20261025';
+  const FALLBACK_THEME = 'matrix';
   const appScript =
     document.currentScript ||
     document.querySelector('script[src*="/app.js"]') ||
@@ -55,7 +57,7 @@
       id: 'default',
       label: 'Default',
       css: 'themes/presets/default.css',
-      description: 'Current site look',
+      description: 'Ink navy with a blueprint grid and blue accent',
       accent: '#2f83ff',
       tags: ['Baseline', 'High readability'],
     },
@@ -79,7 +81,7 @@
       id: 'matrix',
       label: 'Matrix',
       css: 'themes/presets/matrix.css',
-      description: 'Falling green code + phosphor text treatment',
+      description: 'Phosphor green with a quiet code rain',
       accent: '#36ff77',
       tags: ['Cinematic', 'Animated', 'High contrast'],
     },
@@ -106,11 +108,11 @@
   let themeCatalog = [...defaultThemeCatalog];
   let allowedThemes = new Set(themeCatalog.map((theme) => theme.id));
   let themesById = new Map(themeCatalog.map((theme) => [theme.id, theme]));
-  let fallbackThemeId = 'default';
+  let fallbackThemeId = FALLBACK_THEME;
 
   const sanitizeThemeId = (value) => {
     const stringValue = String(value || '').toLowerCase();
-    return /^[a-z0-9-]+$/.test(stringValue) ? stringValue : 'default';
+    return /^[a-z0-9-]+$/.test(stringValue) ? stringValue : FALLBACK_THEME;
   };
 
   const sanitizeThemeAccent = (value) => {
@@ -144,14 +146,14 @@
   const getStoredTheme = () => {
     try {
       const raw = localStorage.getItem(THEME_KEY);
-      if (!raw) return 'default';
+      if (!raw) return FALLBACK_THEME;
 
       const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return 'default';
+      if (!parsed || typeof parsed !== 'object') return FALLBACK_THEME;
       if (String(parsed.registryVersion || '') !== THEME_REGISTRY_VERSION) {
         localStorage.removeItem(THEME_KEY);
         localStorage.removeItem(LEGACY_ARC_KEY);
-        return 'default';
+        return FALLBACK_THEME;
       }
 
       const explicit = sanitizeThemeId(parsed.themeId);
@@ -159,7 +161,7 @@
       localStorage.removeItem(THEME_KEY);
     } catch (e) {}
 
-    return 'default';
+    return FALLBACK_THEME;
   };
 
   const ensureThemeStylesheet = () => {
@@ -181,8 +183,9 @@
     if (!href) return null;
 
     const link = ensureThemeStylesheet();
-    if (link.getAttribute('href') !== href) {
-      link.setAttribute('href', href);
+    const versionedHref = href.includes('v=') ? href : `${href}${href.includes('?') ? '&' : '?'}v=${ASSET_VERSION}`;
+    if (link.getAttribute('href') !== versionedHref) {
+      link.setAttribute('href', versionedHref);
     }
 
     return link;
@@ -209,8 +212,11 @@
 
     if (theme.id === 'default') {
       const img = document.createElement('img');
-      img.src = resolveAssetUrl('assets/chase-logo.png');
+      img.src = resolveAssetUrl('assets/chase-logo.webp');
       img.alt = '';
+      img.addEventListener('error', () => {
+        img.src = resolveAssetUrl('assets/chase-logo.png');
+      }, { once: true });
       icon.appendChild(img);
       return;
     }
@@ -336,7 +342,7 @@
     canvas.style.height = '100vh';
     canvas.style.display = 'block';
     canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '-1';
+    canvas.style.zIndex = '0';
     document.documentElement.appendChild(canvas);
 
     matrixState.canvas = canvas;
@@ -460,10 +466,21 @@
   const applyTheme = (theme) => {
     const nextTheme = normalizeTheme(theme);
 
-    if (nextTheme === 'default') {
-      delete root.dataset.theme;
-    } else {
-      root.dataset.theme = nextTheme;
+    root.dataset.theme = nextTheme;
+    const themeColors = {
+      matrix: '#04110a',
+      default: '#07111f',
+      apple: '#f5f5f7',
+      'classic-mac': '#bdbdbd',
+      simpsons: '#70c6ff',
+      synthwave: '#14081f',
+      nord: '#2e3440',
+    };
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta && themeColors[nextTheme]) themeMeta.setAttribute('content', themeColors[nextTheme]);
+    const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+    if (schemeMeta) {
+      schemeMeta.setAttribute('content', ['apple', 'classic-mac', 'simpsons'].includes(nextTheme) ? 'light' : 'dark');
     }
 
     const themeLink = applyThemeStylesheet(nextTheme);
@@ -1239,34 +1256,22 @@
   const rotatingSuffixEl = document.querySelector('#hero-rotating-suffix');
   const rotatingTitleEl = rotatingSuffixEl?.closest('.hero-title-shine');
   if (rotatingSuffixEl && rotatingTitleEl) {
-    const prefix = rotatingTitleEl.dataset.prefix || 'Home automation heavy, AI-assisted tooling, and ';
+    const prefix = rotatingTitleEl.dataset.prefix || 'Home automation, connected hardware, and ';
     const phrases = [
-      'hands-on maker projects.',
-      'making coding cooler.',
-      'probably coding something right now.',
-      'building tiny tools that punch above their weight.',
-      'shipping practical automations daily.',
-      'turning coffee into shipped features.',
-      'making homelab workflows feel effortless.',
-      'connecting hardware with smarter software.',
-      'obsessing over clean UX and useful systems.',
-      'teaching machines to handle the boring stuff.',
-      'prototyping ideas into real tools fast.',
-      'stacking small wins into big systems.',
-      'engineering projects that actually get used.',
-      'automating what should have been automated years ago.',
-      'gluing APIs together until they feel like magic.',
-      'keeping the stack practical, reliable, and fun.',
-      'making smart-home chaos behave itself.',
-      'building tools that save clicks and time.',
-      'turning repetitive tasks into one-button flows.',
-      'crafting automations that just quietly work.',
-      'chaining APIs into useful everyday workflows.',
-      'debugging edge cases so you do not have to.',
-      'shipping maker ideas from sketch to reality.',
-      'balancing speed, polish, and reliability.',
-      'writing glue code that makes everything nicer.',
+      'hands-on projects.',
+      'small tools I actually use at home.',
+      'sensors wired into simple software.',
+      'scenes I can trigger from a MIDI pad.',
+      'parts I sketch, print, and try on the desk.',
+      'a Raspberry Pi on the workbench.',
+      'plant care that starts with a soil reading.',
+      'side projects small enough to explain.',
+      'glue between a device and Home Assistant.',
+      'builds I can demo without a slide deck.',
+      'systems that stay boring after they work.',
+      'another pass on something I already use.',
     ];
+    const hintedPhrase = 'a logo that throws a little confetti if you tap it 10 times.';
 
     let phraseIndex = 0;
     let cycleCount = 0;
@@ -1280,7 +1285,7 @@
       const initial = rotatingSuffixEl.textContent || phrases[0];
       let maxHeight = rotatingTitleEl.offsetHeight;
 
-      for (const phrase of phrases) {
+      for (const phrase of [...phrases, hintedPhrase]) {
         rotatingSuffixEl.textContent = phrase;
         syncTitleText(phrase);
         maxHeight = Math.max(maxHeight, rotatingTitleEl.offsetHeight);
@@ -1330,8 +1335,6 @@
         lockHeroTitleHeight();
       }, 120);
     });
-
-    const hintedPhrase = 'and if you\'re still here, tap me 10 times for a surprise.';
 
     const cycleLoop = async () => {
       while (true) {

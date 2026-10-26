@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "generatedAt": "2026-02-16T20:56:00Z",
-  "defaultTheme": "default",
+  "generatedAt": "2026-10-25T23:50:00Z",
+  "defaultTheme": "matrix",
   "themes": [
     {
       "id": "default",
       "label": "Default",
       "css": "themes/presets/default.css",
-      "description": "Current site look",
+      "description": "Ink navy with a blueprint grid and blue accent",
       "accent": "#2f83ff",
       "tags": ["Baseline", "High readability"]
     },
@@ -31,7 +31,7 @@
       "id": "matrix",
       "label": "Matrix",
       "css": "themes/presets/matrix.css",
-      "description": "Falling green code + phosphor text treatment",
+      "description": "Phosphor green with a quiet code rain",
       "accent": "#36ff77",
       "tags": ["Cinematic", "Animated", "High contrast"]
     },

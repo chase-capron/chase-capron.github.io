@@ -1,9 +1,78 @@
-/*
-  Default theme placeholder.
-  Purpose: keep theme assets in a dedicated folder so additional themes can be
-  added without touching global layout styles.
-*/
-
+/* Default theme: ink navy, blueprint grid, and a clear blue accent. */
 :root[data-theme="default"] {
-  /* Intentionally empty: base tokens live in styles.css */
+  color-scheme: dark;
+  --bg: #07111f;
+  --bg-soft: #101a2e;
+  --surface: rgba(16, 28, 48, 0.82);
+  --surface-solid: #121c31;
+  --text: #eef3ff;
+  --text-soft: #c5d0e4;
+  --line: rgba(186, 204, 236, 0.24);
+  --accent: #4c8dff;
+  --accent-2: #8eb4ff;
+  --eyebrow: #b9cdff;
+  --shadow: 0 24px 68px rgba(0, 0, 0, 0.38);
+  --shadow-strong: 0 34px 110px rgba(0, 0, 0, 0.48);
+  --radius: 20px;
+  --beam-1: #4c8dff;
+  --beam-2: #8eb4ff;
+  --beam-3: #7dd3c7;
+  --beam-4: #f0c27a;
 }
+
+:root[data-theme="default"] body {
+  background-color: #07111f;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(76, 141, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(125, 211, 199, 0.08), transparent 28%),
+    linear-gradient(rgba(158, 182, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(158, 182, 255, 0.05) 1px, transparent 1px);
+  background-size: auto, auto, 56px 56px, 56px 56px;
+  background-attachment: fixed;
+}
+
+:root[data-theme="default"] .site-header {
+  background: rgba(8, 16, 32, 0.86);
+  border-bottom-color: rgba(186, 204, 236, 0.16);
+}
+
+:root[data-theme="default"] .eyebrow { color: var(--eyebrow); }
+
+:root[data-theme="default"] .btn {
+  background: linear-gradient(140deg, #2f6fe4, #4c8dff);
+  color: #ffffff;
+  border-color: rgba(186, 210, 255, 0.45);
+}
+
+:root[data-theme="default"] .btn--ghost {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="default"] .nav a:hover,
+:root[data-theme="default"] .nav a:focus,
+:root[data-theme="default"] .nav a[aria-current="page"] {
+  color: #ffffff;
+  background: rgba(76, 141, 255, 0.28);
+  border-color: rgba(158, 190, 255, 0.7);
+}
+
+:root[data-theme="default"] .section--alt {
+  background: linear-gradient(90deg, rgba(16, 28, 52, 0.72), rgba(16, 28, 52, 0.2));
+}
+
+:root[data-theme="default"] .hero__logo {
+  background:
+    radial-gradient(circle at 40% 30%, rgba(76, 141, 255, 0.28), transparent 62%),
+    rgba(255, 255, 255, 0.03);
+  border-color: rgba(186, 204, 236, 0.2);
+}
+
+:root[data-theme="default"] .wip-banner {
+  background: #12203a;
+  border-color: rgba(76, 141, 255, 0.45);
+}
+:root[data-theme="default"] .wip-banner strong { color: #d7e6ff; }
+:root[data-theme="default"] .wip-banner span { color: #c5d0e4; }
+
+:root[data-theme="default"] .footer { background: #07111f; }

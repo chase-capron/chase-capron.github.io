@@ -133,7 +133,7 @@ const checkThemeBootstrapping = () => {
     const relPath = path.relative(repoRoot, filePath);
     const html = readUtf8(filePath);
 
-    if (!/src="(?:\.\.\/)*theme-init\.js"/.test(html)) {
+    if (!/src="(?:\/|(?:\.\.\/)*)theme-init\.js(?:\?[^"]*)?"/.test(html)) {
       addIssue(`${relPath} missing theme-init.js bootstrap script include`);
     }
 

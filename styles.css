@@ -25,7 +25,8 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
+body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
@@ -290,7 +291,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .eyebrow {
-  color: #8cb0ff;
+  color: var(--eyebrow, #9eb6ff);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 12px;
@@ -379,21 +380,27 @@ h1 {
 
 .hero-rotating-suffix {
   position: relative;
-  border-right: 2px solid rgba(167, 196, 255, 0.8);
+  border-right: 2px solid color-mix(in oklab, var(--accent) 75%, white);
   padding-right: 3px;
   margin-right: 1px;
   animation: heroCaretBlink 1s steps(1, end) infinite;
 }
 
 @keyframes heroCaretBlink {
-  0%, 49% { border-right-color: rgba(167, 196, 255, 0.86); }
+  0%, 49% { border-right-color: color-mix(in oklab, var(--accent) 75%, white); }
   50%, 100% { border-right-color: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-rotating-suffix {
     animation: none;
-    border-right-color: rgba(167, 196, 255, 0.55);
+    border-right-color: color-mix(in oklab, var(--accent) 70%, white);
+  }
+
+  .chip--ai,
+  .chip--ai::after,
+  .chip--ai:hover::after {
+    animation: none;
   }
 
   .chips--stack .chip {
@@ -652,7 +659,13 @@ h1 {
   box-shadow: 0 28px 88px rgba(0, 0, 0, 0.45), 0 0 0 1px color-mix(in oklab, var(--accent) 24%, transparent);
 }
 
-.project-tile h3 { font-size: 18px; }
+.project-tile .project-tile__title {
+  margin-top: 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+}
 .project-tile p { margin-top: 8px; color: var(--text-soft); }
 
 .project-tile__footer {
@@ -688,22 +701,7 @@ h1 {
   padding: 4px;
 }
 
-/* Smart Heating uses Home Assistant mark; keep it slightly smaller in project modules */
-.tile-icon--logo img.smart-heating-logo,
-.project-card__icon--logo img.smart-heating-logo{
-  transform: scale(0.86);
-  transform-origin: center;
-}
-
-/* Hot Wheels wordmark is wide; tighten padding so it sits cleanly in square icon canvases */
-.project-card__icon--logo img.hotwheels-logo{
-  padding: 3px;
-}
-.app-icon--logo img.hotwheels-logo{
-  padding: 10px;
-}
-
-.section { padding: 60px 0; }
+.section { padding: 72px 0; }
 .section--alt { background: linear-gradient(to right, rgba(11, 19, 34, 0.33), rgba(11, 19, 34, 0)); }
 
 .section__top { margin-bottom: 18px; }
@@ -862,7 +860,7 @@ h1 {
   gap: 18px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 8px max(16px, calc((100vw - 1120px) / 2)) 28px 0;
+  padding: 8px 0 28px;
   scrollbar-width: thin;
 }
 
@@ -1790,8 +1788,20 @@ body.arcade-open {
   border-style: inset;
 }
 
+.brand picture,
+.footer__copyright picture,
+.tile-icon picture,
+.project-card__icon picture,
+.hardware-card__icon picture,
+.project-showcase__visual picture,
+.app-icon picture,
+.hero__logo picture {
+  display: contents;
+}
+
 .theme-dock {
   display: flex;
+  max-width: 100%;
   align-items: end;
   justify-content: center;
   gap: clamp(6px, 1.4vw, 14px);
@@ -1848,8 +1858,8 @@ body.arcade-open {
 }
 
 .theme-app__icon {
-  width: clamp(42px, 8vw, 56px);
-  height: clamp(42px, 8vw, 56px);
+  width: clamp(44px, 8vw, 56px);
+  height: clamp(44px, 8vw, 56px);
   border-radius: 14px;
   display: grid;
   place-items: center;
@@ -2285,11 +2295,6 @@ body.arcade-open {
   gap: 16px;
 }
 
-/* Temporarily hidden per content direction */
-#current-goals {
-  display: none;
-}
-
 .callout p { color: var(--text-soft); margin-top: 8px; max-width: 63ch; }
 
 .muted { color: var(--text-soft); }
@@ -2377,7 +2382,10 @@ body.arcade-open {
     display: none;
   }
 
-  .chips--stack .chip {
+  .chips--stack .chip,
+  .chip--ai,
+  .chip--ai::after,
+  .chip--ai:hover::after {
     animation: none;
   }
 }
@@ -2527,8 +2535,8 @@ body.arcade-open {
   }
 
   .brand {
-    min-width: 44px;
-    flex: 0 0 auto;
+    min-width: 0;
+    flex: 1 1 auto;
   }
   .brand__name { font-size: 15px; }
   .brand__role { display: none; }
@@ -2537,10 +2545,16 @@ body.arcade-open {
     width: auto;
     justify-content: center;
     gap: 4px;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
   }
-  .nav a { padding: 6px 8px; font-size: 13px; }
+  .nav a {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+  }
 
   .header__actions {
     gap: 6px;
@@ -2552,8 +2566,8 @@ body.arcade-open {
   .theme-panel__head { flex-direction: column; align-items: flex-start; }
   .theme-dock { justify-content: flex-start; }
   .header__icon-btn {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
   }
   .header__icon-btn svg {
     width: 18px;
@@ -2589,7 +2603,9 @@ body.arcade-open {
   }
   .footer__theme-head h2 { font-size: clamp(20px, 6vw, 24px); }
   .footer__inner { flex-direction: column; align-items: flex-start; }
-  .hero { padding-top: 44px; }
+  h1 { font-size: clamp(30px, 8.2vw, 40px); }
+  .section { padding: 42px 0; }
+  .hero { padding-top: 28px; }
   .hero__grid { grid-template-columns: 1fr; gap: 14px; align-items: start; }
   .hero__grid > div:first-child { display: contents; }
   .eyebrow { order: 1; }
@@ -2648,7 +2664,7 @@ body.arcade-open {
   }
 
   .project-tile {
-    width: min(292px, calc(100vw - 52px));
+    width: min(280px, 100%);
   }
 }
 
@@ -2663,11 +2679,21 @@ body.arcade-open {
     padding-right: max(10px, env(safe-area-inset-right));
   }
 
-  .brand__text { display: none; }
-
-  .nav {
-    flex: 1 1 auto;
-    justify-content: flex-start;
+  .brand {
+    gap: 6px;
+  }
+  .brand__text {
+    display: flex;
+    min-width: 0;
+  }
+  .brand__name {
+    font-size: 13px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+  .nav a {
+    padding: 10px 8px;
+    font-size: 13px;
   }
 
   .header__actions {
@@ -2700,3 +2726,20 @@ body.arcade-open {
     transform: scale(1.16);
   }
 }
+
+@media (min-width: 1200px) {
+  .container { max-width: 1160px; }
+  .hero { padding-top: 84px; padding-bottom: 32px; }
+  .section { padding: 84px 0; }
+  .header__row { min-height: 80px; }
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn { min-height: 44px; }
+.header__icon-btn { min-width: 44px; min-height: 44px; }
