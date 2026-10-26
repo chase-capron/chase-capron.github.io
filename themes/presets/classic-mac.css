@@ -1,38 +1,45 @@
-/* Classic Mac OS inspired theme */
+/* Classic Apple: platinum desktop, black type, and a System 7 blue highlight. */
 :root[data-theme="classic-mac"] {
-  --bg: #bfbfbf;
-  --bg-soft: #d7d7d7;
-  --surface: rgba(238, 238, 238, 0.95);
-  --surface-solid: #efefef;
+  color-scheme: light;
+  --bg: #bdbdbd;
+  --bg-soft: #d4d4d4;
+  --surface: #efefef;
+  --surface-solid: #f4f4f4;
   --text: #111111;
-  --text-soft: #3a3a3a;
-  --line: rgba(0, 0, 0, 0.25);
-  --accent: #1d49c6;
-  --accent-2: #0f2f93;
-  --shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
-  --shadow-strong: 3px 3px 0 rgba(0, 0, 0, 0.42);
-
-  --beam-1: #d0d0d0;
-  --beam-2: #ececec;
-  --beam-3: #c4c4c4;
-  --beam-4: #f4f4f4;
+  --text-soft: #2a2a2a;
+  --line: rgba(0, 0, 0, 0.45);
+  --accent: #000080;
+  --accent-2: #000080;
+  --eyebrow: #000080;
+  --shadow: 2px 2px 0 rgba(0, 0, 0, 0.28);
+  --shadow-strong: 3px 3px 0 rgba(0, 0, 0, 0.35);
+  --radius: 2px;
+  --beam-1: #000080;
+  --beam-2: #d9d9d9;
+  --beam-3: #ffffff;
+  --beam-4: #8e8e8e;
 }
 
 :root[data-theme="classic-mac"] body {
-  font-family: "Chicago", "Charcoal", "Geneva", "Helvetica", "Arial", sans-serif;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.04)),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 3px),
-    var(--bg);
-  color: var(--text);
+  font-family: "Chicago", "Charcoal", Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0;
+  color: #111111;
+  background-color: #bdbdbd;
+  background-image: radial-gradient(#8f8f8f 0.7px, transparent 0.8px);
+  background-size: 3px 3px;
 }
 
 :root[data-theme="classic-mac"] .site-header {
-  background: #dcdcdc;
-  border-bottom: 1px solid #000;
+  background: linear-gradient(#f7f7f7, #d0d0d0);
+  border-bottom: 2px solid #000;
   backdrop-filter: none;
 }
+
+:root[data-theme="classic-mac"] .eyebrow { color: #000080; }
+:root[data-theme="classic-mac"] .brand__role,
+:root[data-theme="classic-mac"] .muted,
+:root[data-theme="classic-mac"] .section__hint,
+:root[data-theme="classic-mac"] .section__micro { color: #222; }
 
 :root[data-theme="classic-mac"] .brand__logo,
 :root[data-theme="classic-mac"] .project-card,
@@ -40,53 +47,88 @@
 :root[data-theme="classic-mac"] .card,
 :root[data-theme="classic-mac"] .hardware-card,
 :root[data-theme="classic-mac"] .callout,
-:root[data-theme="classic-mac"] .theme-panel {
+:root[data-theme="classic-mac"] .theme-panel,
+:root[data-theme="classic-mac"] .project-showcase,
+:root[data-theme="classic-mac"] .project-showcase__slide,
+:root[data-theme="classic-mac"] .app-stub,
+:root[data-theme="classic-mac"] .app-card,
+:root[data-theme="classic-mac"] .hero__logo {
   border-radius: 2px;
   border: 1px solid #000;
-  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #9b9b9b inset, 2px 2px 0 rgba(0, 0, 0, 0.25);
   background: #efefef;
+  color: #111;
+  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #8d8d8d inset, 2px 2px 0 rgba(0, 0, 0, 0.28);
 }
 
 :root[data-theme="classic-mac"] .nav a,
 :root[data-theme="classic-mac"] .btn,
+:root[data-theme="classic-mac"] .btn--ghost {
+  border-radius: 2px;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #8a8a8a inset;
+}
+
+:root[data-theme="classic-mac"] .btn {
+  background: #000080;
+  color: #ffffff;
+}
+
 :root[data-theme="classic-mac"] .btn--ghost,
-:root[data-theme="classic-mac"] .theme-control,
-:root[data-theme="classic-mac"] .theme-control__select {
-  border-radius: 2px;
-  border: 1px solid #000;
-  box-shadow: 1px 1px 0 #fff inset, -1px -1px 0 #a4a4a4 inset;
-}
-
-:root[data-theme="classic-mac"] .btn,
-:root[data-theme="classic-mac"] .nav a[aria-current="page"] {
-  background: linear-gradient(180deg, #e8e8e8, #cfcfcf);
-  color: #000;
-}
-
-:root[data-theme="classic-mac"] .btn:hover,
-:root[data-theme="classic-mac"] .nav a:hover {
-  background: linear-gradient(180deg, #f5f5f5, #dcdcdc);
-}
-
-:root[data-theme="classic-mac"] .eyebrow,
-:root[data-theme="classic-mac"] .section__hint,
-:root[data-theme="classic-mac"] .section__micro,
-:root[data-theme="classic-mac"] .muted,
-:root[data-theme="classic-mac"] .brand__role {
-  color: #2f2f2f;
-}
-
-:root[data-theme="classic-mac"] .chip {
-  border-radius: 2px;
-  border: 1px solid #000;
-  background: #dfdfdf;
+:root[data-theme="classic-mac"] .nav a {
+  background: linear-gradient(#f4f4f4, #d2d2d2);
   color: #111;
 }
 
-:root[data-theme="classic-mac"] .hero-title-shine,
+:root[data-theme="classic-mac"] .nav a:hover,
+:root[data-theme="classic-mac"] .nav a:focus,
+:root[data-theme="classic-mac"] .nav a[aria-current="page"] {
+  background: #000080;
+  color: #ffffff;
+  border-color: #000;
+}
+
 :root[data-theme="classic-mac"] h1,
 :root[data-theme="classic-mac"] h2,
-:root[data-theme="classic-mac"] h3 {
+:root[data-theme="classic-mac"] h3,
+:root[data-theme="classic-mac"] .hero-title-shine,
+:root[data-theme="classic-mac"] .project-tile__title {
   color: #000;
   text-shadow: none;
+}
+
+:root[data-theme="classic-mac"] .chip:not(.chip--ai) {
+  border-radius: 2px;
+  border: 1px solid #000;
+  background: #e4e4e4;
+  color: #111;
+}
+
+:root[data-theme="classic-mac"] .status { color: #111; background: #e4e4e4; border-color: #000; border-radius: 2px; }
+:root[data-theme="classic-mac"] .status--complete { color: #073d1c; background: #d9f5e4; }
+:root[data-theme="classic-mac"] .status--dev { color: #6a3b00; background: #fff0d6; }
+:root[data-theme="classic-mac"] .status--maker { color: #3d1868; background: #f0e4ff; }
+
+:root[data-theme="classic-mac"] .section--alt { background: rgba(255, 255, 255, 0.28); }
+:root[data-theme="classic-mac"] .footer {
+  background: #d4d4d4;
+  color: #111;
+  border-top: 2px solid #000;
+}
+
+:root[data-theme="classic-mac"] .wip-banner {
+  background: #efefef;
+  border: 1px solid #000;
+  border-radius: 2px;
+}
+:root[data-theme="classic-mac"] .wip-banner strong { color: #000080; }
+:root[data-theme="classic-mac"] .wip-banner span { color: #222; }
+
+:root[data-theme="classic-mac"] .hardware-icon--apple { filter: brightness(0); }
+
+:root[data-theme="classic-mac"] .tile-icon,
+:root[data-theme="classic-mac"] .project-card__icon,
+:root[data-theme="classic-mac"] .project-showcase__visual {
+  background: #fff;
+  border-color: #000;
+  border-radius: 2px;
 }
